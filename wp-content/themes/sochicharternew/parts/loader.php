@@ -1,0 +1,6 @@
+<div id="start_loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; min-height: 100%; z-index: 9999999; background-color: navy; display: flex; justify-content: center; align-items: center">
+    <div style="display:flex; justify-content:center; flex-direction: column; align-items:center">
+    <svg style="width: 70px" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><circle fill='#FFE350' stroke='#FFE350' stroke-width='15' r='15' cx='40' cy='65'><animate attributeName='cy' calcMode='spline' dur='2' values='65;135;65;' keySplines='.5 0 .5 1;.5 0 .5 1' repeatCount='indefinite' begin='-.4'></animate></circle><circle fill='#FFE350' stroke='#FFE350' stroke-width='15' r='15' cx='100' cy='65'><animate attributeName='cy' calcMode='spline' dur='2' values='65;135;65;' keySplines='.5 0 .5 1;.5 0 .5 1' repeatCount='indefinite' begin='-.2'></animate></circle><circle fill='#FFE350' stroke='#FFE350' stroke-width='15' r='15' cx='160' cy='65'><animate attributeName='cy' calcMode='spline' dur='2' values='65;135;65;' keySplines='.5 0 .5 1;.5 0 .5 1' repeatCount='indefinite' begin='0'></animate></circle></svg>
+    <span style="font-size: 12px; color: white; text-align: center; display: block">Загрузка</span>
+    </div>
+</div>

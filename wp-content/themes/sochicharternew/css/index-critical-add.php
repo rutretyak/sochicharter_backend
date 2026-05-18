@@ -1,0 +1,1 @@
+.mainstream__middle svg {width: 190px;position: absolute;transform: rotate(-25deg);top: -30px;}.button_submit .button__icon svg {width: 24px;height: 24px;display: block;position: absolute;}.showcase__filterbtn svg, .showcase__listsbtn svg, .showcase__tilesbtn svg {width: 14px;height: 14px;}.showcase {padding: 3rem 0;background-color: #4682b4;}
