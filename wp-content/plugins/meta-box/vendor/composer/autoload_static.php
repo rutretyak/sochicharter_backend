@@ -4,10 +4,10 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1
+class ComposerStaticInita364f899dce5b6389411556625df886a
 {
     public static $prefixLengthsPsr4 = array (
-        'M' => 
+        'M' =>
         array (
             'MetaBox\\Support\\' => 16,
             'MetaBox\\' => 8,
@@ -15,11 +15,11 @@ class ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1
     );
 
     public static $prefixDirsPsr4 = array (
-        'MetaBox\\Support\\' => 
+        'MetaBox\\Support\\' =>
         array (
             0 => __DIR__ . '/..' . '/wpmetabox/support',
         ),
-        'MetaBox\\' => 
+        'MetaBox\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -32,9 +32,9 @@ class ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd2da1cd611bdc50ec07712a31d2880b1::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita364f899dce5b6389411556625df886a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita364f899dce5b6389411556625df886a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInita364f899dce5b6389411556625df886a::$classMap;
 
         }, null, ClassLoader::class);
     }

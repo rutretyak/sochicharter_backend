@@ -1,4 +1,5 @@
 <?php
+
 // phpcs:disable Yoast.NamingConventions.NamespaceName.TooLong -- Needed in the folder structure.
 namespace Yoast\WP\SEO\Dashboard\User_Interface\Tracking;
 
@@ -107,7 +108,7 @@ class Setup_Steps_Tracking_Route implements Route_Interface {
 						],
 					],
 				],
-			]
+			],
 		);
 	}
 
@@ -119,36 +120,40 @@ class Setup_Steps_Tracking_Route implements Route_Interface {
 	 * @return WP_REST_Response|WP_Error The success or failure response.
 	 */
 	public function track_setup_steps( WP_REST_Request $request ) {
-		$data = \array_filter(
-			[
+			$data = [
 				'setup_widget_loaded'                => $request->get_param( 'setupWidgetLoaded' ),
 				'first_interaction_stage'            => $request->get_param( 'firstInteractionStage' ),
 				'last_interaction_stage'             => $request->get_param( 'lastInteractionStage' ),
 				'setup_widget_temporarily_dismissed' => $request->get_param( 'setupWidgetTemporarilyDismissed' ),
 				'setup_widget_permanently_dismissed' => $request->get_param( 'setupWidgetPermanentlyDismissed' ),
-			],
-			static function ( $element_value ) {
-					return ! \is_null( $element_value );
-			}
-		);
+			];
 
+			// Filter out null values from the data array.
+			$data = \array_filter(
+				$data,
+				static function ( $value ) {
+					return $value !== null;
+				},
+			);
+
+			// Check if all values are null then return an error that no valid params were passed.
 		if ( empty( $data ) ) {
 			return new WP_Error(
 				'wpseo_set_site_kit_usage_tracking',
-				\__( 'No valid parameters were provided.', 'wordpress-seo' ),
-				(object) []
+				\__( 'No valid parameters were passed.', 'wordpress-seo' ),
+				[ 'status' => 400 ],
 			);
 		}
 
 		$result = true;
-		foreach ( $data as $element_name => $element_value ) {
+		foreach ( $data as $key => $value ) {
 			try {
-				$result = $this->setup_steps_tracking_repository->set_setup_steps_tracking_element( $element_name, $element_value );
+				$result = $this->setup_steps_tracking_repository->set_setup_steps_tracking_element( $key, $value );
 			} catch ( Exception $exception ) {
 				return new WP_Error(
 					'wpseo_set_site_kit_usage_tracking',
 					$exception->getMessage(),
-					(object) []
+					(object) [],
 				);
 			}
 			if ( ! $result ) {
@@ -160,7 +165,7 @@ class Setup_Steps_Tracking_Route implements Route_Interface {
 			[
 				'success' => $result,
 			],
-			( $result ) ? 200 : 400
+			( $result ) ? 200 : 400,
 		);
 	}
 

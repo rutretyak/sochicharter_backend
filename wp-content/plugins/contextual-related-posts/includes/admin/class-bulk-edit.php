@@ -7,6 +7,8 @@
 
 namespace WebberZone\Contextual_Related_Posts\Admin;
 
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -22,12 +24,12 @@ class Bulk_Edit {
 	 * CRP_Bulk_Edit constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'add_custom_columns' ), 99 );
-		add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
-		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
-		add_action( 'save_post', array( $this, 'save_post_meta' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_ajax_crp_save_bulk_edit', array( $this, 'save_bulk_edit' ) );
+		Hook_Registry::add_action( 'init', array( $this, 'add_custom_columns' ), 99 );
+		Hook_Registry::add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
+		Hook_Registry::add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
+		Hook_Registry::add_action( 'save_post', array( $this, 'save_post_meta' ) );
+		Hook_Registry::add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		Hook_Registry::add_action( 'wp_ajax_crp_save_bulk_edit', array( $this, 'save_bulk_edit' ) );
 	}
 
 	/**
@@ -44,9 +46,9 @@ class Bulk_Edit {
 
 		wp_enqueue_script(
 			'crp-bulk-edit',
-			CRP_PLUGIN_URL . "includes/admin/js/bulk-edit{$file_prefix}.js",
+			WZ_CRP_PLUGIN_URL . "includes/admin/js/bulk-edit{$file_prefix}.js",
 			array( 'jquery' ),
-			CRP_VERSION,
+			WZ_CRP_VERSION,
 			true
 		);
 		wp_localize_script(
@@ -56,6 +58,9 @@ class Bulk_Edit {
 				'nonce' => wp_create_nonce( 'crp_bulk_edit_nonce' ),
 			)
 		);
+
+		// Enqueue inline CSS to ensure minimum width for CRP column.
+		wp_add_inline_style( 'wp-admin', '.column-crp_columns { min-width: 250px; }' );
 	}
 
 	/**
@@ -67,8 +72,8 @@ class Bulk_Edit {
 
 		// For each post type, add the bulk edit functionality and the columns.
 		foreach ( $post_types as $post_type ) {
-			add_filter( 'manage_' . $post_type . '_posts_columns', array( $this, 'add_admin_columns' ) );
-			add_action( 'manage_' . $post_type . '_posts_custom_column', array( $this, 'populate_custom_columns' ), 10, 2 );
+			Hook_Registry::add_filter( 'manage_' . $post_type . '_posts_columns', array( $this, 'add_admin_columns' ) );
+			Hook_Registry::add_action( 'manage_' . $post_type . '_posts_custom_column', array( $this, 'populate_custom_columns' ), 10, 2 );
 		}
 	}
 
@@ -92,11 +97,8 @@ class Bulk_Edit {
 	public function populate_custom_columns( $column_name, $post_id ) {
 		switch ( $column_name ) {
 			case 'crp_columns':
-				// Get related posts specific meta.
-				$post_meta = get_post_meta( $post_id, 'crp_post_meta', true );
-
-				// Manual related.
-				$manual_related       = isset( $post_meta['manual_related'] ) ? $post_meta['manual_related'] : '';
+				// Get related posts specific meta using backward compatible helper.
+				$manual_related       = crp_get_meta( $post_id, 'manual_related' );
 				$manual_related_array = wp_parse_id_list( $manual_related );
 
 				// For each of the manual related posts, display the post ID with a link to open this in a new tab.
@@ -113,13 +115,13 @@ class Bulk_Edit {
 				}
 
 				// Exclude this post.
-				$exclude_this_post = isset( $post_meta['exclude_this_post'] ) ? $post_meta['exclude_this_post'] : 0;
+				$exclude_this_post = crp_get_meta( $post_id, 'exclude_this_post' );
 
 				// Display the checkbox.
 				echo '<p>';
 				esc_html_e( 'Exclude from list:', 'contextual-related-posts' );
 				echo wp_kses_post( $exclude_this_post ? '<span class="dashicons dashicons-yes" style="color:green"></span>' : '<span class="dashicons dashicons-no" style="color:red"></span>' );
-				echo '<div class="hidden"><div class="crp_exclude_this_post">' . esc_attr( $exclude_this_post ) . '</div></div>';
+				echo '<input type="hidden" class="crp_exclude_this_post" value="' . esc_attr( $exclude_this_post ) . '" />';
 				echo '</p>';
 
 				break;
@@ -147,7 +149,7 @@ class Bulk_Edit {
 							<?php esc_html_e( 'Manual Related Posts', 'contextual-related-posts' ); ?>
 							<?php
 							if ( current_filter() === 'bulk_edit_custom_box' ) {
-								' ' . esc_html_e( '(0 to clear the manual posts)', 'contextual-related-posts' );
+								echo ' <span class="description">' . esc_html__( '(comma-separated post IDs, enter 0 to clear, leave blank to keep existing)', 'contextual-related-posts' ) . '</span>';
 							}
 							?>
 							<input type="text" name="crp_manual_related" class="widefat" value="">
@@ -159,9 +161,9 @@ class Bulk_Edit {
 							<?php } else { ?>
 								<?php esc_html_e( 'Exclude from related posts', 'contextual-related-posts' ); ?>
 								<select name="crp_exclude_this_post">
-									<option value="-1"><?php esc_html_e( '&mdash; No Change &mdash;' ); ?></option>
-									<option value="1"><?php esc_html_e( 'Exclude' ); ?></option>
-									<option value="0"><?php esc_html_e( 'Include' ); ?></option>
+									<option value="-1"><?php esc_html_e( '&mdash; No Change &mdash;', 'contextual-related-posts' ); ?></option>
+									<option value="1"><?php esc_html_e( 'Exclude', 'contextual-related-posts' ); ?></option>
+									<option value="0"><?php esc_html_e( 'Include', 'contextual-related-posts' ); ?></option>
 								</select>
 							<?php } ?>
 						</label>
@@ -185,7 +187,8 @@ class Bulk_Edit {
 			return;
 		}
 
-		$post_meta = array();
+		// Check if this is quick edit or bulk edit.
+		$is_quick_edit = isset( $_REQUEST['crp_quick_edit_nonce'] );
 
 		if ( isset( $_REQUEST['crp_manual_related'] ) ) {
 			$manual_related_array = wp_parse_id_list( sanitize_text_field( wp_unslash( $_REQUEST['crp_manual_related'] ) ) );
@@ -195,29 +198,31 @@ class Bulk_Edit {
 					unset( $manual_related_array[ $key ] );
 				}
 			}
-			$manual_related              = implode( ',', $manual_related_array );
-			$post_meta['manual_related'] = $manual_related;
+			$manual_related = implode( ',', $manual_related_array );
+
+			// In quick edit, only update if field has actual values.
+			// Empty field in quick edit should preserve existing data.
+			if ( ! ( $is_quick_edit && empty( $_REQUEST['crp_manual_related'] ) ) ) {
+				if ( $manual_related ) {
+					update_post_meta( $post_id, '_crp_manual_related', $manual_related );
+				} else {
+					delete_post_meta( $post_id, '_crp_manual_related' );
+				}
+			}
+		} elseif ( $is_quick_edit ) {
+			// Only delete in quick edit if field is not present.
+			// In bulk edit, missing field means "no change".
+			delete_post_meta( $post_id, '_crp_manual_related' );
 		}
 
 		if ( isset( $_REQUEST['crp_exclude_this_post'] ) ) {
-			$post_meta['exclude_this_post'] = 1;
+			update_post_meta( $post_id, '_crp_exclude_this_post', 1 );
 		} else {
-			$post_meta['exclude_this_post'] = 0;
+			delete_post_meta( $post_id, '_crp_exclude_this_post' );
 		}
 
-		$meta = get_post_meta( $post_id, 'crp_post_meta', true );
-		if ( $meta ) {
-			$post_meta = array_merge( $meta, $post_meta );
-		}
-
-		$post_meta_filtered = array_filter( $post_meta );
-
-		/**** Now we can start saving */
-		if ( empty( $post_meta_filtered ) ) {   // Checks if all the array items are 0 or empty.
-			delete_post_meta( $post_id, 'crp_post_meta' );  // Delete the post meta if no options are set.
-		} else {
-			update_post_meta( $post_id, 'crp_post_meta', $post_meta_filtered );
-		}
+		// Delete old array key if it exists to avoid conflicts.
+		delete_post_meta( $post_id, 'crp_post_meta' );
 	}
 
 	/**
@@ -234,17 +239,31 @@ class Bulk_Edit {
 		$post_meta = array();
 
 		if ( isset( $_POST['crp_manual_related'] ) ) {
-			$manual_related_array = wp_parse_id_list( wp_unslash( $_POST['crp_manual_related'] ) );
+			$manual_related_input = sanitize_text_field( wp_unslash( $_POST['crp_manual_related'] ) );
 
-			if ( ! empty( $manual_related_array ) ) {
-				foreach ( $manual_related_array as $key => $value ) {
-					if ( 'publish' !== get_post_status( $value ) ) {
-						unset( $manual_related_array[ $key ] );
+			// Only process if not empty - empty means "no change" in bulk edit.
+			if ( '' !== trim( $manual_related_input ) ) {
+				// Handle special case: '0' means clear manual related posts.
+				if ( '0' === $manual_related_input ) {
+					$post_meta['manual_related'] = '';
+				} else {
+					$manual_related_array = wp_parse_id_list( $manual_related_input );
+
+					if ( ! empty( $manual_related_array ) ) {
+						foreach ( $manual_related_array as $key => $value ) {
+							if ( 'publish' !== get_post_status( $value ) ) {
+								unset( $manual_related_array[ $key ] );
+							}
+						}
+						$manual_related              = implode( ',', $manual_related_array );
+						$post_meta['manual_related'] = $manual_related;
+					} else {
+						// If array is empty after parsing, clear manual related posts.
+						$post_meta['manual_related'] = '';
 					}
 				}
-				$manual_related              = implode( ',', $manual_related_array );
-				$post_meta['manual_related'] = $manual_related;
 			}
+			// If empty, do nothing - preserve existing manual related posts.
 		}
 
 		if ( isset( $_POST['crp_exclude_this_post'] ) && -1 !== (int) $_POST['crp_exclude_this_post'] ) {
@@ -256,15 +275,27 @@ class Bulk_Edit {
 			if ( ! current_user_can( 'edit_post', $post_id ) ) {
 				continue;
 			}
-			$meta          = get_post_meta( $post_id, 'crp_post_meta', true );
-			$meta          = $meta ? array_merge( $meta, $post_meta ) : $post_meta;
-			$meta_filtered = array_filter( $meta );
 
-			if ( empty( $meta_filtered ) ) {   // Checks if all the array items are 0 or empty.
-				delete_post_meta( $post_id, 'crp_post_meta' );  // Delete the post meta if no options are set.
-			} else {
-				update_post_meta( $post_id, 'crp_post_meta', $meta_filtered );
+			// Save manual_related if set.
+			if ( isset( $post_meta['manual_related'] ) ) {
+				if ( $post_meta['manual_related'] ) {
+					update_post_meta( $post_id, '_crp_manual_related', $post_meta['manual_related'] );
+				} else {
+					delete_post_meta( $post_id, '_crp_manual_related' );
+				}
 			}
+
+			// Save exclude_this_post if set.
+			if ( isset( $post_meta['exclude_this_post'] ) ) {
+				if ( $post_meta['exclude_this_post'] ) {
+					update_post_meta( $post_id, '_crp_exclude_this_post', $post_meta['exclude_this_post'] );
+				} else {
+					delete_post_meta( $post_id, '_crp_exclude_this_post' );
+				}
+			}
+
+			// Delete old array key if it exists to avoid conflicts.
+			delete_post_meta( $post_id, 'crp_post_meta' );
 		}
 
 		wp_send_json_success();

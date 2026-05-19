@@ -17,7 +17,7 @@ class Clearfy_Plugin_Options {
 
     public $version = '1.0.0';
 
-    public $api_url = '';
+    public array $api_urls = [];
 
     public $plugin_path = '';
 
@@ -49,6 +49,15 @@ class Clearfy_Plugin_Options {
 				'cookie_message_color'              => '#555555',
 				'cookie_message_background'         => '#ffffff',
 				'cookie_message_button_background'  => '#4b81e8',
+				'maintenance_mode_html'             => '<div style="max-width:720px;margin:10vh auto;padding:2rem 1.5rem;text-align:center;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;line-height:1.6;color:#1f2937;">'
+					. PHP_EOL . '<h1 style="margin:0 0 1rem;font-size:2rem;">' . esc_html__( 'Site under maintenance', 'clearfy-pro' ) . '</h1>'
+					. PHP_EOL . '<p style="margin:0 0 .5rem;font-size:1.0625rem;">' . esc_html__( 'We are currently updating the site and will be back soon.', 'clearfy-pro' ) . '</p>'
+					. PHP_EOL . '<p style="margin:0;font-size:.95rem;color:#6b7280;">' . esc_html__( 'Thank you for your patience.', 'clearfy-pro' ) . '</p>'
+					. PHP_EOL . '</div>',
+				'hide_external_links_post_types'    => [ 'post' ],
+				'pseudo_links_class'                => 'pseudo-clearfy-link',
+				'pseudo_links_color'                => '#0058cf',
+				'pseudo_links_hover_color'          => '#2900cf',
 
 				'login_attempts_allowed_retries'    => 5,
 				'login_attempts_allowed_lockouts'   => 3,

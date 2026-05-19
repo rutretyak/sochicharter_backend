@@ -202,7 +202,7 @@ class Related_Posts_Widget extends \WP_Widget {
 		$instance['show_date']     = isset( $new_instance['show_date'] ) ? (bool) $new_instance['show_date'] : false;
 		$instance['offset']        = ( ! empty( $new_instance['offset'] ) ) ? intval( $new_instance['offset'] ) : '';
 		$instance['ordering']      = isset( $new_instance['ordering'] ) ? $new_instance['ordering'] : '';
-		$instance['random_order']  = isset( $new_instance['random_order'] ) ? (bool) $new_instance['show_date'] : false;
+		$instance['random_order']  = isset( $new_instance['random_order'] ) ? (bool) $new_instance['random_order'] : false;
 
 		// Process post types to be selected.
 		$wp_post_types          = get_post_types(
@@ -255,9 +255,9 @@ class Related_Posts_Widget extends \WP_Widget {
 
 		// Get the post meta.
 		if ( isset( $post ) ) {
-			$crp_post_meta = get_post_meta( $post->ID, 'crp_post_meta', true );
+			$crp_disable_here = crp_get_meta( $post->ID, 'disable_here' );
 
-			if ( isset( $crp_post_meta['disable_here'] ) && $crp_post_meta['disable_here'] ) {
+			if ( $crp_disable_here ) {
 				return;
 			}
 		}
@@ -290,9 +290,9 @@ class Related_Posts_Widget extends \WP_Widget {
 			 */
 			$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
 
-			$limit = isset( $instance['limit'] ) ? $instance['limit'] : crp_get_option( 'limit' );
+			$limit = isset( $instance['limit'] ) ? (int) $instance['limit'] : (int) crp_get_option( 'limit' );
 			if ( empty( $limit ) ) {
-				$limit = crp_get_option( 'limit' );
+				$limit = (int) crp_get_option( 'limit' );
 			}
 			$offset = isset( $instance['offset'] ) ? $instance['offset'] : 0;
 

@@ -7,6 +7,8 @@
 
 namespace WebberZone\Contextual_Related_Posts\Frontend;
 
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -24,7 +26,7 @@ class Styles_Handler {
 	 * @since 3.3.0
 	 */
 	public function __construct() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
+		Hook_Registry::add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
 	}
 
 	/**
@@ -37,7 +39,7 @@ class Styles_Handler {
 			'crp-custom-style',
 			false,
 			array(),
-			CRP_VERSION
+			WZ_CRP_VERSION
 		);
 
 		$style_array = self::get_style();
@@ -48,40 +50,18 @@ class Styles_Handler {
 
 			wp_register_style(
 				"crp-style-{$style}",
-				plugins_url( "css/{$style}.min.css", CRP_PLUGIN_FILE ),
+				plugins_url( "includes/frontend/css/{$style}.min.css", WZ_CRP_PLUGIN_FILE ),
 				array(),
-				CRP_VERSION
+				WZ_CRP_VERSION
 			);
 			wp_enqueue_style( "crp-style-{$style}" );
 			wp_add_inline_style( "crp-style-{$style}", $extra_css );
 		}
 
-		// Add custom CSS to header.
-		$add_to     = crp_get_option( 'add_to', false );
 		$custom_css = stripslashes( crp_get_option( 'custom_css' ) );
 		if ( $custom_css ) {
-			$enqueue_style = false;
-
-			if ( is_single() && ! empty( $add_to['single'] ) ) {
-				$enqueue_style = true;
-			} elseif ( is_page() && ! empty( $add_to['page'] ) ) {
-				$enqueue_style = true;
-			} elseif ( is_home() && ! empty( $add_to['home'] ) ) {
-				$enqueue_style = true;
-			} elseif ( is_category() && ! empty( $add_to['category_archives'] ) ) {
-				$enqueue_style = true;
-			} elseif ( is_tag() && ! empty( $add_to['tag_archives'] ) ) {
-				$enqueue_style = true;
-			} elseif ( ( is_tax() || is_author() || is_date() ) && ! empty( $add_to['other_archives'] ) ) {
-				$enqueue_style = true;
-			} elseif ( is_active_widget( false, false, 'widget_crp', true ) ) {
-				$enqueue_style = true;
-			}
-
-			if ( $enqueue_style ) {
-				wp_enqueue_style( 'crp-custom-style' );
-				wp_add_inline_style( 'crp-custom-style', $custom_css );
-			}
+			wp_enqueue_style( 'crp-custom-style' );
+			wp_add_inline_style( 'crp-custom-style', $custom_css );
 		}
 	}
 
@@ -98,27 +78,20 @@ class Styles_Handler {
 	public static function get_style( $style = '' ) {
 
 		$style_array  = array();
-		$thumb_width  = crp_get_option( 'thumb_width', 150 );
-		$thumb_height = crp_get_option( 'thumb_height', 150 );
+		$thumb_width  = (int) crp_get_option( 'thumb_width', 150 );
+		$thumb_height = (int) crp_get_option( 'thumb_height', 150 );
+		$aspect_ratio = $thumb_width / $thumb_height;
 		$crp_style    = ! empty( $style ) ? $style : crp_get_option( 'crp_styles' );
 
 		switch ( $crp_style ) {
 			case 'rounded_thumbs':
 				$style_array['name']      = 'rounded-thumbs';
 				$style_array['extra_css'] = "
-			.crp_related.crp-rounded-thumbs a {
-				width: {$thumb_width}px;
-                height: {$thumb_height}px;
-				text-decoration: none;
-			}
-			.crp_related.crp-rounded-thumbs img {
-				max-width: {$thumb_width}px;
-				margin: auto;
-			}
-			.crp_related.crp-rounded-thumbs .crp_title {
-				width: 100%;
-			}
-			";
+					.crp_related.crp-rounded-thumbs {
+						--crp-thumb-width: {$thumb_width}px;
+						--crp-thumb-height: {$thumb_height}px;
+					}
+				";
 				break;
 
 			case 'masonry':
@@ -130,27 +103,26 @@ class Styles_Handler {
 			case 'grid':
 				$style_array['name']      = 'grid';
 				$style_array['extra_css'] = "
-			.crp_related.crp-grid ul li a.crp_link {
-				grid-template-rows: {$thumb_height}px auto;
-			}
-			.crp_related.crp-grid ul {
-				grid-template-columns: repeat(auto-fill, minmax({$thumb_width}px, 1fr));
+			.crp_related.crp-grid {
+				--crp-grid-column-min: {$thumb_width}px;
+				--crp-grid-card-min-height: " . ( $thumb_height + 80 ) . "px;
+				--crp-grid-thumb-aspect-ratio: {$aspect_ratio};
+				--crp-grid-title-line-clamp: 3;
+				--crp-grid-title-line-height: 1.2em;
 			}
 			";
 				break;
 
 			case 'thumbs_grid':
-				$row_height = max( 0, (int) $thumb_height - 50 );
-
 				$style_array['name']      = 'thumbs-grid';
 				$style_array['extra_css'] = "
-			.crp_related.crp-thumbs-grid ul li a.crp_link {
-				grid-template-rows: {$row_height}px auto;
+			.crp_related.crp-thumbs-grid {
+				--crp-thumb-width: {$thumb_width}px;
+				--crp-thumb-height: {$thumb_height}px;
+				--crp-thumb-min-width: " . max( 120, $thumb_width * 0.8 ) . 'px;
+				--crp-aspect-ratio: ' . $aspect_ratio . ';
 			}
-			.crp_related.crp-thumbs-grid ul {
-				grid-template-columns: repeat(auto-fill, minmax({$thumb_width}px, 1fr));
-			}
-			";
+			';
 				break;
 
 			default:

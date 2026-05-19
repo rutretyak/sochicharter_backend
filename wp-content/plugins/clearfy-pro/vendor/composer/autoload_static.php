@@ -6,6 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInite7dea4450716d94cee4bd31d216d6ce2
 {
+    public static $files = array (
+        'f6d4f6bcee7247df6b777884c3e22f98' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p6.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'W' => 
         array (
@@ -22,6 +26,12 @@ class ComposerStaticInite7dea4450716d94cee4bd31d216d6ce2
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'WPShop\\ClearfyPro\\ClearfyCloud' => __DIR__ . '/../..' . '/src/ClearfyCloud.php',
+        'WPShop\\ClearfyPro\\DisableFeeds' => __DIR__ . '/../..' . '/src/DisableFeeds.php',
+        'WPShop\\ClearfyPro\\HideExternalLinks' => __DIR__ . '/../..' . '/src/HideExternalLinks.php',
+        'WPShop\\ClearfyPro\\Logger' => __DIR__ . '/../..' . '/src/Logger.php',
+        'WPShop\\ClearfyPro\\MaintenanceMode' => __DIR__ . '/../..' . '/src/MaintenanceMode.php',
+        'WPShop\\ClearfyPro\\RobotsTxt' => __DIR__ . '/../..' . '/src/RobotsTxt.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

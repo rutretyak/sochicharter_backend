@@ -51,11 +51,7 @@ class Display {
 	 * @return string The formatted list of related posts.
 	 */
 	public static function related_posts( $args = array() ) {
-		global $post, $crp_settings;
-
-		if ( ! $post ) {
-			return '';
-		}
+		global $crp_settings;
 
 		$crp_settings = crp_get_settings();
 
@@ -77,6 +73,30 @@ class Display {
 
 		// Sanitize args.
 		$args = Helpers::sanitize_args( $args );
+
+		// Set the post object like CRP_Core_Query::prepare_query_args().
+		$post_id = $args['post_id'] ?? $args['postid'] ?? null;
+
+		if ( ! empty( $post_id ) ) {
+			// Handle WP_Post object, int, or string.
+			$post = ( $post_id instanceof \WP_Post ) ? $post_id : get_post( $post_id );
+		} else {
+			global $post;
+		}
+
+		if ( ! $post instanceof \WP_Post ) {
+			return '';
+		}
+
+		// Ensure we use the queried object ID if we are in the main query and no explicit post_id was provided.
+		$queried_object = get_queried_object();
+		if ( is_main_query() && empty( $post_id ) && $queried_object instanceof \WP_Post && $queried_object->ID !== $post->ID ) {
+			$post = $queried_object; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		if ( ! $post instanceof \WP_Post ) {
+			return '';
+		}
 
 		// Short circuit flag.
 		$short_circuit = false;
@@ -101,15 +121,10 @@ class Display {
 			return ''; // Exit without adding related posts.
 		}
 
-		// WPML & PolyLang support - change strict limit to false.
-		if ( class_exists( 'SitePress' ) || function_exists( 'pll_get_post' ) ) {
-			$args['strict_limit'] = false;
-		}
-
 		// Support caching to speed up retrieval.
+		$meta_key = Cache::get_key( $args );
 		if ( self::should_cache( $args ) ) {
-			$meta_key = Cache::get_key( $args );
-			$output   = Cache::get_cache( $post->ID, $meta_key );
+			$output = Cache::get_cache( $post->ID, $meta_key, 'html' );
 			if ( $output ) {
 				return $output;
 			}
@@ -122,8 +137,7 @@ class Display {
 		$results = self::get_posts(
 			array_merge(
 				array(
-					'postid'       => isset( $args['postid'] ) ? $args['postid'] : $post->ID,
-					'strict_limit' => isset( $args['strict_limit'] ) ? $args['strict_limit'] : true,
+					'post_id' => isset( $args['post_id'] ) ? $args['post_id'] : $post->ID,
 				),
 				$args
 			)
@@ -175,7 +189,7 @@ class Display {
 		 */
 		$post_classes = apply_filters( 'crp_post_class', $post_classes, $args, $post );
 
-		$output = '<div class="' . $post_classes . '">';
+		$output = '<div class="' . esc_attr( $post_classes ) . '">';
 
 		if ( $results ) {
 			$loop_counter = 0;
@@ -260,7 +274,7 @@ class Display {
 
 		// Support caching to speed up retrieval.
 		if ( self::should_cache( $args ) ) {
-			Cache::set_cache( $post->ID, $meta_key, $output );
+			Cache::set_cache( $post->ID, $meta_key, $output, 0, 'html' );
 		}
 
 		/**
@@ -351,13 +365,7 @@ class Display {
 		if ( ( isset( $args['is_shortcode'] ) && ! $args['is_shortcode'] ) &&
 		( isset( $args['is_manual'] ) && ! $args['is_manual'] ) &&
 		( isset( $args['is_block'] ) && ! $args['is_block'] ) ) {
-			$crp_post_meta = get_post_meta( $post->ID, 'crp_post_meta', true );
-
-			if ( isset( $crp_post_meta['crp_disable_here'] ) ) {
-				$crp_disable_here = $crp_post_meta['crp_disable_here'];
-			} else {
-				$crp_disable_here = 0;
-			}
+			$crp_disable_here = crp_get_meta( $post->ID, 'disable_here' );
 
 			if ( $crp_disable_here ) {
 				return true;
@@ -498,17 +506,6 @@ class Display {
 		 * @param boolean  $use_excerpt    Use the excerpt?
 		 */
 		return apply_filters( 'crp_excerpt', $output, $post, $excerpt_length, $use_excerpt );
-	}
-
-	/**
-	 * Get the default thumbnail.
-	 *
-	 * @since 3.6.0
-	 *
-	 * @return string Default thumbnail.
-	 */
-	public static function get_default_thumbnail() {
-		return CRP_PLUGIN_URL . 'default.png';
 	}
 
 	/**
@@ -805,6 +802,7 @@ class Display {
 					'post'               => $result,
 					'size'               => $args['thumb_size'],
 					'thumb_meta'         => $args['thumb_meta'],
+					'acf_field'          => $args['acf_field'] ?? '',
 					'thumb_html'         => $args['thumb_html'],
 					'thumb_default'      => $args['thumb_default'],
 					'thumb_default_show' => $args['thumb_default_show'],
@@ -923,16 +921,17 @@ class Display {
 			return $content;
 		}
 
-		$add_to = \crp_get_option( 'add_to', false );
+		$add_to = \crp_get_option( 'add_to', array( 'single', 'page' ) );
+		$add_to = wp_parse_list( $add_to );
 
 		// Else add the content.
 		switch ( true ) {
-			case is_single() && ! empty( $add_to['single'] ):
-			case is_page() && ! empty( $add_to['page'] ):
-			case is_home() && ! empty( $add_to['home'] ):
-			case is_category() && ! empty( $add_to['category_archives'] ):
-			case is_tag() && ! empty( $add_to['tag_archives'] ):
-			case ( is_tax() || is_author() || is_date() ) && ! empty( $add_to['other_archives'] ):
+			case is_single() && in_array( 'single', $add_to, true ):
+			case is_page() && in_array( 'page', $add_to, true ):
+			case is_home() && in_array( 'home', $add_to, true ):
+			case is_category() && in_array( 'category_archives', $add_to, true ):
+			case is_tag() && in_array( 'tag_archives', $add_to, true ):
+			case ( is_tax() || is_author() || is_date() ) && in_array( 'other_archives', $add_to, true ):
 				return self::generate_content( $content, self::related_posts() );
 			default:
 				return $content;
@@ -1012,13 +1011,14 @@ class Display {
 	 */
 	public static function rss_filter( $content ) {
 
-		$add_to = \crp_get_option( 'add_to', false );
+		$add_to = \crp_get_option( 'add_to', array( 'single', 'page' ) );
+		$add_to = wp_parse_list( $add_to );
 
-		$limit_feed         = \crp_get_option( 'limit_feed' );
+		$limit_feed         = (int) \crp_get_option( 'limit_feed' );
 		$show_excerpt_feed  = \crp_get_option( 'show_excerpt_feed' );
 		$post_thumb_op_feed = \crp_get_option( 'post_thumb_op_feed' );
 
-		if ( isset( $add_to['feed'] ) && $add_to['feed'] ) {
+		if ( in_array( 'feed', $add_to, true ) ) {
 			$output  = $content;
 			$output .= get_crp( 'is_widget=0&limit=' . $limit_feed . '&show_excerpt=' . $show_excerpt_feed . '&post_thumb_op=' . $post_thumb_op_feed );
 			return $output;

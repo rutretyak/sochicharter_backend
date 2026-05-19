@@ -7,6 +7,8 @@
 
 namespace WebberZone\Contextual_Related_Posts\Frontend;
 
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -25,8 +27,8 @@ class Language_Handler {
 	 * @since 3.5.0
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
-		add_filter( 'crp_query_the_posts', array( $this, 'translate_ids' ), 999 );
+		Hook_Registry::add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+		Hook_Registry::add_filter( 'crp_query_the_posts', array( $this, 'translate_ids' ), 999 );
 	}
 
 	/**
@@ -37,7 +39,7 @@ class Language_Handler {
 	 * @return void
 	 */
 	public static function load_plugin_textdomain() {
-		load_plugin_textdomain( 'contextual-related-posts', false, dirname( plugin_basename( CRP_PLUGIN_FILE ) ) . '/languages/' );
+		load_plugin_textdomain( 'contextual-related-posts', false, dirname( plugin_basename( WZ_CRP_PLUGIN_FILE ) ) . '/languages/' );
 	}
 
 	/**
@@ -51,7 +53,7 @@ class Language_Handler {
 	public static function translate_ids( $results ) {
 		global $post;
 
-		$processed_ids     = array();
+		$processed_ids     = ! empty( $post->ID ) ? array( $post->ID ) : array();
 		$processed_results = array();
 
 		foreach ( $results as $result ) {

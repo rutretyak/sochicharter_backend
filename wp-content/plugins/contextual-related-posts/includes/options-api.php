@@ -21,7 +21,7 @@ if ( ! defined( 'WPINC' ) ) {
  */
 function crp_get_settings() {
 
-	$settings = get_option( 'crp_settings' );
+	$settings = get_option( 'crp_settings', array() );
 
 	/**
 	 * Settings array
@@ -47,17 +47,13 @@ function crp_get_settings() {
  * @return mixed
  */
 function crp_get_option( $key = '', $default_value = null ) {
-	global $crp_settings;
+	$crp_settings = crp_get_settings();
 
-	if ( empty( $crp_settings ) ) {
-		$crp_settings = crp_get_settings();
-	}
-
-	if ( is_null( $default_value ) ) {
+	if ( null === $default_value ) {
 		$default_value = crp_get_default_option( $key );
 	}
 
-	$value = isset( $crp_settings[ $key ] ) ? $crp_settings[ $key ] : $default_value;
+	$value = $crp_settings[ $key ] ?? $default_value;
 
 	/**
 	 * Filter the value for the option being fetched.
@@ -80,6 +76,48 @@ function crp_get_option( $key = '', $default_value = null ) {
 	 * @param mixed   $default_value Default value
 	 */
 	return apply_filters( 'crp_get_option_' . $key, $value, $key, $default_value );
+}
+
+/**
+ * Get an option from a specific blog in a multisite network.
+ *
+ * @since 4.1.0
+ *
+ * @param int    $blog_id       Blog ID to fetch the option from.
+ * @param string $key           Key of the option to fetch.
+ * @param mixed  $default_value Default value to fetch if option is missing.
+ * @return mixed
+ */
+function crp_get_blog_option( $blog_id, $key = '', $default_value = false ) {
+
+	$blog_id = (int) $blog_id;
+
+	if ( empty( $blog_id ) ) {
+		$blog_id = get_current_blog_id();
+	}
+
+	if ( get_current_blog_id() === $blog_id ) {
+		return crp_get_option( $key, $default_value );
+	}
+
+	if ( is_multisite() ) {
+		switch_to_blog( $blog_id );
+		$value = crp_get_option( $key, $default_value );
+		restore_current_blog();
+	} else {
+		$value = crp_get_option( $key, $default_value );
+	}
+
+	/**
+	 * Filters a blog option value.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param mixed  $value   The option value.
+	 * @param int    $blog_id Blog ID.
+	 * @param string $key     Option key.
+	 */
+	return apply_filters( "crp_blog_option_{$key}", $value, $blog_id, $key );
 }
 
 
@@ -209,24 +247,51 @@ function crp_get_registered_settings_types() {
  */
 function crp_settings_defaults() {
 
-	$options = array();
+	$options       = array();
+	$default_types = array(
+		'color',
+		'css',
+		'csv',
+		'file',
+		'html',
+		'multicheck',
+		'number',
+		'numbercsv',
+		'password',
+		'postids',
+		'posttypes',
+		'radio',
+		'radiodesc',
+		'repeater',
+		'select',
+		'sensitive',
+		'taxonomies',
+		'text',
+		'textarea',
+		'thumbsizes',
+		'url',
+		'wysiwyg',
+	);
 
 	// Populate some default values.
 	foreach ( \WebberZone\Contextual_Related_Posts\Admin\Settings::get_registered_settings() as $tab => $settings ) {
 		foreach ( $settings as $option ) {
+			if ( ! isset( $option['id'] ) ) {
+				continue;
+			}
+
+			$setting_id    = $option['id'];
+			$setting_type  = $option['type'] ?? '';
+			$default_value = '';
+
 			// When checkbox is set to true, set this to 1.
-			if ( 'checkbox' === $option['type'] && ! empty( $option['options'] ) ) {
-				$options[ $option['id'] ] = 1;
-			} else {
-				$options[ $option['id'] ] = 0;
+			if ( 'checkbox' === $setting_type ) {
+				$default_value = isset( $option['default'] ) ? (int) (bool) $option['default'] : 0;
+			} elseif ( isset( $option['default'] ) && in_array( $setting_type, $default_types, true ) ) {
+				$default_value = $option['default'];
 			}
-			// If an option is set.
-			if ( in_array( $option['type'], array( 'textarea', 'css', 'html', 'text', 'url', 'csv', 'color', 'numbercsv', 'postids', 'posttypes', 'number', 'wysiwyg', 'file', 'password' ), true ) && isset( $option['options'] ) ) {
-				$options[ $option['id'] ] = $option['options'];
-			}
-			if ( in_array( $option['type'], array( 'multicheck', 'radio', 'select', 'radiodesc', 'thumbsizes' ), true ) && isset( $option['default'] ) ) {
-				$options[ $option['id'] ] = $option['default'];
-			}
+
+			$options[ $setting_id ] = $default_value;
 		}
 	}
 
@@ -269,4 +334,15 @@ function crp_get_default_option( $key = '' ) {
  */
 function crp_settings_reset() {
 	delete_option( 'crp_settings' );
+}
+
+/**
+ * Check if WooCommerce is active.
+ *
+ * @since 4.2.0
+ *
+ * @return bool
+ */
+function crp_is_woocommerce_active(): bool {
+	return class_exists( 'WooCommerce' );
 }

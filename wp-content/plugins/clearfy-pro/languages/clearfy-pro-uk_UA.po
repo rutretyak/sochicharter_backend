@@ -1,0 +1,2076 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Clearfy Pro\n"
+"POT-Creation-Date: 2025-02-11 19:36+0300\n"
+"PO-Revision-Date: 2025-02-11 19:36+0300\n"
+"Last-Translator: Clearfy Team <support@wpshop.ru>\n"
+"Language-Team: WPShop UA\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: _e;__;_ex:1,2;_n;_x:1,2;esc_attr__;esc_attr_e;"
+"esc_html__;esc_html_e\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: plugin-update-checker\n"
+
+#: admin/clearfy-admin.php:139
+msgid "Choose avatar"
+msgstr "Вибрати аватар"
+
+#: admin/clearfy-admin.php:140
+msgid "Select"
+msgstr "Вибрати"
+
+#: admin/clearfy-admin.php:141
+msgid "Crop"
+msgstr "Обрізати"
+
+#: admin/clearfy-admin.php:157 admin/clearfy-admin.php:312
+msgid "Settings"
+msgstr "Налаштування"
+
+#: admin/clearfy-admin.php:317
+msgid "Enable all"
+msgstr "Увімкнути все, що можливо"
+
+#: admin/clearfy-admin.php:318
+msgid "Enable recommended"
+msgstr "Лише рекомендовані"
+
+#: admin/clearfy-admin.php:319
+msgid "Disable all"
+msgstr "Вимкнути все"
+
+#: admin/clearfy-admin.php:321
+msgid ""
+"For default we recommend enable only recommended settings.<br>If you are "
+"expert - you can configure manually."
+msgstr ""
+"Для большинства блогов мы рекомендуем включать \"Лише рекомендовані\" "
+"настройки.<br>Если Вы опытный пользователь WordPress - настройки можно "
+"сделать вручную."
+
+#: admin/clearfy-admin.php:322
+msgid "Don't forget to save settings"
+msgstr "Не забудьте зберегти налаштування"
+
+#: admin/clearfy-admin.php:332
+msgid "General"
+msgstr "Основні"
+
+#: admin/clearfy-admin.php:333
+msgid "Code"
+msgstr "Код"
+
+#: admin/clearfy-admin.php:334
+msgid "SEO"
+msgstr "SEO"
+
+#: admin/clearfy-admin.php:335
+msgid "Duplicate"
+msgstr "Дублікати"
+
+#: admin/clearfy-admin.php:336
+msgid "Security"
+msgstr "Безпека"
+
+#: admin/clearfy-admin.php:337
+msgid "Modules"
+msgstr "Модулі"
+
+#: admin/clearfy-admin.php:338
+msgid "Additionally"
+msgstr "Додатково"
+
+#: admin/clearfy-admin.php:339 admin/clearfy-admin.php:1784
+msgid "Redirect"
+msgstr "Редиректи"
+
+#: admin/clearfy-admin.php:340 admin/clearfy-admin.php:1802
+msgid "404"
+msgstr "404"
+
+#: admin/clearfy-admin.php:341 admin/clearfy-admin.php:1866
+msgid "IndexNow"
+msgstr "IndexNow"
+
+#: admin/clearfy-admin.php:346
+msgid "Instructions"
+msgstr "Інструкція"
+
+#: admin/clearfy-admin.php:354
+msgid "Documentation"
+msgstr "Документація"
+
+#: admin/clearfy-admin.php:355
+msgid ""
+"If you have a question about our product - perhaps the answer is already in "
+"our documentation."
+msgstr ""
+"Если у&nbsp;Вас возник вопрос по&nbsp;нашему продукту&nbsp;&mdash; возможно "
+"ответ уже есть в&nbsp;нашей документации."
+
+#: admin/clearfy-admin.php:363
+msgid "FAQ"
+msgstr "Питання та відповіді"
+
+#: admin/clearfy-admin.php:364
+msgid ""
+"Section of frequently asked questions and their answers. You can quickly "
+"find an answer to your question."
+msgstr ""
+"Раздел частозадаваемых вопросов и&nbsp;ответов к&nbsp;ним. Можно быстро "
+"найти ответ на&nbsp;вопрос."
+
+#: admin/clearfy-admin.php:372
+msgid "Video tutorials"
+msgstr "Відео-інструкції"
+
+#: admin/clearfy-admin.php:373
+msgid ""
+"Video tutorials on the plugin and its functions. Subscribe to the channel so "
+"you don't miss it."
+msgstr ""
+"Обзор плагина и&nbsp;функций в&nbsp;видео формате. Подпишитесь на&nbsp;"
+"канал, чтобы не&nbsp;пропустить."
+
+#: admin/clearfy-admin.php:379
+msgid "Our pages"
+msgstr "Наші сторінки"
+
+#: admin/clearfy-admin.php:383
+msgid "Affiliate program"
+msgstr "Партнерська програма"
+
+#: admin/clearfy-admin.php:388
+msgid ""
+"For quick start just enable Recommended settings and click Save. But we "
+"recommend watch all possible Clearfy Pro features."
+msgstr ""
+"Для большинства сайтов и блогов достаточно включить Рекомендованные "
+"настройки и нажать Сохранить. Но мы все таки рекомендуем Вам пройтись по "
+"каждой вкладке и изучить все возможные настройки Clearfy Pro."
+
+#: admin/clearfy-admin.php:389
+msgid ""
+"Bloggers need attention to RSS feeds. If you use them, do not disable it."
+msgstr ""
+"Блогерам необходимо обратить особое внимание на RSS ленты. Если Вы "
+"пользуетесь ими - не отключите случайно."
+
+#: admin/clearfy-admin.php:390
+msgid "Just enable needed settings and click save. All done."
+msgstr "Просто увімкніть потрібні налаштування і натисніть Зберегти."
+
+#: admin/clearfy-admin.php:391
+msgid "Any questions? Send message to our technical support."
+msgstr ""
+"При возникновении вопросов по каким-либо пунктам - не стесняйтесь задать "
+"вопрос в техническую поддержку."
+
+#: admin/clearfy-admin.php:394
+msgid "License key"
+msgstr "Ліцензійний ключ"
+
+#: admin/clearfy-admin.php:396
+msgid ""
+"You can remove your license key by clicking the button below. Warning! After "
+"removing the key, the plugin will no longer work."
+msgstr ""
+"Вы можете видалить лицензионный ключ, нажав на кнопку ниже. Внимание! После "
+"видаления ключа плагин перестанет работать."
+
+#: admin/clearfy-admin.php:399
+msgid "Remove license key"
+msgstr "Видалити ліцензійний ключ"
+
+#: admin/clearfy-admin.php:403
+msgid "Questions, changelog"
+msgstr "Питання, список змін"
+
+#: admin/clearfy-admin.php:404
+#, php-format
+msgid ""
+"FAQ and changelog you can find in <a href=\"%s\">our knowledge base</a>."
+msgstr ""
+"Теперь список изменений и вопросы/ответы можно найти <a href=\"%s\">в нашей "
+"базе</a>."
+
+#: admin/clearfy-admin.php:407
+msgid "Export / Import settings"
+msgstr "Експорт / Імпорт налаштувань"
+
+#: admin/clearfy-admin.php:412
+msgid "Copy this code to any text file to save all site settings."
+msgstr ""
+"Скопируйте этот код в любой текстовый файл, чтобы зберегти все настройки "
+"сайта."
+
+#: admin/clearfy-admin.php:419
+msgid "Warning! Old settings will be deleted before importing!"
+msgstr "Увага! Старі налаштування буде видалено перед імпортом!"
+
+#: admin/clearfy-admin.php:420
+msgid "Import"
+msgstr "Імпорт"
+
+#: admin/clearfy-admin.php:423
+msgid "Team WPShop.ru"
+msgstr "Команда WPShop.ru"
+
+#: admin/clearfy-admin.php:426
+msgid "We thank you for purchasing Clearfy Pro!"
+msgstr "Дякуємо вам за придбання Clearfy Pro!"
+
+#: admin/clearfy-admin.php:428
+msgid ""
+"Our goal is to make a powerful plugin that will be among the first must-have "
+"plugins for WP."
+msgstr ""
+"Наша цель - сделать мощный плагин, который войдет в число первых "
+"обязательных плагинов для WP."
+
+#: admin/clearfy-admin.php:434
+msgid "Clear code"
+msgstr "Очищення коду"
+
+#: admin/clearfy-admin.php:438
+msgid "Disable JSON REST API"
+msgstr "Вимкнути JSON REST API"
+
+#: admin/clearfy-admin.php:440 admin/clearfy-admin.php:473
+#: admin/clearfy-admin.php:486 admin/clearfy-admin.php:520
+#: admin/clearfy-admin.php:531 admin/clearfy-admin.php:542
+#: admin/clearfy-admin.php:553 admin/clearfy-admin.php:569
+#: admin/clearfy-admin.php:702 admin/clearfy-admin.php:715
+#: admin/clearfy-admin.php:729 admin/clearfy-admin.php:742
+#: admin/clearfy-admin.php:783 admin/clearfy-admin.php:796
+#: admin/clearfy-admin.php:809 admin/clearfy-admin.php:927
+#: admin/clearfy-admin.php:940 admin/clearfy-admin.php:953
+#: admin/clearfy-admin.php:966 admin/clearfy-admin.php:979
+#: admin/clearfy-admin.php:993 admin/clearfy-admin.php:1014
+#: admin/clearfy-admin.php:1053 admin/clearfy-admin.php:1066
+#: admin/clearfy-admin.php:1079 admin/clearfy-admin.php:1190
+#: admin/clearfy-admin.php:1203 admin/clearfy-admin.php:1216
+#: admin/clearfy-admin.php:1569 admin/clearfy-admin.php:1659
+msgid "Recommended"
+msgstr "Рекомендовано"
+
+#: admin/clearfy-admin.php:444
+msgid ""
+"WP 4.4 and up create technical pages /wp-json/, which successfully indexing "
+"search engines like Google and reduce rank and positions of site."
+msgstr ""
+"WP с версии 4.4 создает технические страницы /wp-json/, которые успешно "
+"индексируются поисковиками и в индекс попадают мусорные страницы."
+
+#: admin/clearfy-admin.php:445
+#, php-format
+msgid "Remove REST API links from %s and create redirect on front."
+msgstr "Видаляє посилання із секції %s і ставить редирект на головну."
+
+#: admin/clearfy-admin.php:454
+msgid "Show registered path's REST API"
+msgstr "Показати зареєстровані шляхи REST API"
+
+#: admin/clearfy-admin.php:471
+msgid "Disable Emoji"
+msgstr "Вимкнути Emoji"
+
+#: admin/clearfy-admin.php:477
+msgid ""
+"WP 4.2 and up add support Emoji smiles in source code for old browsers. It "
+"use external JavaScript library which slowly page and create request to "
+"external resources."
+msgstr ""
+"WP с версии 4.2 добавил поддержку смайликов Emoji в исходный код для старых "
+"браузеров. Используется внешняя JavaScript библиотека, которая создает "
+"лишний код и запросы к внешним ресурсам."
+
+#: admin/clearfy-admin.php:478
+#, php-format
+msgid "Removes Emoji from %s"
+msgstr "Видаляє код emoji із секції %s"
+
+#: admin/clearfy-admin.php:484
+msgid "Delete dns-prefetch"
+msgstr "Видалити dns-prefetch"
+
+#: admin/clearfy-admin.php:490
+msgid "Do not delete"
+msgstr "Не видаляти"
+
+#: admin/clearfy-admin.php:491
+msgid "Delete all"
+msgstr "Видалити все"
+
+#: admin/clearfy-admin.php:492
+msgid "Selected"
+msgstr "Вибірково"
+
+#: admin/clearfy-admin.php:497
+#, php-format
+msgid "Since version 4.6.1 WordPress add new links in section %s like this: %s"
+msgstr ""
+"С версии 4.6.1 в WordPress появились новые ссылки у секції %s такого вида: %s"
+
+#: admin/clearfy-admin.php:498
+msgid ""
+"You can delete all dns-prefetch links or optionally, just put domains in "
+"textarea. One domain on new line. Example: s.w.org"
+msgstr ""
+"Вы можете видалить все ссылки dns-prefetch или выборочно, добавив домены в "
+"тектовое поле. Одна строка - один домен. Например: s.w.org"
+
+#: admin/clearfy-admin.php:499
+#, php-format
+msgid "Removes dns-prefetch links from %s section"
+msgstr "Видаляє посилання dns-prefetch із секції %s"
+
+#: admin/clearfy-admin.php:505
+msgid "Remove jquery-migrate.min.js"
+msgstr "Видалити jquery-migrate.min.js"
+
+#: admin/clearfy-admin.php:510
+msgid ""
+"File jquery-migrate.min.js require for old version of jQuery before 1.9.х. "
+"In most cases it unnecessary file to load."
+msgstr ""
+"Файл jquery-migrate.min.js требуется для старых скриптов jQuery до версии "
+"1.9.х. Сейчас необходимости использовать этот файл практически нет."
+
+#: admin/clearfy-admin.php:511
+#, php-format
+msgid "Delete including jquery-migrate.min.js from %s"
+msgstr "Видаляє підключення jquery-migrate.min.js із %s"
+
+#: admin/clearfy-admin.php:512 admin/clearfy-admin.php:625
+msgid "Check your site after enable this setting"
+msgstr "Перевірте роботу сайту після увімкнення параметра"
+
+#: admin/clearfy-admin.php:518
+msgid "Delete RSD link"
+msgstr "Видалити RSD посилання"
+
+#: admin/clearfy-admin.php:529
+msgid "Delete WLW Manifest link"
+msgstr "Видалити WLW Manifest посилання"
+
+#: admin/clearfy-admin.php:540
+#, php-format
+msgid "Delete shortlink %s"
+msgstr "Видалити коротке посилання %s"
+
+#: admin/clearfy-admin.php:551
+msgid "Remove previous and next post links"
+msgstr "Видалити посилання на попередній і наступний запис"
+
+#: admin/clearfy-admin.php:559
+msgid ""
+"You can not enable this option, because with WordPress 5.6 these links are "
+"removed from the core."
+msgstr ""
+"Опцию можно не включать, т.к. с WordPress 5.6 данные ссылки видалены із ядра."
+
+#: admin/clearfy-admin.php:567
+msgid "Remove .recentcomments styles"
+msgstr "Видалити стилі .recentcomments"
+
+#: admin/clearfy-admin.php:573
+msgid ""
+"By default for widget \"recent comments\" WordPress add styles to source "
+"code that you can't change, because to them apply !important."
+msgstr ""
+"WP по умолчанию для виджета \"последние комментарии\" прописывает в коде "
+"стилі, которые практически невозможно поменять, т.к. к ним применяется !"
+"important."
+
+#: admin/clearfy-admin.php:574
+#, php-format
+msgid "Removes .recentcomments styles from %s"
+msgstr "Видаляє стилі .recentcomments із секції %s"
+
+#: admin/clearfy-admin.php:580
+#, php-format
+msgid "Code in %s"
+msgstr "Код в %s"
+
+#: admin/clearfy-admin.php:588
+msgid ""
+"This usually adds verification codes from the webmaster, retarget code or JS "
+"code, which should be executed first."
+msgstr ""
+"Сюда обычно добавляют коды верификации от вебмастера, код ретаргета или JS-"
+"код, который нужно исполнить в первую очередь."
+
+#: admin/clearfy-admin.php:589 admin/clearfy-admin.php:605
+#, php-format
+msgid "Insert the code before the closing %s"
+msgstr "Виводить вказаний код перед закривальним %s"
+
+#: admin/clearfy-admin.php:596
+#, php-format
+msgid "Code before %s"
+msgstr "Код перед %s"
+
+#: admin/clearfy-admin.php:604
+msgid "This usually adds counters, analytics and other JS scripts."
+msgstr "Сюди зазвичай додають лічильники, аналітику та інші JS скрипти."
+
+#: admin/clearfy-admin.php:611
+msgid "Minify"
+msgstr "Минификация"
+
+#: admin/clearfy-admin.php:615
+msgid "Enable HTML minify"
+msgstr "Увімкнути HTML минификацию"
+
+#: admin/clearfy-admin.php:620
+msgid ""
+"Reduces page weight about 20-30&#37 by removing line breaks, tabs, spaces, "
+"etc. Improve Google PageSpeed scores."
+msgstr ""
+"Позволяет уменьшить объем страницы на 20-30% за счет видаления переносов "
+"строк, символов табуляции, пробелов и т.д. Кроме уменьшения веса страницы, "
+"это добавляет баллов в Google PageSpeed."
+
+#: admin/clearfy-admin.php:621
+msgid "After turn on this settings - clear cache if you have."
+msgstr ""
+"После включения обновите кеш, если у Вас установлены плагины кеширования."
+
+#: admin/clearfy-admin.php:622
+msgid ""
+"JS scripts are not minified in code, because in 90&#37 of cases minifier "
+"braking them."
+msgstr ""
+"JS скрипты не минифицируются в коде, т.к. в 90% случаев это приводит к "
+"поломкам."
+
+#: admin/clearfy-admin.php:623
+msgid "HTML comments are not deleted, because it can brake ad or analytics."
+msgstr ""
+"HTML комментарии не видаляются, т.к. много случаев, когда счетчики или "
+"реклама перестает работать."
+
+#: admin/clearfy-admin.php:624
+msgid "Minify pages"
+msgstr "Виконує мініфікацію сторінки"
+
+#: admin/clearfy-admin.php:626
+msgid ""
+"In some cases minifier can't work correct - please send report to our "
+"technical support."
+msgstr ""
+"В некоторых случаях может работать некорректно - напишите нам в поддержку."
+
+#: admin/clearfy-admin.php:636
+msgid "Automatically set Last Modified"
+msgstr "Автоматически проставить Last Modified"
+
+#: admin/clearfy-admin.php:642
+msgid "Exclude pages:"
+msgstr "Виключити сторінки:"
+
+#: admin/clearfy-admin.php:645
+#, php-format
+msgid ""
+"You can specify a page mask, such as %s or %s. It will exclude all pages "
+"than contain string."
+msgstr ""
+"Вы можете задать маску страниц, например: %s или %s. Будут исключены все "
+"страницы, в которые входит строка."
+
+#: admin/clearfy-admin.php:648
+#, php-format
+msgid ""
+"If you set %s, all pages containing %s will be excluded, including %s, %s, "
+"%s, etc."
+msgstr ""
+"Если задать %s, будут исключены все страницы, содержащие %s, в т.ч. %s, %s, "
+"%s и т.д."
+
+#: admin/clearfy-admin.php:658
+msgid ""
+"WordPress does not know how to give the server response header Last Modified "
+"(date of last modification of the document) and give the correct response "
+"304 Not Modified. And this header is very important for search engines. Its "
+"presence accelerates indexing, reduces the load and allows search engines to "
+"load more pages at a time in the index."
+msgstr ""
+"WordPress не умеет отдавать в ответах сервера заголовок Last Modified (дату "
+"последнего изменения документа) и давать правильный ответ 304 Not Modified. "
+"А этот заголовок очень важен для поисковых систем. Его наличие ускоряет "
+"индексацию, снижает нагрузку и позволяет загружать поисковикам за раз больше "
+"страниц в индекс."
+
+#: admin/clearfy-admin.php:664
+#, php-format
+msgid ""
+"Set for all posts, pages, archives (categories, tags, etc.) the header %s "
+"and returns the correct answer if the page has not been changed."
+msgstr ""
+"Проставляет для всех записей, страниц, архивов (категорий, тегов и пр.) "
+"заголовок %s и возвращает правильный ответ, если страница не была изменена."
+
+#: admin/clearfy-admin.php:668
+#, php-format
+msgid "It does not work on your hosting, please, read %s."
+msgstr ""
+"Срабатывает не на всех хостингах, если у Вас не отдается этот заголовок, "
+"посмотрите %s."
+
+#: admin/clearfy-admin.php:669
+msgid "manual"
+msgid_plural "last modified manual"
+msgstr[0] "инструкцию"
+msgstr[1] "инструкцию"
+msgstr[2] "инструкцию"
+
+#: admin/clearfy-admin.php:677
+msgid "Set header If-Modified-Since"
+msgstr "Віддавати відповідь If-Modified-Since"
+
+#: admin/clearfy-admin.php:687
+msgid "Automatically set the alt attribute"
+msgstr "Автоматически проставить alt"
+
+#: admin/clearfy-admin.php:692
+msgid ""
+"The most of SEO specialists advise to fill alt attribute. If you missed or "
+"did not fill it, it will be automatically assigned and equal the title of "
+"article."
+msgstr ""
+"Аттрибут alt обязателен к заполнению, - так говорит большинство SEO-"
+"специалистов. Если вдруг Вы пропустилі или вовсе не заполняли его, он будет "
+"проставлен автоматически и будет равен названию статьи."
+
+#: admin/clearfy-admin.php:693
+#, php-format
+msgid "Add attribute %s to image without it."
+msgstr "Проставляет аттрибут %s у изображений, где он не задан."
+
+#: admin/clearfy-admin.php:694
+#, php-format
+msgid "Only works for images in content since it uses %s filter."
+msgstr "Працює лише для зображень у контенті, оскільки використовує фільтр %s."
+
+#: admin/clearfy-admin.php:700
+msgid "Hide external links in comments by JS"
+msgstr "Сховати зовнішні посилання в коментарях у JS"
+
+#: admin/clearfy-admin.php:706
+msgid ""
+"A lot of external links in comments reduce page rank and positions in search "
+"engines like Google."
+msgstr ""
+"Лишние зовнішні ссылки із комментариев, которых может набираться с десяток и "
+"больше всего для одной статьи, ничего хорошего для продвижения не принесут."
+
+#: admin/clearfy-admin.php:707
+msgid ""
+"Replaces only external links in comments by JS and it looks like a regular "
+"link."
+msgstr ""
+"Заменяет только зовнішні ссылки в комментариях на JS код, отличить от обычных "
+"ссылок внешне невозможно."
+
+#: admin/clearfy-admin.php:713
+msgid "Hide authors external links in comments by JS"
+msgstr "Сховати зовнішні посилання авторів коментарів у JS"
+
+#: admin/clearfy-admin.php:719
+msgid ""
+"Up to 90&#37 comments may be left on your site for external link. Even "
+"nofollow can't stop reduce page rank."
+msgstr ""
+"До 90% комментариев на блоге может быть оставлено ради внешней ссылки. Даже "
+"nofollow от утекания веса страницы тут не поможет."
+
+#: admin/clearfy-admin.php:720
+msgid ""
+"Replaces authors external links in comments by JS, and it looks like a "
+"regular link."
+msgstr ""
+"Заменяет ссылки авторов комментариев на JS код, отличить от обычных ссылок "
+"внешне невозможно."
+
+#: admin/clearfy-admin.php:721
+msgid "Perhaps it will not work with your theme"
+msgstr "Может не работать с Вашей темой"
+
+#: admin/clearfy-admin.php:727
+msgid "Noindex for pagination"
+msgstr "Noindex для пагинации"
+
+#: admin/clearfy-admin.php:733
+msgid ""
+"Pagination pages are included in search engine results /page/2/, /page/3/, "
+"etc."
+msgstr ""
+"В результаты выдачи поисковых систем включаются страницы пагинации /"
+"page/2/, /page/3/ и т.д."
+
+#: admin/clearfy-admin.php:734
+msgid "Add noindex meta tag on pagination pages /page/2/, /page/3/, etc."
+msgstr ""
+"Добавляет meta-тег noindex на страницы пагинации /page/2/, /page/3/ и т.д."
+
+#: admin/clearfy-admin.php:740
+msgid "Create an optimized robots.txt"
+msgstr "Створити правильний robots.txt"
+
+#: admin/clearfy-admin.php:747
+msgid "Attention! A robots.txt was detected."
+msgstr "Внимание! Обнаружен файл robots.txt."
+
+#: admin/clearfy-admin.php:748
+msgid ""
+"Make a backup of the current robots.txt file and delete it to make this "
+"feature work"
+msgstr ""
+"Сделайте бекап текущего файла robots.txt и видалите его, чтобы данная функция "
+"могла работать"
+
+#: admin/clearfy-admin.php:750
+msgid ""
+"After installing WP, there is no robots.txt file and you have to create it "
+"manually. We've checked more then 30 different best examples to create the "
+"perfect robots.txt"
+msgstr ""
+"После установки WP не содержит файла robots.txt и его приходится создавать "
+"вручную. Мы изучили больше 30 различных примеров и инструкций, чтобы создать "
+"идеальный robots.txt"
+
+#: admin/clearfy-admin.php:751
+msgid "Automatically creates the perfect robots.txt"
+msgstr "Автоматично створює ідеальний robots.txt"
+
+#: admin/clearfy-admin.php:752
+msgid "You can change your robots.txt in the box below:"
+msgstr "Ви можете змінити ваш robots.txt у полі нижче:"
+
+#: admin/clearfy-admin.php:756
+msgid ""
+"If you want to reset robots.txt to its original position, as with a new "
+"Clearfy Pro installation, clear the field above and save your settings."
+msgstr ""
+"Если вы хотите сбросить robots.txt до исходного положения, как при новой "
+"установке Clearfy Pro, очистите поле выше и сохраните настройки."
+
+#: admin/clearfy-admin.php:767
+msgid ""
+"Warning! Before you activate it, make sure that your site opens via https"
+msgstr ""
+"Внимание! Перед активацией обязательно убедитесь, что Ваш сайт открывается "
+"по https"
+
+#: admin/clearfy-admin.php:768
+msgid ""
+"If your site uses an SSL certificate, check this box to enable redirection "
+"from http to https"
+msgstr ""
+"Если Ваш сайт использует SSL-сертификат, отметьте данный пункт, чтобы "
+"включить редирект с http на https"
+
+#: admin/clearfy-admin.php:769
+msgid "It redirects from http to https."
+msgstr "Ставить редирект с http на https."
+
+#: admin/clearfy-admin.php:776
+msgid "For Yoast SEO plugin"
+msgstr "Для плагина Yoast SEO"
+
+#: admin/clearfy-admin.php:781
+msgid "Remove last duplicate title in breadcrumbs WP SEO by Yoast"
+msgstr "Прибирає дублювання назви у хлібних крихтах WP SEO by Yoast"
+
+#: admin/clearfy-admin.php:787
+msgid ""
+"Last element in breadcrubms in Yoast SEO plugin duplicate article title. "
+"Some SEO specialists thinks that it's worse for optimization."
+msgstr ""
+"Последний элемент у хлібних крихтах в плагине WP SEO by Yoast дублирует "
+"название статьи. Некоторые SЕО-специалисты считают это дублирование лишним."
+
+#: admin/clearfy-admin.php:788
+msgid "Removes duplicate title in breadcrumbs WP SEO by Yoast"
+msgstr "Видаляє дублювання назви статті у хлібних крихтах Yoast SEO"
+
+#: admin/clearfy-admin.php:794
+msgid ""
+"Replace the title of an entry with the title in WP SEO Yoast breadcrumbs"
+msgstr "Замінити назву запису на title у хлібних крихтах WP SEO Yoast"
+
+#: admin/clearfy-admin.php:800
+msgid ""
+"In the last element of the breadcrumbs plugin Yoast SEO displays the name of "
+"the record. To avoid duplication, you can replace it with the title of the "
+"record."
+msgstr ""
+"В последнем элементе хлебных крошек плагина Yoast SEO выводится название "
+"записи. Чтобы оно не дублировалось можно заменить его на title записи."
+
+#: admin/clearfy-admin.php:801
+msgid ""
+"Replaces the name of the record with the title of the record in the "
+"breadcrumbs of the WP SEO Yoast plugin"
+msgstr ""
+"Заменяет название записи на title записи у хлібних крихтах плагина WP SEO "
+"Yoast"
+
+#: admin/clearfy-admin.php:807
+#, php-format
+msgid "Remove tag %s from XML sitemap"
+msgstr "Видаляє тег %s з XML карти плагіна Yoast SEO"
+
+#: admin/clearfy-admin.php:813
+#, php-format
+msgid ""
+"Yandex.Webmaster is fighting the standard XML map from the Yoast plugin, "
+"because it has a specific tag %s Read more on our blog."
+msgstr ""
+"Яндекс.Вебмастер ругается на стандартную XML карту от плагина Yoast, т.к. в "
+"ней есть специфичный тег %s. Подробнее у нас в блоге."
+
+#: admin/clearfy-admin.php:814
+#, php-format
+msgid "Remove tag %s from XML sitemap plugin Yoast SEO."
+msgstr "Видаляє тег %s з XML карти плагіна Yoast SEO."
+
+#: admin/clearfy-admin.php:815
+msgid "Warning!"
+msgstr "Внимание!"
+
+#: admin/clearfy-admin.php:815
+msgid ""
+"After activation, turn off the sitemap and turn it back on to regenerate it."
+msgstr ""
+"После активации выключите карту сайта и включите обратно, чтобы "
+"перегенерировать её."
+
+#: admin/clearfy-admin.php:816
+msgid "* On older versions of Yoast SEO may not work - update the Yoast plugin"
+msgstr ""
+"* На старых версиях Yoast SEO может не сработать - обновите плагин Yoast"
+
+#: admin/clearfy-admin.php:822
+#, php-format
+msgid "Delete a comment from a section %s"
+msgstr "Видалити комментарий із секції %s"
+
+#: admin/clearfy-admin.php:828
+#, php-format
+msgid "Yoast SEO plugin displays a comment of the kind %s in a section %s"
+msgstr "Плагін Yoast SEO виводить коментар виду %s у секції %s"
+
+#: admin/clearfy-admin.php:829
+#, php-format
+msgid "Removes the Yoast SEO plugin comment from the section %s."
+msgstr "Видаляє комментарий плагина Yoast SEO із секції %s."
+
+#: admin/clearfy-admin.php:835 admin/clearfy-admin.php:887
+msgid "Canonical in pagination pages"
+msgstr "Canonical на страницах пагинации"
+
+#: admin/clearfy-admin.php:840
+msgid ""
+"Yoast SEO plugin displays canonical links /page/2/, /page/3/, etc. on "
+"pagination pages."
+msgstr ""
+"Плагин Yoast SEO на страницах пагинации выводит canonical ссылки /page/2/, /"
+"page/3/ и т. д."
+
+#: admin/clearfy-admin.php:841 admin/clearfy-admin.php:893
+msgid "Changes the canonical link to the homepage or the rubric itself."
+msgstr "Змінює canonical посилання на головну або саму рубрику."
+
+#: admin/clearfy-admin.php:847 admin/clearfy-admin.php:899
+msgid "Remove application/ld+json"
+msgstr "Видалити application/ld+json"
+
+#: admin/clearfy-admin.php:852 admin/clearfy-admin.php:904
+msgid ""
+"JSON-LD is a markup format. Plugin outputs in the header information about "
+"the site and a link to the search using this format."
+msgstr ""
+"JSON-LD - формат микроразметки. Плагин выводит в шапке информацию о сайте и "
+"ссылку на поиск с помощью этого формата."
+
+#: admin/clearfy-admin.php:853 admin/clearfy-admin.php:905
+msgid "Disables the output of application/ld+json code in the site header."
+msgstr "Вимикає виведення коду application/ld+json у шапці сайту."
+
+#: admin/clearfy-admin.php:861 admin/clearfy-admin.php:912
+#, php-format
+msgid ""
+"Settings for %s are hidden because the plugin is not active at the moment."
+msgstr "Налаштування для %s приховані, оскільки плагін зараз не активний."
+
+#: admin/clearfy-admin.php:871
+msgid "For Rank Math plugin"
+msgstr "Для плагина Rank Math"
+
+#: admin/clearfy-admin.php:875
+msgid "Enable white label"
+msgstr "Увімкнути White Label"
+
+#: admin/clearfy-admin.php:880
+msgid ""
+"Rank Math adds comments in HTML, links, social media links to source code."
+msgstr ""
+"Rank Math добавляет комментарии HTML, ссылки, социальные сети в код страниц."
+
+#: admin/clearfy-admin.php:881
+msgid "Remove all HTML comments, links, social media links about Rank Math."
+msgstr ""
+"Видаляє все HTML-комментарии, ссылки, ссылки на социальные сети от плагина "
+"Rank Math."
+
+#: admin/clearfy-admin.php:892
+msgid ""
+"Rank Math plugin displays canonical links /page/2/, /page/3/, etc. on "
+"pagination pages."
+msgstr ""
+"Плагин Rank Math на страницах пагинации выводит canonical ссылки /page/2/, /"
+"page/3/ и т. д."
+
+#: admin/clearfy-admin.php:920
+msgid "Duplicate pages"
+msgstr "Дублікати сторінок"
+
+#: admin/clearfy-admin.php:925
+msgid "Delete date archives"
+msgstr "Видалити архіви дат"
+
+#: admin/clearfy-admin.php:931
+msgid ""
+"A huge number of duplicates in date archives. Imagine, besides the fact that "
+"your article will be displayed on the main page and in the category, you "
+"will get at least 3 doubles: in the archives by year, month and date, for "
+"example /2016/ /2016/02/ /2016/02/15."
+msgstr ""
+"Огромное количество дублей в архивах дат. Представьте, кроме того, что Ваша "
+"статья будет выводиться на главной и в категории, Вы еще получите как "
+"минимум 3 дубля: в архивах по году, месяцу и дате, "
+"например /2016/ /2016/02/ /2016/02/15."
+
+#: admin/clearfy-admin.php:932
+msgid "Deletes the date archives completely and sets a redirect."
+msgstr "Повністю видаляє архіви дат і ставить редирект."
+
+#: admin/clearfy-admin.php:938
+msgid "Delete user archives"
+msgstr "Видалити архіви користувачів"
+
+#: admin/clearfy-admin.php:944
+msgid ""
+"If you are the only one filling the site, it's a must. Allows you to get rid "
+"of duplicates on user archives, such as /author/admin/."
+msgstr ""
+"Если сайт наполняете только Вы - обязательный пункт. Позволит избавиться от "
+"дублей на архивах пользователей, например /author/admin/."
+
+#: admin/clearfy-admin.php:945
+msgid "Deletes user archives completely and puts a redirect."
+msgstr "Повністю видаляє архіви користувачів і ставить редирект."
+
+#: admin/clearfy-admin.php:951
+msgid "Delete tag archives"
+msgstr "Видалити архіви тегів"
+
+#: admin/clearfy-admin.php:957
+msgid ""
+"If you use tags only for the Related posts block or don't use them at all, "
+"it's better to close them to avoid duplicates."
+msgstr ""
+"Если Вы используете теги только для блока Похожие записи, либо не использете "
+"их совсем - правильнее будет их закрыть, чтобы избежать дублей."
+
+#: admin/clearfy-admin.php:958
+msgid "It redirects from the tag pages to the main page."
+msgstr "Ставитьь редирект зі сторінок тегів на головну."
+
+#: admin/clearfy-admin.php:964
+msgid "Delete attachment pages"
+msgstr "Видалити сторінки вкладень"
+
+#: admin/clearfy-admin.php:970
+msgid ""
+"Each uploaded picture has its own page on the site, consisting of only one "
+"picture. Such pages are successfully indexed and create duplicates. The site "
+"may have thousands of pages of the same type of attachments."
+msgstr ""
+"Каждая загруженная картинка имеет свою страничку на сайте, состоящую только "
+"із одной картинки. Такие страницы успешно индексируются и создают дубли. На "
+"сайте могут быть тысячи однотипных страниц вложений."
+
+#: admin/clearfy-admin.php:971
+msgid "Deletes attachment pages and puts a redirect on the entry."
+msgstr "Видаляє сторінки вкладень і ставить редирект на запис."
+
+#: admin/clearfy-admin.php:977
+msgid "Remove duplicate pagination of posts"
+msgstr "Видалити дубли пагинации постов"
+
+#: admin/clearfy-admin.php:983
+msgid ""
+"In WordPress, any entry can be divided into parts (pages), each part has its "
+"own address. But this functionality is rarely used, but can cause you "
+"trouble. For example, to the address of any record of your blog can add a "
+"number, /privet-mir/1/ - will open the record itself, which will be a "
+"double. The number can be any number."
+msgstr ""
+"В WordPress любую запись можно разделить на части (страницы), у каждой части "
+"будет свой адрес. Но этот функционал крайне редко используется, зато может "
+"создать Вам неприятности. Например, к адресу любой записи Вашего блога можно "
+"добавить номер, /privet-mir/1/ - откроется сама запись, что будет дублем. "
+"Номер можно подставить любой."
+
+#: admin/clearfy-admin.php:984
+msgid ""
+"The option can not be included, because with WordPress 5.5 fixed in the core."
+msgstr "Опцію можна не вмикати, оскільки у WordPress 5.5 це виправили в ядрі."
+
+#: admin/clearfy-admin.php:985
+msgid "It redirects to the entry itself."
+msgstr "Ставить редирект на саму запись."
+
+#: admin/clearfy-admin.php:991
+msgid "Delete ?replytocom"
+msgstr "Видалити ?replytocom"
+
+#: admin/clearfy-admin.php:997
+msgid ""
+"WordPress adds ?replytocom= to the Reply link in comments if tree comments "
+"are enabled"
+msgstr ""
+"WordPress добавляет ?replytocom= к ссылке Ответить в комментариях, если "
+"включены древовидные комментарии"
+
+#: admin/clearfy-admin.php:998
+msgid "Deletes ?relpytocom and puts a redirect on the entry"
+msgstr "Видаляє ?relpytocom и ставит редирект на запись"
+
+#: admin/clearfy-admin.php:1009
+msgid "Cloud site protection"
+msgstr "Облачная защита сайта"
+
+#: admin/clearfy-admin.php:1018
+msgid ""
+"All websites are constantly under attack by bots looking for "
+"vulnerabilities. These include attempts to find security holes, "
+"authorization attempts, opportunities to upload viruses to the site, find "
+"backups, logs, and so on. To avoid this, we decided to launch a cloud-based "
+"protection service."
+msgstr ""
+"На все сайты постоянно идут атаки ботов в поисках уязвимостей. Это и попытки "
+"найти дыры в безопасности, попытки авторизации, возможности закачать вирусы "
+"на сайт, найти бекапы, логи и так далее. Чтобы этого избежать, мы решили "
+"запустить облачный сервис защиты."
+
+#: admin/clearfy-admin.php:1019
+msgid ""
+"Now the service is free, but as the consumption of resources grows and "
+"Clearfy Cloud+ functionality improves, a small fee will be introduced."
+msgstr ""
+"Сейчас сервис бесплатный, но по мере роста потребления ресурсов и улучшения "
+"функционала Clearfy Cloud+, будет введена небольшая плата."
+
+#: admin/clearfy-admin.php:1020
+msgid ""
+"Includes cloud-based site protection in beta mode. Collects and analyzes "
+"potentially dangerous requests, gives recommendations."
+msgstr ""
+"Включает облачную защиту сайта в бета-режиме. Собирает и анализирует "
+"потенциально опасные запросы, дает рекомендации."
+
+#: admin/clearfy-admin.php:1027
+msgid "Hide wp-login.php"
+msgstr "Спрятать wp-login.php"
+
+#: admin/clearfy-admin.php:1032
+msgid ""
+"You can hide the login page wp-login.php, and replace its address with the "
+"new one."
+msgstr ""
+"Вы можете спрятать страницу входа wp-login.php, и заменить ее адрес на новый."
+
+#: admin/clearfy-admin.php:1033
+msgid ""
+"Important: Be sure to memorize and write down the new login page. After "
+"activating this option - the old login page will be unavailable."
+msgstr ""
+"Важно! Обязательно запомните и запишите новую страницу входа. После "
+"активации данной опции - старая страница входа будет недоступна."
+
+#: admin/clearfy-admin.php:1034
+msgid "If possible, do not use the words login, sign-in, admin, dashboard."
+msgstr "По возможности не используйте слова login, sign-in, admin, dashboard."
+
+#: admin/clearfy-admin.php:1039
+msgid "You can use the ones just generated for you:"
+msgstr "Ви можете використовувати щойно згенеровані для вас:"
+
+#: admin/clearfy-admin.php:1044
+msgid ""
+"If you forget the address of the new page - you will have to either delete "
+"the plugin or use the hook from the "
+msgstr ""
+"Если Вы забудете адрес новой страницы - Вам придется или видалить плагин, или "
+"использовать хук із "
+
+#: admin/clearfy-admin.php:1044
+msgid "documentation"
+msgstr "документации"
+
+#: admin/clearfy-admin.php:1051
+msgid "Remove the ability to know the username of the administrator"
+msgstr "Прибрати можливість дізнатися логін адміна"
+
+#: admin/clearfy-admin.php:1057
+#, php-format
+msgid ""
+"Have you changed your username from admin to another so that intruders do "
+"not know your login? Don't get excited, type in the address bar %s and you "
+"will be redirected to the author's page in 90&#37 of cases %s, thus giving "
+"away your login."
+msgstr ""
+"Сменили имя пользователя с admin на другое, чтобы злоумышленники не узнали "
+"Ваш логин? Не спешите радоваться, наберите в адресной строке %s и Вас в "
+"90&#37 случаев сразу перекинет на страницу автора %s, тем самым выдавая Ваш "
+"логин."
+
+#: admin/clearfy-admin.php:1058
+msgid "Removes the ability to find out the username of the administrator"
+msgstr "Прибирає возможность узнать логин администратора"
+
+#: admin/clearfy-admin.php:1064
+msgid "Hide login errors"
+msgstr "Спрятать ошибки при входе на сайт"
+
+#: admin/clearfy-admin.php:1070
+msgid ""
+"WP by default shows if you entered the wrong username or the wrong password, "
+"which gives attackers to understand if a particular user exists on the site, "
+"and then start brute-forcing passwords."
+msgstr ""
+"WP по умолчанию показывает, ввели ли Вы неправильный логин или неправильный "
+"пароль, что дает злоумышленникам понять, существует ли определенный "
+"пользователь на сайте, а после начать перебор паролей."
+
+#: admin/clearfy-admin.php:1071
+msgid ""
+" Changes the text of the error so that attackers can not pick up the login."
+msgstr ""
+" Меняет текст ошибки так, чтобы злоумышленники не смогли подобрать логин."
+
+#: admin/clearfy-admin.php:1077
+msgid "Disable xmlrpc.php"
+msgstr "Вимкнути xmlrpc.php"
+
+#: admin/clearfy-admin.php:1083
+msgid ""
+"One of the reasons why your site on WP started to slow down is an attack on "
+"the site, when there are a lot of requests to the file xmlrpc.php, which is "
+"responsible for pingback's, remote access to WP. Through the file xmlrpc.php "
+"can go DDoS or Brutforce attack."
+msgstr ""
+"Одной із причин, по которым Ваш сайт на WP стал тормозить, является атака на "
+"сайт, при которой идет большое количество запросов к файлу xmlrpc.php, "
+"который отвечает за pingback'и, видаленный доступ к WP. Через файл xmlrpc.php "
+"может идти DDoS или Брутфорс-атака."
+
+#: admin/clearfy-admin.php:1084
+msgid ""
+"It removes the link to xmlrpc.php in the server response, and closes the "
+"possibility of spamming the site with pingbacks."
+msgstr ""
+"Видаляє в ответах сервера ссылку на xmlrpc.php, закрывает возможность "
+"спамить сайт pingback'ами."
+
+#: admin/clearfy-admin.php:1093
+msgid "Password brute force protection"
+msgstr "Защита от перебора паролей"
+
+#: admin/clearfy-admin.php:1097
+msgid "Limit the number of attempts"
+msgstr "Обмежити кількість спроб"
+
+#: admin/clearfy-admin.php:1103
+msgid ""
+"Bruteforcing or brute-forcing passwords to sites happens all the time. In "
+"addition to potential hacking, you get a constant load on the server."
+msgstr ""
+"Брутфорс или перебор паролей на сайты происходит постоянно. Кроме "
+"потенциального взлома вы получаете постоянную нагрузку на сервер."
+
+#: admin/clearfy-admin.php:1104
+msgid "If you forget your username/password and get locked out - "
+msgstr "Якщо ви забудете логін/пароль і вас заблокує — "
+
+#: admin/clearfy-admin.php:1104
+msgid "this protection can be disabled"
+msgstr "цей захист можна вимкнути"
+
+#: admin/clearfy-admin.php:1105 admin/clearfy-admin.php:1106
+msgid "After "
+msgstr "После "
+
+#: admin/clearfy-admin.php:1105
+msgid "  incorrect attempts to enter will be blocked for "
+msgstr "  неправильних спроб вхід буде заблоковано на "
+
+#: admin/clearfy-admin.php:1105
+msgid " minutes."
+msgstr " минут."
+
+#: admin/clearfy-admin.php:1106
+msgid " blockings, access will be blocked for "
+msgstr " блокировок доступ будет заблокирован на "
+
+#: admin/clearfy-admin.php:1106
+msgid " hours."
+msgstr " часов."
+
+#: admin/clearfy-admin.php:1108
+msgid "Protects the site from password brute-forcing."
+msgstr "Защищает сайт от перебора паролей."
+
+#: admin/clearfy-admin.php:1112
+msgid "It was already blocked: "
+msgstr "Вже було заблоковано: "
+
+#: admin/clearfy-admin.php:1122
+msgid "IP Whitelist"
+msgstr "Білий список IP"
+
+#: admin/clearfy-admin.php:1127
+msgid "Add here the IPs that will not be restricted. 1 line - 1 IP."
+msgstr ""
+"Добавьте сюда IP, на которые не будут действовать ограничения. 1 строка - 1 "
+"IP."
+
+#: admin/clearfy-admin.php:1135
+msgid "IP Blacklist"
+msgstr "Чорний список IP"
+
+#: admin/clearfy-admin.php:1140
+msgid "Add here the IPs to be blocked. 1 line - 1 IP."
+msgstr "Додайте сюди IP, які потрібно заблокувати. 1 рядок - 1 IP."
+
+#: admin/clearfy-admin.php:1149
+msgid "Current lockouts"
+msgstr "Текущие блокировки"
+
+#: admin/clearfy-admin.php:1157
+msgid "Expired"
+msgstr "Истекает"
+
+#: admin/clearfy-admin.php:1166
+msgid "h."
+msgstr "ч."
+
+#: admin/clearfy-admin.php:1168
+msgid "m."
+msgstr "м."
+
+#: admin/clearfy-admin.php:1174
+msgid "Remove"
+msgstr "Видалити"
+
+#: admin/clearfy-admin.php:1184
+msgid "Versions"
+msgstr "Версии"
+
+#: admin/clearfy-admin.php:1188
+msgid "Remove meta generator"
+msgstr "Видалити meta generator"
+
+#: admin/clearfy-admin.php:1194
+msgid ""
+"Allows attackers to find out the WP version installed on the site. This meta "
+"tag has no useful function."
+msgstr ""
+"Позволяет злоумышленникам узнать версию WP, установленную на сайте. Этот "
+"meta тег никакой полезной функции не несет."
+
+#: admin/clearfy-admin.php:1195
+#, php-format
+msgid "Removes the meta tag from the section  %s"
+msgstr "Видаляє метатег із секції  %s"
+
+#: admin/clearfy-admin.php:1201
+msgid "Remove version from styles"
+msgstr "Видалити версию у стилей"
+
+#: admin/clearfy-admin.php:1207
+#, php-format
+msgid ""
+"WP, themes and plugins often include styles with the version of the file, "
+"plugin or engine, it looks like this: %s. First, this allows attackers to "
+"know the version of the plugin, the engine, and secondly, disables caching "
+"for these files, which reduces the time it takes to load the page."
+msgstr ""
+"WP, темы и плагины часто підключают стилі с указанием версии файла, плагина "
+"или движка, выглядит это так: %s. Во-первых, это позволяет злоумышленникам "
+"узнать версию плагина, движка, во-вторых, отключает кеширование для этих "
+"файлов, что уменьшает время загрузки страницы."
+
+#: admin/clearfy-admin.php:1208
+msgid "Deletes versions of styles"
+msgstr "Видаляє версии у стилей"
+
+#: admin/clearfy-admin.php:1214
+msgid "Remove the version from the scripts"
+msgstr "Видалити версию у скриптов"
+
+#: admin/clearfy-admin.php:1220
+#, php-format
+msgid ""
+"As with styles, scripts are connected by specifying the version of the file, "
+"plugin or engine, it looks like this: %s. Firstly, this allows attackers to "
+"know the version of the plugin, the engine, and secondly, disables caching "
+"for these files, which reduces the page load time."
+msgstr ""
+"Как и со стилями, скрипты підключаются с указанием версии файла, плагина или "
+"движка, выглядит это так: %s. Во-первых, это позволяет злоумышленникам "
+"узнать версию плагина, движка, во-вторых, отключает кеширование для этих "
+"файлов, что уменьшает время загрузки страницы."
+
+#: admin/clearfy-admin.php:1221
+msgid "Removes versions from scripts"
+msgstr "Видаляє версии у скриптов"
+
+#: admin/clearfy-admin.php:1234
+msgid "Transliteration"
+msgstr "Транслитерация"
+
+#: admin/clearfy-admin.php:1238
+msgid "Transliteration of headers and files"
+msgstr "Транслитерация заголовков и файлов"
+
+#: admin/clearfy-admin.php:1243
+msgid ""
+"Analogue to Rus To Lat, Cyr2Lat and other plugins. Transliteration of "
+"permanent links and file names. For example, the post \"hello world!\" "
+"becomes \"privet-mir\", and the file \"picture.jpg\" becomes \"kartinka."
+"jpg\"."
+msgstr ""
+"Аналог плагинов Rus To Lat, Cyr2Lat и др. Транслитерация постоянных ссылок и "
+"названий файлов. Например, пост \"привет мир!\" станет \"privet-mir\", а "
+"файл \"картинка.jpg\" станет \"kartinka.jpg\"."
+
+#: admin/clearfy-admin.php:1245
+msgid "Attention!"
+msgstr "Внимание!"
+
+#: admin/clearfy-admin.php:1245
+msgid ""
+"The plugin does not automatically translate existing slugs. Click the button "
+"below to transliterate them"
+msgstr ""
+"Плагин автоматически не переводит существующие адреса. Чтобы это сделать, "
+"нажмите кнопку ниже"
+
+#: admin/clearfy-admin.php:1246
+msgid "Transliterate existing slugs"
+msgstr "Транслитерировать существующие адреса"
+
+#: admin/clearfy-admin.php:1248
+msgid "Performs transliteration of permanent links and downloadable files."
+msgstr "Виконує транслітерацію постійних посилань і завантажуваних файлів."
+
+#: admin/clearfy-admin.php:1256
+msgid "Avatars"
+msgstr "Аватари"
+
+#: admin/clearfy-admin.php:1262
+msgid "Disable gravatars"
+msgstr "Вимкнути граватари"
+
+#: admin/clearfy-admin.php:1267
+msgid ""
+"As avatars in WP are automatically displayed gravatars from gravatar.com, an "
+"unnecessary external resource to download."
+msgstr ""
+"В качестве аватаров в WP автоматически выводятся граватары от gravatar.com, "
+"лишний внешний ресурс для загрузки."
+
+#: admin/clearfy-admin.php:1268
+msgid ""
+"You can specify the address of any of your images, or leave this field blank."
+msgstr ""
+"Вы можете задать адрес любой своей картинки, либо оставить это поле пустым."
+
+#: admin/clearfy-admin.php:1269
+#, php-format
+msgid "You can create our own unique avatar on %s"
+msgstr "Створити власний унікальний аватар ви можете на сторінці %s"
+
+#: admin/clearfy-admin.php:1272
+msgid "Upload avatar"
+msgstr "Загрузить аватар"
+
+#: admin/clearfy-admin.php:1275
+msgid "Disables gravatars and displays the default image as an avatar."
+msgstr ""
+"Вимикає граватари і як аватар виводить зображення за замовчуванням."
+
+#: admin/clearfy-admin.php:1281
+msgid "Enable local avatars"
+msgstr "Увімкнути локальні аватари"
+
+#: admin/clearfy-admin.php:1286
+msgid ""
+"Enable the ability for registered users to upload their avatars on the user "
+"edit page."
+msgstr ""
+"Увімкнути возможность загружать свои аватарки для зарегистрированных "
+"пользователей на странице редактирования пользователя."
+
+#: admin/clearfy-admin.php:1287
+msgid "Adds image uploading for local avatars on profile edit page."
+msgstr ""
+"Добавляет загрузку картинок для локальных аватаров на странице "
+"редактирования профиля."
+
+#: admin/clearfy-admin.php:1295
+msgid "Comments"
+msgstr "Комментарии"
+
+#: admin/clearfy-admin.php:1299
+msgid "Disables comments"
+msgstr "Вимкнути комментарии"
+
+#: admin/clearfy-admin.php:1304
+msgid "Select post types to disable comments:"
+msgstr "Виберіть типи записів, у яких потрібно вимкнути коментарі:"
+
+#: admin/clearfy-admin.php:1322
+msgid "Fully or partially disables commenting."
+msgstr "Повністю або частково вимикає роботу коментарів."
+
+#: admin/clearfy-admin.php:1329
+msgid "Disable XML-RPC comments"
+msgstr "Вимкнути комментирование XML-RPC"
+
+#: admin/clearfy-admin.php:1334
+msgid ""
+"Comments in WordPress can be added through external applications using XML-"
+"RPC."
+msgstr ""
+"Комментарии в WordPress можно оставлять с помощью внешних приложений, "
+"используя XML-RPC."
+
+#: admin/clearfy-admin.php:1335
+msgid "Disables commenting via XML-RPC."
+msgstr "Вимикає добавление комментариев через XML-RPC."
+
+#: admin/clearfy-admin.php:1342
+msgid "Disable REST API comments"
+msgstr "Вимкнути комментирование REST API"
+
+#: admin/clearfy-admin.php:1347
+msgid "Comments in WordPress can be added through the REST API."
+msgstr "Коментарі у WordPress можна залишати через інтерфейс REST API."
+
+#: admin/clearfy-admin.php:1348
+msgid "Disables commenting via the REST API."
+msgstr "Вимикає добавление комментариев через REST API."
+
+#: admin/clearfy-admin.php:1355
+msgid "Remove from interface"
+msgstr "Видалити із интерфейса"
+
+#: admin/clearfy-admin.php:1360
+msgid "Remove comments from all menus, admin bar, widgets, feeds etc."
+msgstr "Видаляє комментарии із меню, админ-бара, виджетов, фидов и т.д."
+
+#: admin/clearfy-admin.php:1361
+msgid "Removes comments from interface."
+msgstr "Видаляє комментарии із интерфейса."
+
+#: admin/clearfy-admin.php:1369
+msgid "Content protection"
+msgstr "Защита контента"
+
+#: admin/clearfy-admin.php:1375
+msgid "Link to source when copying"
+msgstr "Посилання на джерело під час копіювання"
+
+#: admin/clearfy-admin.php:1380 clearfy-pro.php:1555
+msgid "<br>Source: %link%"
+msgstr "<br>Источник: %link%"
+
+#: admin/clearfy-admin.php:1381
+msgid ""
+"Adds a link to the source of the article when copying text. Be sure to add "
+"the word: %link% it will be replaced by the link. &lt;br&gt; is a line break."
+msgstr ""
+"Добавляет ссылку на источник статьи при копировании текста. Обязательно "
+"добавьте слово: %link% оно будет заменено на ссылку. &lt;br&gt; - это "
+"перенос строки."
+
+#: admin/clearfy-admin.php:1382
+msgid "For example:"
+msgstr "Например:"
+
+#: admin/clearfy-admin.php:1383
+msgid "Source: %link%"
+msgstr "Источник: %link%"
+
+#: admin/clearfy-admin.php:1384
+msgid "- Read more at: %link%"
+msgstr "- Читайте подробнее на: %link%"
+
+#: admin/clearfy-admin.php:1387
+msgid "How do I disable copy protection for an individual page?"
+msgstr "Як вимкнути захист від копіювання для окремої сторінки?"
+
+#: admin/clearfy-admin.php:1395
+msgid "Disable the right mouse button"
+msgstr "Вимкнути праву кнопку миші"
+
+#: admin/clearfy-admin.php:1400 admin/clearfy-admin.php:1412
+#: admin/clearfy-admin.php:1424
+msgid "One way to combat text copying."
+msgstr "Один зі способів боротьби з копіюванням тексту."
+
+#: admin/clearfy-admin.php:1401
+msgid "Disables the right mouse button"
+msgstr "Вимикає праву кнопку миші"
+
+#: admin/clearfy-admin.php:1407
+msgid "Disable text selection"
+msgstr "Вимкнути виділення тексту"
+
+#: admin/clearfy-admin.php:1413
+msgid "Disables text selection on the page"
+msgstr "Вимикає виділення тексту на сторінці"
+
+#: admin/clearfy-admin.php:1419
+msgid "Disable hotkeys"
+msgstr "Вимкнути работу горячих клавиш"
+
+#: admin/clearfy-admin.php:1425
+msgid ""
+"Disables key operation Ctrl+C, Ctrl+A, Ctrl+U, Ctrl+S, Ctrl+X, Ctrl+Shift+C"
+msgstr ""
+"Вимикає работу клавиш Ctrl+C, Ctrl+A, Ctrl+U, Ctrl+S, Ctrl+X, Ctrl+Shift+C"
+
+#: admin/clearfy-admin.php:1431 admin/clearfy-admin.php:1435
+msgid "Cookie notice"
+msgstr "Уведомление о Cookie"
+
+#: admin/clearfy-admin.php:1442
+msgid "You can set the text for the cookie notification, for example:"
+msgstr "Можете задать текст для уведомления о куки, например:"
+
+#: admin/clearfy-admin.php:1445
+msgid ""
+"Displays a notification at the bottom about the use of cookies on the site."
+msgstr "Виводить у нижній частині повідомлення про використання cookie на сайті."
+
+#: admin/clearfy-admin.php:1451
+msgid "Position"
+msgstr "Позиция"
+
+#: admin/clearfy-admin.php:1455
+msgid "Bottom"
+msgstr "Внизу"
+
+#: admin/clearfy-admin.php:1456
+msgid "Left"
+msgstr "Слева"
+
+#: admin/clearfy-admin.php:1457
+msgid "Right"
+msgstr "Справа"
+
+#: admin/clearfy-admin.php:1466
+msgid "Text color"
+msgstr "Цвет текста"
+
+#: admin/clearfy-admin.php:1475
+msgid "Background Color"
+msgstr "Цвет фона"
+
+#: admin/clearfy-admin.php:1484
+msgid "Button text"
+msgstr "Текст кнопки"
+
+#: admin/clearfy-admin.php:1493
+msgid "Button Color"
+msgstr "Цвет кнопки"
+
+#: admin/clearfy-admin.php:1506
+msgid "Hide entries"
+msgstr "Приховати записи"
+
+#: admin/clearfy-admin.php:1511
+msgid "On the main page"
+msgstr "На главной"
+
+#: admin/clearfy-admin.php:1516
+msgid ""
+"Hide records from the main page, specify the IDs of records, separated by "
+"commas."
+msgstr ""
+"Скрыть вывод записей с главной страницы, укажите ID записей через запятую."
+
+#: admin/clearfy-admin.php:1522
+msgid "In the archives"
+msgstr "В архивах"
+
+#: admin/clearfy-admin.php:1527
+msgid ""
+"Hide the output of records from all archives (headings, labels, etc.), "
+"specify the record IDs separated by commas."
+msgstr ""
+"Скрыть вывод записей со всех архивов (рубрик, меток и т.д.), укажите ID "
+"записей через запятую."
+
+#: admin/clearfy-admin.php:1533
+msgid "In search"
+msgstr "В поиске"
+
+#: admin/clearfy-admin.php:1538
+msgid ""
+"Hide the records from the search page, specify the IDs of the records, "
+"separated by commas."
+msgstr ""
+"Скрыть вывод записей со страницы поиска, укажите ID записей через запятую."
+
+#: admin/clearfy-admin.php:1546
+msgid "XML sitemap"
+msgstr "XML карта сайта"
+
+#: admin/clearfy-admin.php:1549
+msgid ""
+"These settings apply only to the standard XML sitemap, which appeared since "
+"WP 5.5."
+msgstr ""
+"Данные настройки относятся только к стандартной XML карте сайта, которая "
+"появилась с версии WP 5.5."
+
+#: admin/clearfy-admin.php:1550
+msgid "Built-in XML sitemap is located at /wp-sitemap.xml."
+msgstr "Встроенная XML карта сайта расположена по адресу /wp-sitemap.xml."
+
+#: admin/clearfy-admin.php:1556
+msgid "Disable standard XML Sitemap"
+msgstr "Вимкнути встроенную XML карту сайта"
+
+#: admin/clearfy-admin.php:1560
+msgid ""
+"By default, since version 5.5 in WordPress appeared XML sitemap. If you use "
+"SEO plugins, you can disable the default map."
+msgstr ""
+"По умолчанию, с версии 5.5 в WordPress появилась XML карта сайта. Если вы "
+"используете SEO-плагины, стандартную карту можно отключить."
+
+#: admin/clearfy-admin.php:1561
+msgid "Completely disables the built-in XML sitemap."
+msgstr "Полностью отключает встроенную XML карту сайта."
+
+#: admin/clearfy-admin.php:1567
+msgid "Disable users"
+msgstr "Вимкнути пользователей"
+
+#: admin/clearfy-admin.php:1573
+msgid ""
+"By default, the XML sitemap displays links to user pages. In 99&#37; of "
+"cases they are not needed and it is recommended to disable them."
+msgstr ""
+"По умолчанию, в XML карте сайта выводятся ссылки на страницы пользователей. "
+"В 99% случаев они не нужны и рекомендуется их отключить."
+
+#: admin/clearfy-admin.php:1574
+msgid "Disable user list in wp-sitemap-users-1.xml"
+msgstr "Вимкнути список пользователей в wp-sitemap-users-1.xml"
+
+#: admin/clearfy-admin.php:1584
+msgid "Extras"
+msgstr "Дополнительно"
+
+#: admin/clearfy-admin.php:1589
+msgid "Disable Gutenberg"
+msgstr "Вимкнути Gutenberg"
+
+#: admin/clearfy-admin.php:1594
+msgid ""
+"After upgrading WordPress to version 5.0, everyone had the Gutenberg editor "
+"turned on by default, which brought not a few problems and issues."
+msgstr ""
+"После обновления WordPress до версии 5.0 у всех по умолчанию включился "
+"редактор Гутенберг, который принес не мало проблем и вопросов."
+
+#: admin/clearfy-admin.php:1595
+msgid "Completely turns off Gutenberg."
+msgstr "Полностью отключает Гутенберг."
+
+#: admin/clearfy-admin.php:1602
+msgid "Disable Gutenberg widgets"
+msgstr "Вимкнути Gutenberg віджети"
+
+#: admin/clearfy-admin.php:1607
+msgid ""
+"In WordPress 5.8, the usual widgets have been replaced by Gutenberg, it is "
+"not very convenient and many do not need. Analogue to Classic Widgets."
+msgstr ""
+"В WordPress 5.8 обычные виджеты заменили на Gutenberg, это не очень удобно и "
+"многим не требуется. Аналог Classic Widgets."
+
+#: admin/clearfy-admin.php:1608
+msgid "Returns classic widgets."
+msgstr "Повертає класичні віджети."
+
+#: admin/clearfy-admin.php:1616
+msgid "PageSpeed passive listeners"
+msgstr "Пасивні слухачі PageSpeed"
+
+#: admin/clearfy-admin.php:1621
+msgid ""
+"Activate the option if Google PageSpeed is berating \"Passive event "
+"listeners are not used to improve scrolling performance\"."
+msgstr ""
+"Активируйте опцию, если Google PageSpeed ругается на \"Пассивные "
+"прослушиватели событий не используются для улучшения производительности при "
+"прокрутке\"."
+
+#: admin/clearfy-admin.php:1622
+msgid "Does not work: with Yandex.Market widget."
+msgstr "Не работает: с виджетом Яндекс.Маркета."
+
+#: admin/clearfy-admin.php:1623
+msgid "Adds passive for scroll and touch-action listeners."
+msgstr "Добавляет passive для прослушивателей прокрутки и touch-действий."
+
+#: admin/clearfy-admin.php:1632
+msgid "Disable RSS Feeds"
+msgstr "Вимкнути стрічки RSS"
+
+#: admin/clearfy-admin.php:1637
+msgid ""
+"The main hole from which they will parse your content is RSS feeds. For "
+"article sites, business card sites, corporate sites - disable it."
+msgstr ""
+"Основная дыра, откуда будут парсить Ваш контент, - RSS-ленты. Для статейных "
+"сайтов, сайтов-визиток, корпоративных сайтов - отключать обязательно."
+
+#: admin/clearfy-admin.php:1638
+msgid ""
+"Removes the link to the RSS feed from the &lt;head&gt; section, closes it "
+"and puts a redirect from all RSS feeds."
+msgstr ""
+"Видаляє ссылку на RSS-ленту із секції &lt;head&gt;, закрывает и ставит "
+"редирект со всех RSS-лент."
+
+#: admin/clearfy-admin.php:1644
+msgid "Remove the \"Site\" field in the comment form"
+msgstr "Прибрати у формі коментування поле «Сайт»"
+
+#: admin/clearfy-admin.php:1649
+msgid ""
+"Tired of spam comments? Visitors leaving \"empty\" comments for a link to "
+"your site?"
+msgstr ""
+"Надоел спам в комментариях? Посетители оставляют «пустые» комментарии ради "
+"ссылки на свой сайт?"
+
+#: admin/clearfy-admin.php:1650
+msgid "Removes the \"Site\" field from the comment form."
+msgstr "Прибирає поле «Сайт» із форми коментування."
+
+#: admin/clearfy-admin.php:1651
+msgid ""
+"* Works with the standard commenting form, if your topic has a manually "
+"prescribed form - most likely will not work!"
+msgstr ""
+"* Работает со стандартной формой комментирования, если в Вашей теме форма "
+"прописана вручную - скорей всего не сработает!"
+
+#: admin/clearfy-admin.php:1657
+msgid "Remove links to wordpress.org from the admin bar"
+msgstr "Прибрати посилання на wordpress.org з адмін-бара"
+
+#: admin/clearfy-admin.php:1663
+msgid ""
+"The first item in the top bar is the WordPress logo and external links to "
+"wordpress.org, documentation, and forums."
+msgstr ""
+"Первым пунктом в верхней панели идет логотип WordPress и зовнішні ссылки на "
+"сайты wordpress.org, документацию и форумы."
+
+#: admin/clearfy-admin.php:1664
+msgid "Removes all links to wordpress.org from the toolbar."
+msgstr "Прибирає всі посилання на wordpress.org з панелі інструментів."
+
+#: admin/clearfy-admin.php:1674 admin/clearfy-admin.php:1680
+msgid "Disable admin bar"
+msgstr "Вимкнути админ бар"
+
+#: admin/clearfy-admin.php:1679
+msgid "By default, the top admin panel is shown for authorized users."
+msgstr ""
+"По умолчанию для авторизованных пользователей показывается верхняя панель "
+"администратора."
+
+#: admin/clearfy-admin.php:1686
+msgid "Update notifications"
+msgstr "Уведомления об обновлениях"
+
+#: admin/clearfy-admin.php:1691
+msgid ""
+"Since version 3.7, WordPress has learned how to automatically update itself "
+"and send you an email about the update each time. Since version 5.5, two "
+"more types of emails have been added."
+msgstr ""
+"С версии 3.7 WordPress научилась автоматически обновляться и отправлять "
+"каждый раз e-mail об обновлении. С версии 5.5 добавили еще два вида писем."
+
+#: admin/clearfy-admin.php:1692
+msgid "Disables email notifications about automatic updates."
+msgstr "Вимикає email-сповіщення про автоматичні оновлення."
+
+#: admin/clearfy-admin.php:1705
+msgid "Widgets"
+msgstr "Віджети"
+
+#: admin/clearfy-admin.php:1712
+msgid "Remove \"Pages\" widget"
+msgstr "Прибрати віджет \"Сторінки\""
+
+#: admin/clearfy-admin.php:1721
+msgid "Remove \"Calendar\" widget"
+msgstr "Прибрати віджет \"Календар\""
+
+#: admin/clearfy-admin.php:1730
+msgid "Remove \"Tag Cloud\" widget"
+msgstr "Прибрати віджет \"Хмара міток\""
+
+#: admin/clearfy-admin.php:1734
+msgid ""
+"Widgets \"Pages\", \"Calendar\", \"Label Cloud\" create unnecessary requests "
+"to the database, and are now used very rarely, because \"Pages\" is easily "
+"replaced by the widget \"Menu\", and the other two only create duplicate "
+"pages."
+msgstr ""
+"Віджети \"Страницы\", \"Календарь\", \"Облако меток\" создают по лишнему "
+"запросу к базе данных, а используются сейчас крайне редко, т.к. \"Страницы\" "
+"легко заменяются виджетом \"Меню\", а два других только создают дубли "
+"страниц."
+
+#: admin/clearfy-admin.php:1735
+msgid "Disables these widgets, reducing the number of database queries."
+msgstr "Вимикає ці віджети, зменшуючи кількість запитів до бази даних."
+
+#: admin/clearfy-admin.php:1742
+msgid "Revisions"
+msgstr "Ревизии"
+
+#: admin/clearfy-admin.php:1749
+msgid "Disable revisions completely"
+msgstr "Вимкнути ревизии полностью"
+
+#: admin/clearfy-admin.php:1758
+msgid "Limit the number of revisions"
+msgstr "Ограничить количество ревизий"
+
+#: admin/clearfy-admin.php:1766
+msgid ""
+"Warning. In the file wp-config.php found a constant WP_POST_REVISIONS, it "
+"defines the number of revisions. Remove it, so you can change this value "
+"through the admin panel."
+msgstr ""
+"Внимание! В файле wp-config.php найдена константа WP_POST_REVISIONS, она "
+"определяет количество ревизий. Удалите её, чтобы Вы могли менять это "
+"значение через админку."
+
+#: admin/clearfy-admin.php:1769
+msgid ""
+"When you save and update any record or page, a copy (revision) of it is "
+"created, which you can view or restore in the future. But over time, a large "
+"number of such revisions (and there can be dozens of them for each page) "
+"clog the database, wasting space and slowing down the work. Usually, it is "
+"sufficient to keep up to 3-5 recent revisions."
+msgstr ""
+"При сохранении и обновлении любой записи или страницы создается её копия "
+"(ревизия), которую в будущем можно посмотреть или восстановить. Но со "
+"временем большое количество таких ревизий (а их может быть десятки для "
+"каждой страницы) забивают базу данных, расходуя место и замедляя работу. "
+"Обычно достаточно хранить до 3-5 последних ревизий."
+
+#: admin/clearfy-admin.php:1778
+msgid "Redirect Manager"
+msgstr "Менеджер редиректов"
+
+#: admin/clearfy-admin.php:1793
+msgid ""
+"301 redirect from one address to another. For example, if the article is not "
+"accessible at the old address."
+msgstr ""
+"301 редирект с одного адреса на другой. Например, если статья не доступна по "
+"старому адресу."
+
+#: admin/clearfy-admin.php:1794
+msgid "You can specify both internal and external links."
+msgstr "Ви можете вказати як внутрішні посилання, так і зовнішні."
+
+#: admin/clearfy-admin.php:1795
+#, php-format
+msgid "Put * to replace any number of characters. For example: %s."
+msgstr "Поставте * для заміни будь-якої кількості символів. Наприклад: %s."
+
+#: admin/clearfy-admin.php:1813
+msgid "Disable logging"
+msgstr "Вимкнути логирование"
+
+#: admin/clearfy-admin.php:1817
+msgid ""
+"If you are sure that 404 error logging is not required - you can disable it "
+"completely."
+msgstr ""
+"Если вы уверены, что логирование 404 ошибок не требуется - можете отключить "
+"его полностью."
+
+#: admin/clearfy-admin.php:1821
+msgid ""
+"On this page you can see a log of the most recent requests for which a 404 "
+"error was returned."
+msgstr ""
+"На этой странице Вы видите журнал последних запросов, по которым была "
+"возвращена 404 ошибка."
+
+#: admin/clearfy-admin.php:1822
+msgid ""
+"This information will help you properly configure redirects from articles in "
+"which you have changed the address, to find pictures, styles and scripts "
+"that do not open on the site, to monitor the security of the site, time to "
+"see the problem areas."
+msgstr ""
+"Эта информация поможет Вам правильно настроить редиректы со статей, у "
+"которых Вы сменили адрес, найти картинки, стилі и скрипты, которые не "
+"открываются на сайте, следить за безопасностью сайта, вовремя увидеть "
+"проблемные места."
+
+#: admin/clearfy-admin.php:1823
+msgid "At most, the most recent "
+msgstr "Максимум хранятся последние "
+
+#: admin/clearfy-admin.php:1823 admin/clearfy-admin.php:1910
+msgid " entries."
+msgstr " записей."
+
+#: admin/clearfy-admin.php:1825
+msgid "Clear log"
+msgstr "Очистить лог"
+
+#: admin/clearfy-admin.php:1875
+msgid "Include IndexNow"
+msgstr "Увімкнути IndexNow"
+
+#: admin/clearfy-admin.php:1880
+msgid "Automatically notify search engines of changes to the site."
+msgstr "Автоматично повідомляти пошукові системи про зміни на сайті."
+
+#: admin/clearfy-admin.php:1886
+msgid "IndexNow key"
+msgstr "Ключ IndexNow"
+
+#: admin/clearfy-admin.php:1892
+msgid ""
+"It is generated automatically, you can change it to your own. The key can "
+"contain the characters a-z, A-Z , 0-9, -."
+msgstr ""
+"Сгенерирован автоматически, можно изменить на свой. Ключ может содержать "
+"символы a-z, A-Z , 0-9, -."
+
+#: admin/clearfy-admin.php:1893
+msgid "Length from 8 to 128 characters."
+msgstr "Длина от 8 до 128 символов."
+
+#: admin/clearfy-admin.php:1894
+msgid "You can delete it to generate a new one automatically."
+msgstr "Можете видалити, щоб автоматично згенерувати новий."
+
+#: admin/clearfy-admin.php:1901
+msgid "Dispatch History"
+msgstr "История отправки"
+
+#: admin/clearfy-admin.php:1906
+msgid "Help:"
+msgstr "Помощь:"
+
+#: admin/clearfy-admin.php:1907
+msgid "What does code 202 mean"
+msgstr "Что значит код 202"
+
+#: admin/clearfy-admin.php:1908
+msgid "which means "
+msgstr "що означає "
+
+#: admin/clearfy-admin.php:1910
+msgid "The table shows the last "
+msgstr "У таблиці виводяться останні "
+
+#: admin/clearfy-admin.php:1981
+msgid "Plugin version"
+msgstr "Версия плагина"
+
+#: admin/clearfy-admin.php:2010
+msgid "Help"
+msgstr "Помощь"
+
+#: inc/class-disable-comments.php:146 inc/class-disable-comments.php:165
+msgid "Comments are closed."
+msgstr "Коментарі закриті."
+
+#: inc/class-disable-rest-api.php:90
+msgid "Access denied by Clearfy Pro."
+msgstr "Доступ запрещен Clearfy Pro."
+
+#: inc/class-hide-admin.php:168
+msgid "Sorry, this is private territory."
+msgstr "Извините, доступ запрещен."
+
+#: inc/class-local-avatars.php:65
+msgid "Choose local avatar"
+msgstr "Вибрати локальний аватар"
+
+#: inc/class-local-avatars.php:72
+msgid "Remove local avatar"
+msgstr "Видалити локальний аватар"
+
+#: inc/class-login-attempts.php:112 inc/class-login-attempts.php:279
+msgid "<strong>ERROR</strong>: Access denied."
+msgstr "<strong>Помилка</strong>: Доступ запрещен."
+
+#: inc/class-login-attempts.php:155 inc/class-login-attempts.php:214
+#, php-format
+msgid "Attempts remaining: <strong>%d</strong>"
+msgstr "Залишилось спроб: <strong>%d</strong>"
+
+#: inc/class-login-attempts.php:293
+msgid "<strong>ERROR</strong>: Too many failed login attempts."
+msgstr "<strong>Помилка</strong>: Слишком много неправильних спроб."
+
+#: inc/class-login-attempts.php:297
+msgid "Please try again later."
+msgstr "Попробуйте позже."
+
+#: inc/class-login-attempts.php:306
+#, php-format
+msgid "Please try again after %dh."
+msgstr "Попробуйте еще раз через %dч."
+
+#: inc/class-login-attempts.php:308
+#, php-format
+msgid "Please try again after %dm."
+msgstr "Попробуйте еще раз через %dм."
+
+#: inc/class-plugin-options.php:46
+msgid ""
+"This website uses cookies to improve user experience. By continuing to use "
+"the site, you consent to the use of cookies."
+msgstr ""
+"Этот сайт использует cookie для хранения данных. Продолжая использовать "
+"сайт, Вы даете свое согласие на работу с этими файлами."
+
+#: inc/class-settings-migrate.php:42
+msgid "Import successfully done"
+msgstr "Імпорт успешно завершен"
+
+#: admin/clearfy-admin.php:366
+#, php-format
+msgid "To activate the plugin, enter the license key that you receive after payment in the letter or in <a href=\"%s\" target=\"_blank\" rel=\"noopener\">personal account</a>."
+msgstr "Чтобы активировать плагин, введите лицензионный ключ, который вы получите после оплаты в письме или в <a href=\"%s\" target=\"_blank\" rel=\"noopener\">личном кабинете</a>."
+
+#~ msgid "Hide the admin panel"
+#~ msgstr "Спрятать админку"
+
+#~ msgid "Protection"
+#~ msgstr "Защита"
+
+#~ msgid "Upload Avatar"
+#~ msgstr "Загрузить аватар"
+
+#~ msgid "Choose an image from your computer:"
+#~ msgstr "Выберите изображение с компьютера:"
+
+#~ msgid "Choose from Media Library"
+#~ msgstr "Выберите із Медиафайлов"
+
+#~ msgid "Delete local avatar"
+#~ msgstr "Видалити локальний аватар"
+
+#~ msgid ""
+#~ "You do not have media management permissions. To change your local "
+#~ "avatar, contact the blog administrator."
+#~ msgstr ""
+#~ "У вас нет доступа к медиафайлам. Чтобы изменить аватарку, обратитесь к "
+#~ "администратору."
+
+#, fuzzy
+#~| msgid " entries."
+#~ msgid "entries."
+#~ msgstr " записей."
+
+#, fuzzy
+#~| msgid "After "
+#~ msgid "After"
+#~ msgstr "После "
+
+#~ msgid "There is no changelog available."
+#~ msgstr "Список изменения не доступен."
+
+#~ msgid "Check for updates"
+#~ msgstr "Проверить обновления"
+
+#~ msgid "This plugin is up to date."
+#~ msgstr "У Вас установлена последняя версия плагина."
+
+#~ msgid "A new version of this plugin is available."
+#~ msgstr "Доступна новая версия плагина."
+
+#, php-format
+#~ msgid "Unknown update checker status \"%s\""
+#~ msgstr "Неизвестный ответ от сервера обновлений  \"%s\""
+
+#~ msgid "Changelog"
+#~ msgstr "Список изменений"
+
+#: admin/clearfy-admin.php:1996
+msgid "Post types"
+msgstr "Типи записів"
+
+#: admin/clearfy-admin.php:2017
+msgid "Select which post types should trigger IndexNow when updated."
+msgstr "Выберите, для каких типов записей нужно отправлять IndexNow при обновлении."
+
+#: inc/class-indexnow.php:25
+msgid "Accepted"
+msgstr "Принято"
+
+#: inc/class-indexnow.php:26
+msgid "Invalid key"
+msgstr "Невірний ключ"
+
+#: inc/class-indexnow.php:27
+msgid "Method not allowed"
+msgstr "Метод не разрешен"
+
+#: inc/class-indexnow.php:28
+msgid "Invalid request"
+msgstr "Некоректний запит"
+
+#: inc/class-indexnow.php:29
+msgid "Too Many Requests"
+msgstr "Слишком много запросов"

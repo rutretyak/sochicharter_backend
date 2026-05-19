@@ -8,6 +8,10 @@
 namespace WebberZone\Contextual_Related_Posts\Admin;
 
 use WebberZone\Contextual_Related_Posts\Util\Cache;
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
+use WebberZone\Contextual_Related_Posts\Admin\Admin_Notices;
+use WebberZone\Contextual_Related_Posts\Admin\Admin_Notices_API;
+use WebberZone\Contextual_Related_Posts\Admin\Settings_Wizard;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -85,6 +89,33 @@ class Admin {
 	public Admin_Notices $admin_notices;
 
 	/**
+	 * Admin notices API.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @var Admin_Notices_API Admin notices API.
+	 */
+	public Admin_Notices_API $admin_notices_api;
+
+	/**
+	 * Settings wizard.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @var Settings_Wizard Settings wizard.
+	 */
+	public Settings_Wizard $settings_wizard;
+
+	/**
+	 * Admin banner helper instance.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var Admin_Banner
+	 */
+	public Admin_Banner $admin_banner;
+
+	/**
 	 * Settings Page in Admin area.
 	 *
 	 * @since 3.5.0
@@ -129,13 +160,16 @@ class Admin {
 		$this->hooks();
 
 		// Initialise admin classes.
-		$this->settings      = new Settings();
-		$this->activator     = new Activator();
-		$this->metabox       = new Metabox();
-		$this->tools_page    = new Tools_Page();
-		$this->cache         = new Cache();
-		$this->bulk_edit     = new Bulk_Edit();
-		$this->admin_notices = new Admin_Notices();
+		$this->settings          = new Settings();
+		$this->activator         = new Activator();
+		$this->metabox           = new Metabox();
+		$this->tools_page        = new Tools_Page();
+		$this->cache             = new Cache();
+		$this->bulk_edit         = new Bulk_Edit();
+		$this->admin_notices_api = new Admin_Notices_API();
+		$this->admin_notices     = new Admin_Notices();
+		$this->settings_wizard   = new Settings_Wizard();
+		$this->admin_banner      = new Admin_Banner( $this->get_admin_banner_config() );
 	}
 
 	/**
@@ -144,8 +178,7 @@ class Admin {
 	 * @since 3.5.0
 	 */
 	public function hooks() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'admin_notices', array( $this, 'fulltext_index_notice' ) );
+		Hook_Registry::add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
 	/**
@@ -158,9 +191,9 @@ class Admin {
 
 		wp_register_script(
 			'crp-admin-js',
-			CRP_PLUGIN_URL . "includes/admin/js/admin-scripts{$file_prefix}.js",
+			WZ_CRP_PLUGIN_URL . "includes/admin/js/admin-scripts{$file_prefix}.js",
 			array( 'jquery', 'jquery-ui-tabs', 'jquery-ui-datepicker' ),
-			CRP_VERSION,
+			WZ_CRP_VERSION,
 			true
 		);
 		wp_localize_script(
@@ -171,13 +204,14 @@ class Admin {
 				'nonce'           => wp_create_nonce( 'crp_admin_nonce' ),
 				'copied'          => __( 'Copied!', 'contextual-related-posts' ),
 				'copyToClipboard' => __( 'Copy to clipboard', 'contextual-related-posts' ),
+				'copyError'       => __( 'Error copying to clipboard', 'contextual-related-posts' ),
 			)
 		);
 		wp_register_style(
 			'crp-admin-ui-css',
-			CRP_PLUGIN_URL . "includes/admin/css/admin-styles{$file_prefix}.css",
+			WZ_CRP_PLUGIN_URL . "includes/admin/css/admin-styles{$file_prefix}.css",
 			array(),
-			CRP_VERSION
+			WZ_CRP_VERSION
 		);
 	}
 
@@ -187,31 +221,85 @@ class Admin {
 	 * @since 3.5.0
 	 */
 	public static function display_admin_sidebar() {
-		require_once CRP_PLUGIN_DIR . 'includes/admin/settings/sidebar.php';
+		require_once WZ_CRP_PLUGIN_DIR . 'includes/admin/sidebar.php';
 	}
 
 	/**
-	 * Display admin notice if the fulltext indexes are not created.
+	 * Display the pro upgrade banner.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.0
+	 *
+	 * @param bool   $donate        Whether to show the donate banner.
+	 * @param string $custom_text   Custom text to show in the banner.
 	 */
-	public function fulltext_index_notice() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		// Check if all indexes are installed.
-		if ( ! Db::is_fulltext_index_installed() ) {
+	public static function pro_upgrade_banner( $donate = true, $custom_text = '' ) {
+		if ( function_exists( '\WebberZone\Contextual_Related_Posts\crp_freemius' ) && ! \WebberZone\Contextual_Related_Posts\crp_freemius()->is_paying() ) {
 			?>
-			<div class="notice notice-warning">
-				<p>
-					<?php esc_html_e( 'Contextual Related Posts: Some fulltext indexes are missing, which will affect the related posts.', 'contextual-related-posts' ); ?>
-					<a href="<?php echo esc_url( admin_url( 'tools.php?page=crp_tools_page' ) ); ?>">
-						<?php esc_html_e( 'Click here to recreate indexes.', 'contextual-related-posts' ); ?>
-					</a>
-				</p>
-			</div>
+				<div id="pro-upgrade-banner">
+					<div class="inside">
+						<?php if ( ! empty( $custom_text ) ) : ?>
+							<p><?php echo wp_kses_post( $custom_text ); ?></p>
+						<?php endif; ?>
+
+						<p><a href="https://webberzone.com/plugins/contextual-related-posts/pro/" target="_blank"><img src="<?php echo esc_url( WZ_CRP_PLUGIN_URL . 'includes/admin/images/crp-pro-banner.png' ); ?>" alt="<?php esc_html_e( 'Contextual Related Posts Pro - Buy now!', 'contextual-related-posts' ); ?>" width="300" height="300" style="max-width: 100%;" /></a></p>
+
+						<?php if ( $donate ) : ?>							
+							<p style="text-align:center;"><?php esc_html_e( 'OR', 'contextual-related-posts' ); ?></p>
+							<p><a href="https://wzn.io/donate-crp" target="_blank"><img src="<?php echo esc_url( WZ_CRP_PLUGIN_URL . 'includes/admin/images/support.webp' ); ?>" alt="<?php esc_html_e( 'Support the development - Send us a donation today.', 'contextual-related-posts' ); ?>" width="300" height="169" style="max-width: 100%;" /></a></p>
+						<?php endif; ?>
+					</div>
+				</div>
 			<?php
 		}
+	}
+
+	/**
+	 * Retrieve the configuration array for the admin banner.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_admin_banner_config(): array {
+		return array(
+			'capability' => 'manage_options',
+			'prefix'     => 'crp',
+			'screen_ids' => array(
+				'settings_page_crp_options_page',
+				'tools_page_crp_tools_page',
+			),
+			'page_slugs' => array(
+				'crp_options_page',
+				'crp_tools_page',
+			),
+			'strings'    => array(
+				'region_label' => esc_html__( 'Contextual Related Posts quick links', 'contextual-related-posts' ),
+				'nav_label'    => esc_html__( 'Contextual Related Posts admin shortcuts', 'contextual-related-posts' ),
+				'eyebrow'      => esc_html__( 'WebberZone Contextual Related Posts', 'contextual-related-posts' ),
+				'title'        => esc_html__( 'Display related posts automatically on your site.', 'contextual-related-posts' ),
+				'text'         => esc_html__( 'Jump to your most-used Contextual Related Posts tools, manage content faster, and explore more WebberZone plugins.', 'contextual-related-posts' ),
+			),
+			'sections'   => array(
+				'settings' => array(
+					'label'      => esc_html__( 'Settings', 'contextual-related-posts' ),
+					'url'        => admin_url( 'options-general.php?page=crp_options_page' ),
+					'screen_ids' => array( 'settings_page_crp_options_page' ),
+					'page_slugs' => array( 'crp_options_page' ),
+				),
+				'tools'    => array(
+					'label'      => esc_html__( 'Tools', 'contextual-related-posts' ),
+					'url'        => admin_url( 'tools.php?page=crp_tools_page' ),
+					'screen_ids' => array( 'tools_page_crp_tools_page' ),
+					'page_slugs' => array( 'crp_tools_page' ),
+				),
+				'plugins'  => array(
+					'label'  => esc_html__( 'WebberZone Plugins', 'contextual-related-posts' ),
+					'url'    => 'https://webberzone.com/plugins/',
+					'type'   => 'secondary',
+					'target' => '_blank',
+					'rel'    => 'noopener noreferrer',
+				),
+			),
+		);
 	}
 }

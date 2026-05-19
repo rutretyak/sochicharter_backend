@@ -3,7 +3,7 @@
  * Plugin Name: Clearfy Pro
  * Plugin URI:  https://wpshop.ru/plugins/clearfy
  * Description: Очищает код WP от лишнего мусора, улучшает SEO, убирает дубли, усиливает защиту и не только! Смотрите полное описание на странице настроек
- * Version:     3.6.4
+ * Version:     3.7.1
  * Author:      WPShop.ru
  * Author URI:  https://wpshop.ru/
  * License:     WPShop License
@@ -14,6 +14,9 @@
 
 use WPShop\ClearfyPro\ClearfyCloud;
 use WPShop\ClearfyPro\DisableFeeds;
+use WPShop\ClearfyPro\HideExternalLinks;
+use WPShop\ClearfyPro\MaintenanceMode;
+use WPShop\ClearfyPro\RobotsTxt;
 
 if ( ! defined( 'WPINC' ) ) {
     die;
@@ -38,6 +41,8 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
          * Need to delete when license key updated
          */
         const CHECK_UPDATE_OPTION = 'clearfy_update_checker_option';
+        const LICENSE_TOKEN_OPTION = 'clearfy_license_token';
+        const LICENSE_KEY_OPTION = 'clearfy_license_key';
 
         /**
          * The unique identifier of this plugin.
@@ -70,12 +75,7 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
          */
         protected $options;
 
-        /**
-         * Api url
-         *
-         * @var string
-         */
-        protected $api_url;
+        protected $api_urls;
 
         /**
          * Api automatic update url
@@ -129,9 +129,12 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
             // set variables
             $this->plugin_name      = 'clearfy-pro';
-            $this->version          = '3.6.4';
-            $this->api_url          = 'https://wpshop.ru/api.php';
-            $this->api_update_url   = 'https://api.wpgenerator.ru/wp-update-server/?action=get_metadata&slug=' . $this->plugin_name;
+            $this->version          = '3.7.1';
+            $this->api_urls         = [
+                'https://wpshop.ru/api/',           // main api
+                'https://wpshop.biz/api-proxy/',    // proxy cloudflare
+            ];
+            $this->api_update_url   = 'https://wpgenerator.ru/update-server-v2/?action=get_metadata&slug=' . $this->plugin_name;
             $this->check_license    = $this->check_license();
             $this->plugin_path      = plugin_basename( __FILE__ );
 
@@ -148,7 +151,7 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
             $plugin_options->plugin_slug    = 'clearfy_pro';
             $plugin_options->text_domain    = 'clearfy-pro';
             $plugin_options->version        = $this->version;
-            $plugin_options->api_url        = $this->api_url;
+            $plugin_options->api_urls       = $this->api_urls;
             $plugin_options->plugin_path    = $this->plugin_path;
             $plugin_options->options        = $this->options;
             $plugin_options->option_name    = $this->option_name;
@@ -169,8 +172,7 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
             /**
              * Automatic plugin update checker
              */
-            require 'plugin-update-checker/plugin-update-checker.php';
-            $clearfy_update_checker = PucFactory::buildUpdateChecker(
+            $clearfy_update_checker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
                 $this->api_update_url,     //Metadata URL.
                 __FILE__,           //Full path to the main plugin file.
                 $this->plugin_name,  //Plugin slug. Usually it's the same as the name of the directory.
@@ -178,11 +180,29 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
                 self::CHECK_UPDATE_OPTION
             );
 
-            //Add the license key to query arguments.
-            $clearfy_update_checker->addQueryArgFilter( array( $this, 'wsh_filter_update_checks' ) );
+            // Add license credentials to query arguments (token first, legacy key fallback).
+            $clearfy_update_checker->addQueryArgFilter( function ( $queryArgs ) {
+                $license_token = get_option( self::LICENSE_TOKEN_OPTION );
+                if ( ! empty( $license_token ) ) {
+                    $queryArgs['token'] = $license_token;
+                } else {
+                    $license_key = get_option( self::LICENSE_KEY_OPTION );
+                    if ( ! empty( $license_key ) ) {
+                        $queryArgs['license_key'] = $license_key;
+                    }
+                }
+
+                return $queryArgs;
+            } );
+
+            if ( is_admin() ) {
+                $robots_txt = new RobotsTxt( $plugin_options );
+                $robots_txt->init();
+            }
 
 
 
+            register_deactivation_hook( __FILE__, [ $this, 'deactivate' ] );
 
 
 	        /**
@@ -328,14 +348,8 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
 
 
-                // include pseudo links styles and script
-                if (
-                    $this->check_option('comment_text_convert_links_pseudo') ||
-                    $this->check_option('remove_url_from_comment_form')
-                ) {
-                    add_action('wp_head', array($this, 'add_pseudo_link_style'));
-                    add_action('wp_footer', array($this, 'add_pseudo_link_scripts'));
-                }
+                $hide_external_links = new HideExternalLinks( $plugin_options );
+                $hide_external_links->init();
 
 
 
@@ -373,13 +387,6 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
                     add_filter( 'the_content', array($this, 'content_image_auto_alt') );
                 }
 
-                if ($this->check_option('comment_text_convert_links_pseudo')) {
-                    add_filter( 'comment_text', array($this, 'comment_text_convert_links_pseudo') );
-                }
-
-                if ($this->check_option('pseudo_comment_author_link')) {
-                    add_filter( 'get_comment_author_link', array( $this, 'pseudo_comment_author_link' ), 100, 3 );
-                }
 
                 if ($this->check_option('noindex_pagination')) {
 
@@ -563,6 +570,11 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
                     add_action( 'template_redirect', array($this, 'set_last_modified_headers'), 999 );
                 }
 
+                if ( $this->check_option( 'maintenance_mode_enable' ) ) {
+                    $maintenance_mode = new MaintenanceMode( $plugin_options );
+                    $maintenance_mode->init();
+                }
+
                 if ($this->check_option('protect_author_get')) {
                     add_action( 'wp', array($this, 'protect_author_get') );
                 }
@@ -598,7 +610,9 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
         }
 
 
-
+        public function deactivate() {
+            wp_clear_scheduled_hook( \WPShop\ClearfyPro\ClearfyCloud::CRON_HOOK_FEED_SYNC );
+        }
 
         /**
          * Add localization
@@ -625,28 +639,15 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
         }
 
 
-        /**
-         * Add license key to request update
-         *
-         * @param $queryArgs
-         * @return mixed
-         */
-        public function wsh_filter_update_checks($queryArgs) {
-            $license_key = get_option('clearfy_license_key');
-            if ( !empty($license_key) ) {
-                $queryArgs['license_key'] = $license_key;
-            }
-            return $queryArgs;
-        }
-
 
 
         public function check_license() {
-            $license_key    = get_option('clearfy_license_key');
+            $license_token  = get_option(self::LICENSE_TOKEN_OPTION);
+            $license_key    = get_option(self::LICENSE_KEY_OPTION);
             $license_verify = get_option('license_verify');
             $license_error  = get_option('license_error');
 
-            if (!empty($license_key) && !empty($license_verify) && empty($license_error)) {
+            if (( !empty($license_token) || !empty($license_key) ) && !empty($license_verify) && empty($license_error)) {
                 // TODO: проверка на срок истечения $license_verify
                 return true;
             }
@@ -678,6 +679,32 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
             $log = new Clearfy_Logging( $this->plugin_options, '404' );
 
             $url = esc_url($_SERVER['REQUEST_URI']);
+            $url = ltrim( $url, '/' );
+
+            $whitelist = [
+                '.well-known/traffic-advice',
+                '.well-known/assetlinks.json',
+                '.well-known/dnt-policy.txt',
+                '.well-known/change-password',
+                '.well-known/apple-app-site-association',
+                '.well-known/security.txt',
+                '.well-known/gpc.json',
+                'ads.txt',
+                'site.webmanifest',
+                'manifest.json',
+                'service-worker.js',
+                'humans.txt',                       // Информация о разработчиках
+                'browserconfig.xml',                // Настройки для IE и Edge
+                'crossdomain.xml',                  // Настройки кросс-доменных политик для Flash и Silverlight
+                'readme.html',                      // Стандартный файл WordPress, может быть запрошен ботами
+                'license.txt',                      // Лицензионное соглашение WordPress
+            ];
+
+            if ( in_array( $url, $whitelist ) ) {
+                // Don't log whitelisted URLs
+                return;
+            }
+
             $referer = ( ! empty( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : '';
             $info = array(
                 'referer'   => $referer,
@@ -686,7 +713,6 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
             $log->add( '404', $url, $info );
         }
-
 
         public function ajax_clearfy_clear_log() {
 
@@ -734,7 +760,8 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
             check_ajax_referer( 'clearfy_remove_license_nonce' );
 
-            delete_option('clearfy_license_key');
+            delete_option(self::LICENSE_TOKEN_OPTION);
+            delete_option(self::LICENSE_KEY_OPTION);
             delete_option('license_verify');
             delete_option('license_error');
 
@@ -1079,14 +1106,30 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
          * @since 1.0.8
          */
         public function redirect_from_http_to_https() {
-            if ( false === apply_filters( 'clearfy_redirect_from_http_to_https', true ) ) return;
-            if ( is_ssl() ) return;
-            if ( 0 === strpos($_SERVER['REQUEST_URI'], 'http') ) {
-                wp_redirect(set_url_scheme($_SERVER['REQUEST_URI'], 'https'), 301);
+
+            // Отключаем редирект, если работаем в CLI
+            // Некоторые хостинги могут запускать WP-CLI в окружении, где php_sapi_name() возвращает не cli, а cgi-fcgi
+            // Поэтому сделана дополнительная проверка на WP_CLI
+            if ( php_sapi_name() === 'cli' || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+                return;
             }
-            else {
-                wp_redirect('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], 301);
+
+            // Проверка через фильтр
+            if ( false === apply_filters( 'clearfy_redirect_from_http_to_https', true ) ) {
+                return;
             }
+
+            // Если сайт уже на HTTPS, редирект не нужен
+            if ( is_ssl() ) {
+                return;
+            }
+
+            if ( 0 === strpos( $_SERVER['REQUEST_URI'], 'http' ) ) {
+                wp_redirect( set_url_scheme( $_SERVER['REQUEST_URI'], 'https' ), 301 );
+            } else {
+                wp_redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], 301 );
+            }
+
             die();
         }
 
@@ -1100,66 +1143,6 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
         public function remove_url_from_comment_form($fields) {
             if ( isset( $fields['url'] ) ) unset( $fields['url'] );
             return $fields;
-        }
-
-
-        /**
-         * Convert links in comment text into span pseudo links
-         *
-         * @param $comment_text
-         * @return mixed
-         */
-        public function comment_text_convert_links_pseudo($comment_text) {
-            return $this->convert_links_pseudo($comment_text);
-        }
-
-
-        /**
-         * Convert links into span pseudo links
-         *
-         * @param $text
-         * @return mixed
-         */
-        public function convert_links_pseudo($text) {
-            preg_match_all('/(<a.*>)(.*)(<\/a>)/ismU', $text, $text_links, PREG_SET_ORDER);
-            if ( ! empty($text_links) ) {
-                foreach ( $text_links as $key => $comment_link ) {
-                    preg_match('/href\s*=\s*[\'|\"]\s*(.*)\s*[\'|\"]/i', $comment_link[1], $href);
-
-                    if (
-                        ! empty( $href[1] ) &&
-                        substr_count( $href[1], get_home_url() ) === 0 &&
-                        ( substr($href[1], 0, 7) == 'http://' || substr($href[1], 0, 8) == 'https://' )
-                    ) {
-                        $prepared_link = $text_links[$key][0];
-                        $prepared_link = str_replace('<a', '<span class="pseudo-clearfy-link"', $prepared_link);
-                        $prepared_link = str_replace('</a>', '</span>', $prepared_link);
-                        $prepared_link = str_replace('href=', 'data-uri=', $prepared_link);
-
-                        $text = str_replace($text_links[$key][0], $prepared_link, $text);
-                    }
-                }
-            }
-
-            return $text;
-        }
-
-
-        /**
-         * Convert author link to pseudo link
-         *
-         * @return string
-         */
-        public function pseudo_comment_author_link( $return, $author, $comment_ID ){
-
-            $url    = get_comment_author_url( $comment_ID );
-            $author = get_comment_author( $comment_ID );
-
-            if ( empty( $url ) || 'http://' == $url )
-                $return = $author;
-            else
-                $return = '<span class="pseudo-clearfy-link" data-uri="'. $url .'">'. $author .'</span>';
-            return $return;
         }
 
 
@@ -1178,42 +1161,6 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
             }
             return $value;
         }
-
-
-
-        public function add_pseudo_link_style() {
-
-            $styles = '';
-
-            echo '<style>';
-
-            $styles .= '.pseudo-clearfy-link {';
-            $styles .= ' color: #008acf;';
-            $styles .= ' cursor: pointer;';
-            $styles .= '}';
-            $styles .= '.pseudo-clearfy-link:hover {';
-            $styles .= ' text-decoration: none;';
-            $styles .= '}';
-
-            echo apply_filters( 'clearfy_pseudo_links_style', $styles );
-
-            echo '</style>';
-        }
-
-
-
-        public function add_pseudo_link_scripts() {
-            echo '<script>';
-            echo 'var pseudo_links = document.querySelectorAll(".pseudo-clearfy-link");';
-            echo 'for (var i=0;i<pseudo_links.length;i++ ) { ';
-            echo 'pseudo_links[i].addEventListener("click", function(e){ ';
-            echo '  window.open( e.target.getAttribute("data-uri") ); ';
-            echo '}); ';
-            echo '}';
-            echo '</script>';
-        }
-
-
 
         /**
          * Change login error message
@@ -1430,7 +1377,8 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
         public function disable_keystrokes() {
 
             /**
-             * Enable or disable content protection.
+             * [en] Enable or disable content protection.
+             * [ru] Включить или отключить защиту контента.
              *
              * @since 3.6.0
              * @param bool $enable
@@ -1619,8 +1567,32 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
             if ( is_admin() ) return $src;
 
-            if ( strpos( $src, 'ver=' ) ) {
-                $src = remove_query_arg( 'ver', $src );
+            if ( strpos( $src, 'ver=' ) !== false ) {
+                /**
+                 * Allows fully removing the "ver" query arg for assets.
+                 * [ru] Позволяет полностью удалить параметр "ver" у ассетов.
+                 */
+                $is_remove_versions_fully = (bool) apply_filters( 'clearfy/assets/is_remove_versions_fully', false, $handle, $src );
+
+                if ( $is_remove_versions_fully ) {
+                    return remove_query_arg( 'ver', $src );
+                }
+
+                $version_raw = (string) wp_parse_url( $src, PHP_URL_QUERY );
+                parse_str( $version_raw, $query_args );
+                $version = isset( $query_args['ver'] ) ? (string) $query_args['ver'] : '';
+
+                if ( $version !== '' ) {
+                    $version_hash = substr( md5( $version ), 0, 12 );
+
+                    /**
+                     * Filters obfuscated asset version hash.
+                     * [ru] Позволяет изменить хеш-версию для ассетов.
+                     */
+                    $version_hash = (string) apply_filters( 'clearfy/assets/version_hash', $version_hash, $version, $handle, $src );
+
+                    return add_query_arg( 'ver', $version_hash, remove_query_arg( 'ver', $src ) );
+                }
             }
 
             return $src;
@@ -1638,64 +1610,9 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
          * Add directories to virtual robots.txt file
          */
         public function right_robots_txt( $output ) {
+            $robots_txt = new RobotsTxt( $this->plugin_options );
 
-            if ( isset($this->options['robots_txt_text']) && !empty($this->options['robots_txt_text']) ) {
-                return $this->options['robots_txt_text'];
-            }
-
-            $site_url = get_home_url();
-            $site_url_clear = str_replace('http://', '', $site_url);
-            $site_url_clear = str_replace('https://', '', $site_url_clear);
-
-            if ( is_ssl() ) {
-                $dir_host = 'https://' . $site_url_clear;
-            } else {
-                $dir_host = $site_url_clear;
-            }
-
-            $output  = 'User-agent: *' . PHP_EOL;
-            //$output .= 'Disallow: /cgi-bin' . PHP_EOL;
-            $output .= 'Disallow: /wp-admin' . PHP_EOL;
-            $output .= 'Disallow: /wp-includes' . PHP_EOL;
-            $output .= 'Disallow: /wp-content/plugins' . PHP_EOL;
-            $output .= 'Disallow: /wp-content/cache' . PHP_EOL;
-            //$output .= 'Disallow: /wp-content/themes' . PHP_EOL;
-            $output .= 'Disallow: /wp-json/' . PHP_EOL;
-            $output .= 'Disallow: /xmlrpc.php' . PHP_EOL;
-            $output .= 'Disallow: /readme.html' . PHP_EOL;
-            //$output .= 'Disallow: */trackback' . PHP_EOL;
-            //$output .= 'Disallow: */feed' . PHP_EOL;
-            //$output .= 'Disallow: */comments' . PHP_EOL;
-            $output .= 'Disallow: /*?' . PHP_EOL;
-            $output .= 'Disallow: /?s=' . PHP_EOL;
-            $output .= 'Disallow: /?customize_changeset_uuid=' . PHP_EOL;
-            $output .= 'Allow: /wp-includes/*.css' . PHP_EOL;
-            $output .= 'Allow: /wp-includes/*.js' . PHP_EOL;
-            $output .= 'Allow: /wp-content/plugins/*.css' . PHP_EOL;
-            $output .= 'Allow: /wp-content/plugins/*.js' . PHP_EOL;
-            $output .= 'Allow: /*.css' . PHP_EOL;
-            $output .= 'Allow: /*.js' . PHP_EOL . PHP_EOL;
-
-            $output .= 'User-agent: Yandex' . PHP_EOL;
-            $output .= 'Clean-param: customize_changeset_uuid' . PHP_EOL;
-
-            /**
-             * Check sitemaps
-             */
-            if ( function_exists( 'get_headers' ) ):
-                $get_headers = @get_headers($site_url . '/sitemap.xml', 1);
-
-                // standart path
-                if ( preg_match( '#200 OK#i', $get_headers[0] ) ) {
-                    $output .= 'Sitemap: ' . $site_url . '/sitemap.xml' . PHP_EOL;
-
-                // if redirect, like yoast example
-                } else if ( isset($get_headers['Location']) && !empty($get_headers['Location']) ) {
-                    $output .= 'Sitemap: ' . $get_headers['Location'] . PHP_EOL;
-                }
-            endif;
-
-            return $output;
+            return $robots_txt->render( $output );
         }
 
 
@@ -1765,6 +1682,12 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
                 // Google Site-kit
                 add_filter( 'googlesitekit_generator', '__return_empty_string' );
+
+                // Удаляем генератор Elementor через опцию (раньше проверяется в render_generator_tag)
+                // <meta name="generator" content="Elementor 3.31.5; features: ...>
+                add_filter( 'pre_option_elementor_meta_generator_tag', function () {
+                    return '1'; // Elementor увидит "1" и ничего не выведет
+                });
             }
 
             if ( ! empty( $this->options['remove_dns_prefetch'] ) && $this->options['remove_dns_prefetch'] != 'no' ) {

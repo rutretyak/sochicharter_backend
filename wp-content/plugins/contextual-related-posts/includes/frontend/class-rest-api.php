@@ -39,7 +39,7 @@ class REST_API extends \WP_REST_Controller {
 	}
 
 	/**
-	 * Initialises the Top 10 REST API adding the necessary routes.
+	 * Initialises the Contextual Related Posts REST API adding the necessary routes.
 	 *
 	 * @since 3.5.0
 	 */
@@ -74,6 +74,16 @@ class REST_API extends \WP_REST_Controller {
 	 * @return \WP_Error|bool
 	 */
 	public function permissions_check( $request ) {
+		$context = $request->get_param( 'context' );
+
+		if ( 'edit' === $context && ! current_user_can( 'edit_posts' ) ) {
+			return new \WP_Error(
+				'rest_forbidden_context',
+				__( 'Sorry, you are not allowed to view this context.', 'contextual-related-posts' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		/**
 		 * Permissions check flag for the CRP REST API.
 		 *
@@ -94,27 +104,30 @@ class REST_API extends \WP_REST_Controller {
 	 * @return mixed|\WP_REST_Response Array of post objects or post IDs.
 	 */
 	public function get_items( $request ) {
-		$id = absint( $request->get_param( 'id' ) );
-
-		$error = new \WP_Error(
-			'rest_post_invalid_id',
-			__( 'Invalid post ID.', 'contextual-related-posts' ),
-			array( 'status' => 404 )
-		);
-
-		if ( $id <= 0 ) {
-			return $error;
-		}
+		$id   = absint( $request->get_param( 'id' ) );
+		$args = $request->get_params();
 
 		$post = get_post( $id );
-		if ( empty( $post ) || empty( $post->ID ) || ! $this->check_read_permission( $post ) ) {
-			return $error;
+
+		if ( empty( $post ) || ! $this->check_read_permission( $post, $request ) ) {
+			return new \WP_Error(
+				'rest_post_invalid_id',
+				__( 'Invalid post ID.', 'contextual-related-posts' ),
+				array( 'status' => 404 )
+			);
 		}
 
 		$related_posts = array();
 
-		$args           = $request->get_params();
-		$args['postid'] = $id;
+		$args['post_id'] = $post;
+
+		if ( isset( $args['id'] ) ) {
+			unset( $args['id'] );
+		}
+
+		if ( isset( $args['postid'] ) ) {
+			unset( $args['postid'] );
+		}
 
 		/**
 		 * Filter the REST API arguments before they passed to get_crp_posts().
@@ -130,7 +143,7 @@ class REST_API extends \WP_REST_Controller {
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
 			foreach ( $results as $related_post ) {
-				if ( ! $this->check_read_permission( $related_post ) ) {
+				if ( ! $this->check_read_permission( $related_post, $request ) ) {
 					continue;
 				}
 
@@ -163,7 +176,7 @@ class REST_API extends \WP_REST_Controller {
 	 *
 	 * @since 3.5.0
 	 *
-	 * @return array Top 10 REST API related posts arguments.
+	 * @return array Contextual Related Posts REST API related posts arguments.
 	 */
 	public function get_item_params() {
 		$args = array(
@@ -229,12 +242,17 @@ class REST_API extends \WP_REST_Controller {
 	 *
 	 * @since 3.5.0
 	 *
-	 * @param \WP_Post $post Post object.
+	 * @param \WP_Post              $post    Post object.
+	 * @param \WP_REST_Request|null $request Request context.
 	 * @return bool Whether the post can be read.
 	 */
-	public function check_read_permission( $post ) {
+	public function check_read_permission( $post, $request = null ) {
 		$post_type = get_post_type_object( $post->post_type );
 		if ( ! $this->check_is_post_type_allowed( $post_type ) ) {
+			return false;
+		}
+
+		if ( $request && 'edit' === $request->get_param( 'context' ) && ! current_user_can( 'edit_post', $post->ID ) ) {
 			return false;
 		}
 

@@ -29,6 +29,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option('clearfy_license_key');
+delete_option('clearfy_license_token');
 delete_option('license_verify');
 delete_option('license_error');
 

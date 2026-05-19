@@ -1,3 +1,7 @@
+.clearfy-settings-page {
+    color: #19193d;
+}
+
 /********************************************************************
  * General
  *******************************************************************/
@@ -28,36 +32,49 @@
 
 .redirect-manager-item {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 5px;
-}
-
-.redirect-manager-item:after {
-    content: '';
-    display: block;
-    clear: both;
+    gap: .5rem;
+    margin-bottom: .5rem;
 }
 
 .redirect-manager-item input {
-    float: left;
-    width: 45%;
+    flex: 1 1 320px;
+    min-width: 220px;
 }
 
 .redirect-manager-item__sep {
-    float: left;
-    width: 4%;
+    flex: 0 0 auto;
     text-align: center;
 }
 
 .redirect-manager-item__del {
-    float: left;
-    width: 4%;
+    flex: 0 0 auto;
     font-weight: bold;
     font-size: 1.1em;
     color: #f00;
     text-align: center;
     cursor: pointer;
+}
+
+.redirect-manager-item--warning {
+    border: 1px solid #ed6f00;
+    padding: .5rem;
+    border-radius: .5rem;
+    margin-left: -.5rem;
+    margin-right: -.5rem;
+}
+
+.redirect-manager-item__warning {
+    display: none;
+    width: 100%;
+    color: #a55200;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.redirect-manager-item__warning.is-visible {
+    display: block;
 }
 
 
@@ -94,10 +111,14 @@
 
 .option-field {
     position: relative;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
     padding-bottom: 20px;
     margin-bottom: 20px;
     padding-right: 24px;
 }
+
 .option-field:after {
     content: '';
     display: block;
@@ -105,8 +126,9 @@
 }
 
 .option-field-label {
-    width: 30%;
-    float: left;
+    align-self: start;
+    /*width: 30%;*/
+    /*float: left;*/
 }
 
 /*.option-field-label .clearfy-ico-help {*/
@@ -114,8 +136,21 @@
 /*}*/
 
 .option-field-body {
-    width: 70%;
-    float: left;
+    flex: 1 0 0;
+    /*width: 70%;*/
+    /*float: left;*/
+}
+
+
+
+@media (min-width: 768px) {
+    .option-field {
+        flex-direction: row;
+        gap: 2rem;
+    }
+    .option-field-label {
+        width: 28%;
+    }
 }
 
 .option-field-tooltip {
@@ -163,24 +198,25 @@
     position: relative;
     top: -2px;
     display: inline-block;
-    width: 50px;
-    height: 26px;
-    border-radius: 13px;
-    background: #CDD1DA;
-    box-shadow: inset 0 2px 3px rgba(0,0,0,.1);
+    width: 36px;
+    height: 20px;
+    border-radius: 14px;
+    background: #fff;
+    /*box-shadow: inset 0 2px 3px rgba(0,0,0,.1);*/
+    border: 1px solid rgba(0,0,0,.25);
     cursor: pointer;
 }
 
 .pseudo-checkbox:after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 20px;
-    height: 20px;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
     border-radius: 10px;
-    background: #FFF;
-    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    background: rgba(0,0,0,.25);
+    /*box-shadow: 0 2px 5px rgba(0,0,0,.2);*/
     transition: all .2s;
 }
 
@@ -190,7 +226,8 @@
 }
 
 .pseudo-checkbox.checked:after {
-    left: 26px;
+    left: 18px;
+    background: #fff;
 }
 
 .pseudo-checkbox.focused {
@@ -263,6 +300,8 @@ p.description.danger {
 }
 .wpshopbiz-plugin-info {
     float: right;
+    margin-top: 1rem;
+    margin-right: 1rem;
 }
 
 
@@ -349,7 +388,8 @@ p.description.danger {
     background: #c4cdd5;
 }
 
-.clearfy-indexnow-status--200 {
+.clearfy-indexnow-status--200,
+.clearfy-indexnow-status--202 {
     background: #1ac141;
 }
 
@@ -370,24 +410,36 @@ p.description.danger {
     box-sizing: border-box;
 }
 
-.wpshop-cols {
+
+.clearfy-settings-cols {
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+}
+
+@media (min-width: 1200px) {
+    .clearfy-settings-cols {
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 1200px) {
+    .clearfy-settings-cols {
+        padding-right: 2rem;
+    }
+}
+
+.clearfy-settings-col {
 
 }
 
-.wpshop-cols:after {
-    content: '';
-    display: block;
-    clear: both;
+.clearfy-settings-col--left {
+    flex: 1 0 0;
 }
 
-.wpshop-col-left {
-    width: 75%;
-    float: left;
-}
-
-.wpshop-col-right {
-    width: 20%;
-    float: right;
+.clearfy-settings-col--right {
+    flex: 0 0 300px;
+    max-width: 300px;
     padding-top: 20px;
 }
 
@@ -471,7 +523,7 @@ p.description.danger {
 
 .wpshop-tab {
     border-bottom: none;
-    padding: 7px calc(.6vw + .6%);
+    padding: 7px calc(.2vw + .2%);
     font-size: 14px;
     line-height: 24px;
     background: #fbfbfb;
@@ -482,6 +534,12 @@ p.description.danger {
     border-bottom: 1px solid #e6e6e6;
     outline: none;
     border-radius: .1rem .1rem 0 0;
+}
+
+@media (min-width: 1440px) {
+    .wpshop-tab {
+        padding: 7px calc(.5vw + .5%);
+    }
 }
 
 .wpshop-tab:focus,
@@ -505,10 +563,37 @@ p.description.danger {
     background: #fff;
     /*box-shadow: 0 0 20px rgba(0,0,0,.1);*/
     box-shadow: 0 1px 3px rgba(153, 144, 198, 0.2);
-    border-radius: 0 .5rem .5rem .5rem;
+    border-radius: 0 .5rem 0 0;
 }
+
 .wpshop-tab-in.active {
     display: block;
+}
+
+/* для страницы активации */
+.clearfy-settings-box {
+    padding: 35px 25px 25px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(153, 144, 198, 0.2);
+    border-radius: .5rem;
+}
+
+.clearfy-settings-save-container {
+    bottom: -4px;
+
+    background: #fff;
+    border-radius: 0 0 .5rem .5rem;
+    border-top: 1px solid #e5e5e5;
+
+    padding: 20px 25px;
+    box-shadow: 0 -10px 20px -20px rgba(0,0,0,.2);
+    /*box-shadow: 0 1px 3px rgba(153, 144, 198, 0.2);*/
+    z-index: 100;
+}
+
+.clearfy-settings-save-container p {
+    margin: 0;
+    padding: 0;
 }
 
 
@@ -587,9 +672,7 @@ p.description.danger {
     margin: .4em 0;
 }
 
-.clearfy .robots-text textarea,
-.clearfy .code-in-head textarea,
-.clearfy .code-in-body textarea {
+.clearfy .robots-text textarea  {
     display: block;
     width: 100%;
     height: 160px;
@@ -604,9 +687,7 @@ p.description.danger {
     height: 80px;
 }
 
-.clearfy .textarea-block,
-.clearfy .code-in-head,
-.clearfy .code-in-body {
+.clearfy .textarea-block {
     margin-top: 10px;
     margin-bottom: 10px;
 }

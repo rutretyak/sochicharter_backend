@@ -212,8 +212,8 @@ class RWMB_Datetime_Field extends RWMB_Input_Field {
 			]
 		);
 		$format  = $formats[ $field['save_format'] ];
-		$date    = DateTimeImmutable::createFromFormat( $format, $meta );
-		return false === $date ? $meta : $date->format( $field['php_format'] );
+		$date    = DateTimeImmutable::createFromFormat( $format, (string) $meta );
+		return false === $date ? (string) $meta : $date->format( $field['php_format'] );
 	}
 
 	/**

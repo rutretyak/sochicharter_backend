@@ -21,12 +21,10 @@ class Clearfy_Disable_Comments {
 
 	public function init() {
 
-		if ( empty( $this->plugin_options->options['disable_comments'] ) || $this->plugin_options->options['disable_comments'] != 'on' ) {
-			return;
+		if ( ! empty( $this->plugin_options->options['disable_comments'] ) && $this->plugin_options->options['disable_comments'] != 'on' ) {
+            // remove comments
+            add_action( 'wp_loaded', array( $this, 'filter_wp_loaded' ) );
 		}
-
-		// remove comments
-		add_action( 'wp_loaded', array( $this, 'filter_wp_loaded' ) );
 
 		if ( ! empty( $this->plugin_options->options['disable_comments_interface'] ) && $this->plugin_options->options['disable_comments_interface'] == 'on' ) {
 			// remove rest api
@@ -72,8 +70,39 @@ class Clearfy_Disable_Comments {
 				return;
 			} );
 		}
+
+        if ( ! empty( $this->plugin_options->options['disable_comments_email_field'] ) && $this->plugin_options->options['disable_comments_email_field'] == 'on' ) {
+            // Удаляем email из дефолтных полей
+            add_filter( 'comment_form_default_fields', [ $this, 'remove_email_field' ], 20 );
+
+            // Также удаляем его из финального массива, если кто-то добавил снова
+            add_filter( 'comment_form_fields', [ $this, 'remove_email_field' ], 20 );
+
+            // Принудительно отключаем требование имени и email
+            add_filter( 'option_require_name_email', '__return_false' );
+        }
+
+
+        if ( ! empty( $this->plugin_options->options['disable_comments_save_ip'] ) && $this->plugin_options->options['disable_comments_save_ip'] == 'on' ) {
+            // Отключаем сохранение IP-адресов комментаторов
+            add_filter( 'pre_comment_user_ip', '__return_empty_string' );
+
+            // Отключаем сохранение информации о браузере (user agent)
+            add_filter( 'pre_comment_user_agent', '__return_empty_string' );
+        }
 	}
 
+
+    public function remove_email_field( $fields ) {
+        unset( $fields['email'] );
+
+        // Удаляем email из текста чекбокса про cookie внизу формы комментариев
+        if ( isset( $fields['cookies'] ) ) {
+            $fields['cookies'] = str_replace( ', email', '', $fields['cookies'] );
+        }
+
+        return $fields;
+    }
 
 	public function filter_wp_loaded() {
 

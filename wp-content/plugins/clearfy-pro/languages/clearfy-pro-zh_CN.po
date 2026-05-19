@@ -79,8 +79,8 @@ msgid "Duplicate"
 msgstr "重复"
 
 #: admin/clearfy-admin.php:355
-msgid "Defence"
-msgstr "防御"
+msgid "Security"
+msgstr "安全"
 
 #: admin/clearfy-admin.php:356
 msgid "Modules"
@@ -1817,6 +1817,11 @@ msgstr "请在 %d分钟后重试。"
 msgid "Import successfully done"
 msgstr "导入成功"
 
+#: admin/clearfy-admin.php:366
+#, php-format
+msgid "To activate the plugin, enter the license key that you receive after payment in the letter or in <a href=\"%s\" target=\"_blank\" rel=\"noopener\">personal account</a>."
+msgstr "要激活插件，请输入您在付款后通过邮件收到的许可证密钥，或前往<a href=\"%s\" target=\"_blank\" rel=\"noopener\">个人账户</a>获取。"
+
 #. Plugin Name of the plugin/theme
 msgid "Clearfy Pro"
 msgstr "Clearfy Pro"
@@ -1858,3 +1863,198 @@ msgstr "https://wpshop.ru/"
 #, php-format
 #~ msgid "Unknown update checker status \"%s\""
 #~ msgstr "未知的更新检查器状态“%s”"
+
+#: admin/clearfy-admin.php:1996
+msgid "Post types"
+msgstr "文章类型"
+
+#: admin/clearfy-admin.php:2017
+msgid "Select which post types should trigger IndexNow when updated."
+msgstr "选择更新时要触发 IndexNow 的文章类型。"
+
+#: inc/class-indexnow.php:25
+msgid "Accepted"
+msgstr "已接受"
+
+#: inc/class-indexnow.php:26
+msgid "Invalid key"
+msgstr "密钥无效"
+
+#: inc/class-indexnow.php:27
+msgid "Method not allowed"
+msgstr "方法不被允许"
+
+#: inc/class-indexnow.php:28
+msgid "Invalid request"
+msgstr "请求无效"
+
+#: inc/class-indexnow.php:29
+msgid "Too Many Requests"
+msgstr "请求过多"
+
+msgid "Enable maintenance mode"
+msgstr "启用维护模式"
+
+msgid "Show a temporary maintenance page to visitors while the site is under construction."
+msgstr "网站施工期间，向访客显示临时维护页面。"
+
+msgid "Allow indexing by robots"
+msgstr "允许搜索引擎抓取"
+
+msgid "HTML content"
+msgstr "HTML 内容"
+
+msgid "You can use your own HTML. By default, simple localized text with minimal style is used."
+msgstr "您可以使用自己的 HTML。默认使用带有简洁样式的本地化文本。"
+
+msgid "Site under maintenance"
+msgstr "网站维护中"
+
+msgid "We are currently updating the site and will be back soon."
+msgstr "我们正在更新网站，很快回来。"
+
+msgid "Thank you for your patience."
+msgstr "感谢您的耐心等待。"
+
+
+
+msgid "Shows a temporary \"Site under maintenance\" page only on the frontend. The admin area is not affected. Users with the Editor access level can still view the site. The page returns HTTP status 503 (Service Unavailable), which tells search engines and monitoring systems that this is a temporary state."
+msgstr "仅在前端向访客显示临时的“网站维护中”页面，不影响后台。具有编辑级别访问权限的用户仍可查看网站。该页面返回 HTTP 状态 503（Service Unavailable），用于告知搜索引擎和监控系统这是临时状态。"
+
+msgid "The domain in robots.txt Sitemap does not match the current site domain. Check and update robots.txt settings."
+msgstr "robots.txt 中 Sitemap 的域名与当前站点域名不一致。请检查并更新 robots.txt 设置。"
+
+msgid "Cyclic redirect: this URL points to itself."
+msgstr "循环重定向：该链接指向自身。"
+
+msgid "Duplicate redirect: this source URL is used more than once."
+msgstr "重复重定向：该来源链接被使用了不止一次。"
+
+msgid "Hide external links"
+msgstr "隐藏外部链接"
+
+msgid "Hide in content"
+msgstr "在内容中隐藏"
+
+msgid "Converts external links in selected post types into pseudo links."
+msgstr "将所选文章类型中的外部链接转换为伪链接。"
+
+msgid "Hide in comments text"
+msgstr "在评论内容中隐藏"
+
+msgid "Converts external links in comment text into pseudo links."
+msgstr "将评论文本中的外部链接转换为伪链接。"
+
+msgid "Hide comment author links"
+msgstr "隐藏评论作者链接"
+
+msgid "Converts comment author website links into pseudo links."
+msgstr "将评论作者的网站链接转换为伪链接。"
+
+msgid "Exclude links"
+msgstr "排除链接"
+
+msgid "One pattern per line. If a URL contains this part, it will not be converted. You can specify a full URL or only part of an address (for example: example.com, /go/, partner-site)."
+msgstr "每行一个模式。若 URL 包含该部分，将不会被转换。可填写完整 URL 或地址片段（例如：example.com、/go/、partner-site）。"
+
+msgid "Disable by post IDs"
+msgstr "按文章 ID 禁用"
+
+msgid "Enter post IDs separated by commas. For these posts/pages, links will not be converted in content."
+msgstr "输入以逗号分隔的文章 ID。这些文章/页面中的内容链接将不会被转换。"
+
+msgid "Pseudo links settings"
+msgstr "伪链接设置"
+
+msgid "Link class"
+msgstr "链接类名"
+
+msgid "You can set your own unique class. Avoid overly generic names like \"link\"."
+msgstr "你可以设置自己的唯一类名。避免使用过于通用的名称，例如“link”。"
+
+msgid "Link color"
+msgstr "链接颜色"
+
+msgid "Underline"
+msgstr "下划线"
+
+msgid "Hover color"
+msgstr "悬停颜色"
+
+msgid "Underline on hover"
+msgstr "悬停时下划线"
+
+msgid "Last bad IP feed update:"
+msgstr "恶意 IP 列表上次更新时间："
+
+msgid "Bad IPs in current list:"
+msgstr "当前列表中的恶意 IP 数量："
+
+msgid "Last 24 hours"
+msgstr "最近 24 小时"
+
+msgid "Last 30 days"
+msgstr "最近 30 天"
+
+msgid "All time"
+msgstr "全部时间"
+
+msgid "Blocked:"
+msgstr "已拦截："
+
+msgid "Captcha shown:"
+msgstr "已显示验证码："
+
+msgid "Captcha passed:"
+msgstr "验证码通过："
+
+msgid "Captcha failed:"
+msgstr "验证码失败："
+
+msgid "Hide email field"
+msgstr "隐藏邮箱字段"
+
+msgid "Removes the email field from the comment form."
+msgstr "从评论表单中移除邮箱字段。"
+
+msgid "This option hides the email field completely and disables its validation."
+msgstr "此选项会完全隐藏邮箱字段并禁用其校验。"
+
+msgid "Disable IP address logging"
+msgstr "禁用 IP 地址记录"
+
+msgid "Prevents WordPress from saving commenters’ IP addresses to the database. This helps protect users’ personal data and supports GDPR compliance."
+msgstr "阻止 WordPress 将评论者 IP 地址保存到数据库。这有助于保护用户个人数据并支持 GDPR 合规。"
+
+msgid "Also removes IP logging from custom forms and plugins."
+msgstr "同时会移除自定义表单和插件中的 IP 记录。"
+
+msgid "Verification"
+msgstr "验证"
+
+msgid "Security check"
+msgstr "安全检查"
+
+msgid "Please confirm you are a human."
+msgstr "请确认你是人类。"
+
+msgid "Rotate the icon to the upright position."
+msgstr "请将图标旋转到正向位置。"
+
+msgid "Continue"
+msgstr "继续"
+
+msgid "Protection by Clearfy Pro"
+msgstr "由 Clearfy Pro 提供防护"
+
+msgid "If you think this is a mistake, contact the site administrator."
+msgstr "如果你认为这是误拦截，请联系网站管理员。"
+
+msgid "If you are the site owner, disable Cloud Protection temporarily using %s."
+msgstr "如果你是站点所有者，请参考%s临时关闭 Cloud Protection。"
+
+msgid "this guide"
+msgstr "本指南"
+
+msgid "Your IP:"
+msgstr "你的 IP："

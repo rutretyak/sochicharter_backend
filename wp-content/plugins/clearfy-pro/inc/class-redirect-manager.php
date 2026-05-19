@@ -202,16 +202,18 @@ class Clearfy_Redirect_Manager {
                 $out .= '    <span class="redirect-manager-item__sep"> &rarr; </span>';
                 $out .= '    <input type="text" name="redirect_to[]" value="' . $field['to'] . '">';
                 $out .= '    <span class="redirect-manager-item__del js-redirect-manager-delete">&times;</span>';
+                $out .= '    <div class="redirect-manager-item__warning js-redirect-manager-warning"></div>';
                 $out .= '</div>';
             }
         }
 
         $out .= '<div class="redirect-manager-item js-redirect-manager-item">';
-	    $out .= '    <a href="#">#</a>';
+        $out .= '    <a href="#">#</a>';
         $out .= '    <input type="text" name="redirect_from[]" value="">';
         $out .= '    <span class="redirect-manager-item__sep"> &rarr; </span>';
         $out .= '    <input type="text" name="redirect_to[]" value="">';
         $out .= '    <span class="redirect-manager-item__del js-redirect-manager-delete">&times;</span>';
+        $out .= '    <div class="redirect-manager-item__warning js-redirect-manager-warning"></div>';
         $out .= '</div>';
 
         $out .= '</div>';

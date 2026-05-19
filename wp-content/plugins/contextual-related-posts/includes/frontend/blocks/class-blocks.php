@@ -10,6 +10,7 @@ namespace WebberZone\Contextual_Related_Posts\Frontend\Blocks;
 
 use WebberZone\Contextual_Related_Posts\Frontend\Styles_Handler;
 use WebberZone\Contextual_Related_Posts\Admin\Settings;
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -26,8 +27,8 @@ class Blocks {
 	 * Register widget with WordPress.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'register_blocks' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
+		Hook_Registry::add_action( 'init', array( $this, 'register_blocks' ) );
+		Hook_Registry::add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
 	}
 
 	/**
@@ -113,9 +114,9 @@ class Blocks {
 
 			wp_register_style(
 				"crp-style-{$style}",
-				plugins_url( "css/{$style}.min.css", CRP_PLUGIN_FILE ),
+				plugins_url( "includes/frontend/css/{$style}.min.css", WZ_CRP_PLUGIN_FILE ),
 				array(),
-				CRP_VERSION
+				WZ_CRP_VERSION
 			);
 			wp_enqueue_style( "crp-style-{$style}" );
 			wp_add_inline_style( "crp-style-{$style}", $extra_css );
@@ -155,16 +156,16 @@ class Blocks {
 				$style     = $style_array['name'];
 				$extra_css = $style_array['extra_css'];
 
-				$pro = '';
+				$base_path = 'includes/frontend/css/';
 				if ( false !== strpos( $style, '-pro' ) ) {
-					$pro = 'pro/';
+					$base_path = 'includes/pro/frontend/css/';
 				}
 
 				wp_enqueue_style(
 					"crp-block-editor-{$style}",
-					plugins_url( "css/{$pro}{$style}{$file_prefix}.css", CRP_PLUGIN_FILE ),
+					plugins_url( "{$base_path}{$style}{$file_prefix}.css", WZ_CRP_PLUGIN_FILE ),
 					array( 'wp-edit-blocks' ),
-					CRP_VERSION
+					WZ_CRP_VERSION
 				);
 				wp_add_inline_style( "crp-block-editor-{$style}", $extra_css );
 			}

@@ -101,23 +101,39 @@ class Helpers {
 	 * @return string Truncated string.
 	 */
 	public static function trim_char( $input, $count = 60, $more = '&hellip;', $break_words = false ) {
-
-		$output = wp_strip_all_tags( $input, true );
-		$count  = absint( $count );
-
+		$count = absint( $count );
 		if ( 0 === $count ) {
 			return $input;
 		}
-		if ( mb_strlen( $output ) > $count ) {
-			$count -= min( $count, mb_strlen( $more ) );
+
+		// Decode HTML entities and strip tags.
+		$output = html_entity_decode( $input, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$output = wp_strip_all_tags( $output, true );
+
+		// Normalize Unicode if intl extension is available.
+		if ( class_exists( '\Normalizer' ) && ! \Normalizer::isNormalized( $output, \Normalizer::FORM_C ) ) {
+			$output = \Normalizer::normalize( $output, \Normalizer::FORM_C );
+		}
+
+		$output_length = mb_strlen( $output, 'UTF-8' );
+
+		if ( $output_length > $count ) {
+			$count -= min( $count, mb_strlen( $more, 'UTF-8' ) );
+
 			if ( ! $break_words ) {
-				$output = preg_replace( '/\s+?(\S+)?$/u', '', mb_substr( $output, 0, $count + 1 ) );
+				$output = preg_replace(
+					'/\s+?(\S+)?$/u',
+					'',
+					mb_substr( $output, 0, $count + 1, 'UTF-8' )
+				);
 			}
-			$output = mb_substr( $output, 0, $count ) . $more;
+
+			$output = mb_substr( $output, 0, $count, 'UTF-8' ) . $more;
 		}
 
 		return $output;
 	}
+
 
 	/**
 	 * Get the primary term for a given post.
@@ -249,9 +265,19 @@ class Helpers {
 	public static function strip_stopwords( $subject = '', $search = '', $replace = '' ): string {
 		// If no search terms provided, get WordPress stopwords.
 		if ( empty( $search ) ) {
-			$get_search_stopwords = new \ReflectionMethod( 'WP_Query', 'get_search_stopwords' );
-			$get_search_stopwords->setAccessible( true );
-			$search = $get_search_stopwords->invoke( new WP_Query() );
+			if ( method_exists( WP_Query::class, 'get_search_stopwords' ) ) {
+				$wp_query = new WP_Query();
+				$getter   = \Closure::bind(
+					function (): array {
+						return $this->get_search_stopwords();
+					},
+					$wp_query,
+					WP_Query::class
+				);
+				$search   = $getter();
+			} else {
+				$search = array();
+			}
 			$search = array_merge( $search, array( 'from', 'where' ) );
 		}
 
@@ -316,7 +342,18 @@ class Helpers {
 	public static function sanitize_args( $args ): array {
 		foreach ( $args as $key => $value ) {
 			if ( is_string( $value ) ) {
-				$args[ $key ] = wp_kses_post( $value );
+				switch ( $key ) {
+					case 'class':
+					case 'className':
+					case 'extra_class':
+						$classes           = explode( ' ', $value );
+						$sanitized_classes = array_map( 'sanitize_html_class', $classes );
+						$args[ $key ]      = implode( ' ', $sanitized_classes );
+						break;
+					default:
+						$args[ $key ] = wp_kses_post( $value );
+						break;
+				}
 			}
 		}
 		return $args;
@@ -330,6 +367,12 @@ class Helpers {
 	 * @return string Message about compatibility or empty string if compatible.
 	 */
 	public static function get_database_compatibility_message() {
+		static $cached_message = null;
+
+		if ( null !== $cached_message ) {
+			return $cached_message;
+		}
+
 		global $wpdb;
 
 		$db_version = $wpdb->get_var( 'SELECT VERSION()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -352,25 +395,28 @@ class Helpers {
 		}
 
 		if ( version_compare( $version, $min_version, '<' ) ) {
-			return sprintf(
+			$cached_message = sprintf(
 				/* translators: 1: Database type (MySQL/MariaDB) 2: Current database version 3: Required database version */
-				__( '⚠️ Your %1$s version (%2$s) does not support all custom table features. %1$s %3$s or higher is required for optimal performance. The plugin will continue to use standard WordPress tables.', 'contextual-related-posts' ),
+				__( '⚠️ Your %1$s version (%2$s) does not support all custom table features. %1$s %3$s or higher is required for optimal performance. The plugin might not be able to deliver the best results. Please consider upgrading your database version.', 'contextual-related-posts' ),
 				esc_html( $db_name ),
 				esc_html( $version ),
 				esc_html( $min_version )
 			);
+			return $cached_message;
 		}
 
 		if ( version_compare( $version, $rec_version, '<' ) ) {
-			return sprintf(
+			$cached_message = sprintf(
 				/* translators: 1: Database type (MySQL/MariaDB) 2: Current database version 3: Recommended database version */
 				__( '⚠️ Your %1$s version (%2$s) is below the recommended version %3$s. While the plugin will work, upgrading your database is recommended for better performance.', 'contextual-related-posts' ),
 				esc_html( $db_name ),
 				esc_html( $version ),
 				esc_html( $rec_version )
 			);
+			return $cached_message;
 		}
 
-		return '';
+		$cached_message = '';
+		return $cached_message;
 	}
 }

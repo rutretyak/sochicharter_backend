@@ -76,7 +76,7 @@ class Activator {
 		$wpdb->show_errors();
 
 		// Set the database version.
-		update_option( 'crp_db_version', CRP_DB_VERSION );
+		update_option( 'crp_db_version', WZ_CRP_DB_VERSION );
 
 		// Create PRO custom tables if the class exists.
 		if ( class_exists( '\WebberZone\Contextual_Related_Posts\Pro\Custom_Tables\Table_Manager' ) ) {
@@ -89,6 +89,13 @@ class Activator {
 				\WebberZone\Contextual_Related_Posts\Pro\Custom_Tables\Table_Manager::$db_version
 			);
 		}
+
+		/**
+		 * Fires after plugin activation.
+		 *
+		 * @since 4.1.0
+		 */
+		do_action( 'crp_activate' );
 	}
 
 	/**
@@ -100,7 +107,7 @@ class Activator {
 	 */
 	public static function activate_new_site( $blog ) {
 
-		if ( ! is_plugin_active_for_network( plugin_basename( CRP_PLUGIN_FILE ) ) ) {
+		if ( ! is_plugin_active_for_network( plugin_basename( WZ_CRP_PLUGIN_FILE ) ) ) {
 			return;
 		}
 
@@ -171,7 +178,7 @@ class Activator {
 	public static function update_db_check() {
 		global $network_wide;
 
-		if ( get_option( 'crp_db_version' ) !== CRP_DB_VERSION ) {
+		if ( get_option( 'crp_db_version' ) !== WZ_CRP_DB_VERSION ) {
 			self::activation_hook( $network_wide );
 		}
 	}

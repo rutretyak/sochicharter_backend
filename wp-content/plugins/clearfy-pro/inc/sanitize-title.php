@@ -25,9 +25,19 @@ class Clearfy_Sanitize {
 
         $title = html_entity_decode( $title, ENT_QUOTES, 'utf-8' );
         $title = strtr( $title, $this->get_utf() );
-        $title = trim( $title, '-' );
+
+        // Разрешаем только ascii + разделители
         $title = preg_replace( "/[^A-Za-z0-9-_.]/", '-', $title );
         $title = preg_replace( '~([=+.-])\\1+~' , '\\1', $title );
+
+        // Схлопнем повторные дефисы и обрежем края
+        $title = preg_replace( '/-{2,}/', '-', $title );
+        $title = trim( $title, '-._' );
+
+        // Если получилось пусто — сигнал, что транслитерации не хватило
+        if ( $title === '' ) {
+            return '';
+        }
 
         if ( apply_filters( 'clearfy_transliteration_lower_title', true ) ) {
             $title = strtolower( $title );
@@ -61,12 +71,26 @@ class Clearfy_Sanitize {
             return $title;
         }
 
-        $title = $this->sanitize( $title );
-        $title = str_replace('.', '-', $title);
-        $title = preg_replace('/-{2,}/', '-', $title);
+        // Предотвращаем пустые slug, если, например, иврит и мы не смогли транслитерировать
+        $sanitized = $this->sanitize( $title );
+
+        // Если не смогли сделать нормальный slug — НЕ ЛОМАЕМ.
+        // Возвращаем то, что WordPress уже сделал (может быть иврит и т.п.)
+        if ( $sanitized === '' ) {
+            return $title;
+        }
+
+        $sanitized = str_replace('.', '-', $sanitized);
+        $sanitized = preg_replace('/-{2,}/', '-', $sanitized);
+        $sanitized = trim( $sanitized, '-' );
+
+        // ещё один предохранитель на случай, если вдруг осталось только "-"
+        if ( $sanitized === '' ) {
+            return $title;
+        }
 
 
-        return $title;
+        return $sanitized;
     }
 
 
@@ -113,19 +137,41 @@ class Clearfy_Sanitize {
 
         $posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_name REGEXP('[^A-Za-z0-9\-]+') AND post_status IN ('publish', 'future', 'private')");
         foreach ( (array) $posts as $post ) {
-            $sanitized_name = $this->sanitize_title(urldecode($post->post_name));
-            if ( $post->post_name != $sanitized_name && ! empty( $sanitized_name ) ) {
-                add_post_meta($post->ID, '_wp_old_slug', $post->post_name);
-                $wpdb->update($wpdb->posts, array( 'post_name' => $sanitized_name ), array( 'ID' => $post->ID ));
+            $sanitized_name = $this->sanitize_title( urldecode( $post->post_name ) );
+
+            // если вернулось то же самое или пусто — пропускаем
+            if ( $post->post_name === $sanitized_name || empty( $sanitized_name ) ) {
+                continue;
             }
+
+            // сохраняем прошлый адрес
+            add_post_meta($post->ID, '_wp_old_slug', $post->post_name, true);
+
+            // сохраняем через wp_update_post, чтобы WP сам уникализировал slug
+            wp_update_post([
+                'ID'        => $post->ID,
+                'post_name' => $sanitized_name,
+            ]);
         }
 
         $terms = $wpdb->get_results("SELECT term_id, slug FROM {$wpdb->terms} WHERE slug REGEXP('[^A-Za-z0-9\-]+') ");
         foreach ( (array) $terms as $term ) {
+
             $sanitized_slug = $this->sanitize_title(urldecode($term->slug));
-            if ( $term->slug != $sanitized_slug && ! empty( $sanitized_slug ) ) {
-                $wpdb->update($wpdb->terms, array( 'slug' => $sanitized_slug ), array( 'term_id' => $term->term_id ));
+
+            // если вернулось то же самое или пусто — пропускаем
+            if ( $term->slug === $sanitized_slug || empty( $sanitized_slug ) ) {
+                continue;
             }
+
+            // сохраняем прошлый адрес
+            $history = (array) get_term_meta( $term->term_id, '_clearfy_old_slugs', true );
+            $history[] = $term->slug;
+            $history = array_values( array_unique( array_filter( $history ) ) );
+            update_term_meta( $term->term_id, '_clearfy_old_slugs', $history );
+
+            $wpdb->update($wpdb->terms, array( 'slug' => $sanitized_slug ), array( 'term_id' => $term->term_id ));
+
         }
 
     }

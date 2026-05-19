@@ -75,6 +75,7 @@ class Clearfy_Disable_Rest_Api {
 			'wp',
 			'wp-site-health',
 			'wp-block-editor',
+            'official_cdek',
 		) );
 
 		if ( ! empty( $rest_route ) ) {

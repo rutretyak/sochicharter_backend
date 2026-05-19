@@ -1,5 +1,7 @@
 <?php
 
+use WPShop\ClearfyPro\Logger;
+
 /**
  * Class Clearfy_Indexnow
  *
@@ -8,26 +10,35 @@
 
 class Clearfy_Indexnow {
 
+    const OPTION_INDEXNOW_KEY = 'indexnow_key';
+    const OPTION_INDEXNOW_POST_TYPES = 'indexnow_post_types';
+
     protected $plugin_options;
 
     protected $log_option = 'clearfy_indexnow_log';
     public $log_limit;
 
 
-    public $messages = [
-        200 => 'OK',
-        202 => 'Accepted',
-        403 => 'Invalid key',
-        405 => 'Method not allowed',
-        422 => 'Invalid request',
-        429 => 'Too Many Requests',
-    ];
+    public $messages = [];
 
+
+    protected $logger;
 
     public function __construct( Clearfy_Plugin_Options $plugin_options ) {
         $this->plugin_options = $plugin_options;
 
+        $this->messages = [
+            200 => 'OK',
+            202 => __( 'Accepted', $this->plugin_options->text_domain ),
+            403 => __( 'Invalid key', $this->plugin_options->text_domain ),
+            405 => __( 'Method not allowed', $this->plugin_options->text_domain ),
+            422 => __( 'Invalid request', $this->plugin_options->text_domain ),
+            429 => __( 'Too Many Requests', $this->plugin_options->text_domain ),
+        ];
+
         $this->log_limit = apply_filters( 'clearfy_indexnow_log_limit', 100 );
+
+        $this->logger = new Logger();
     }
 
     public function init() {
@@ -40,8 +51,8 @@ class Clearfy_Indexnow {
             if ( ! is_admin() && $query->is_main_query() ) {
                 global $wp;
                 if ( preg_match( '/(.+?)\.txt$/ui', $wp->request, $match ) ) {
-                    if ( $this->plugin_options->options['indexnow_key'] == $match[1] ) {
-                        echo $this->plugin_options->options['indexnow_key'];
+                    if ( $this->plugin_options->options[ self::OPTION_INDEXNOW_KEY ] == $match[1] ) {
+                        echo $this->plugin_options->options[ self::OPTION_INDEXNOW_KEY ];
                         die();
                     }
                 }
@@ -79,8 +90,10 @@ class Clearfy_Indexnow {
 
 
     public function send() {
+        $post_types = $this->get_selected_post_types();
+        $post_types = (array) apply_filters( 'clearfy_indexnow_post_types', $post_types );
+        $post_types = array_unique( array_filter( array_map( 'sanitize_key', $post_types ) ) );
 
-        $post_types = (array) apply_filters( 'clearfy_indexnow_post_types', [ 'post', 'page' ] );
         foreach ( $post_types as $post_type ) {
             add_action( "save_post_{$post_type}", function ( $post_ID, $post, $update ) {
                 if ( wp_is_post_revision( $post ) ) {
@@ -125,6 +138,54 @@ class Clearfy_Indexnow {
 
     }
 
+    public function get_available_post_types() {
+        $post_types = get_post_types(
+            [
+                'public'  => true,
+                'show_ui' => true,
+            ],
+            'objects'
+        );
+
+        $excluded_post_types = [
+            'attachment',
+            'revision',
+            'nav_menu_item',
+            'custom_css',
+            'customize_changeset',
+            'oembed_cache',
+            'user_request',
+            'wp_block',
+            'wp_template',
+            'wp_template_part',
+            'wp_navigation',
+            'wp_global_styles',
+            'wp_font_family',
+            'wp_font_face',
+        ];
+
+        foreach ( $excluded_post_types as $excluded_post_type ) {
+            if ( isset( $post_types[ $excluded_post_type ] ) ) {
+                unset( $post_types[ $excluded_post_type ] );
+            }
+        }
+
+        return $post_types;
+    }
+
+    public function get_selected_post_types() {
+        $selected_post_types = isset( $this->plugin_options->options[ self::OPTION_INDEXNOW_POST_TYPES ] ) ? (array) $this->plugin_options->options[ self::OPTION_INDEXNOW_POST_TYPES ] : [];
+        $selected_post_types = array_unique( array_filter( array_map( 'sanitize_key', $selected_post_types ) ) );
+
+        if ( empty( $selected_post_types ) ) {
+            $selected_post_types = [ 'post', 'page' ];
+        }
+
+        $available_post_types = array_keys( $this->get_available_post_types() );
+
+        return array_values( array_intersect( $selected_post_types, $available_post_types ) );
+    }
+
 
     /**
      * @param       $url
@@ -135,12 +196,11 @@ class Clearfy_Indexnow {
     public function send_yandex( $url, $args = [] ) {
         $body = [
             'url' => $url,
-            'key' => $this->plugin_options->options['indexnow_key'],
+            'key' => $this->plugin_options->options[ self::OPTION_INDEXNOW_KEY ],
         ];
 
-//        if ( ( $key_location = get_option( 'indexnow_key_location' ) ) ) {
-//            $body['keyLocation'] = $key_location;
-//        }
+
+        $this->logger->log('IndexNow: Send request to Yandex', $body);
 
         $args = wp_parse_args( $args, [
             'body' => $body,
@@ -148,6 +208,9 @@ class Clearfy_Indexnow {
         ] );
 
         $response = wp_remote_get( 'https://yandex.com/indexnow', $args );
+
+        $this->logger->log( 'IndexNow: Response from Yandex', $response );
+
         if ( is_wp_error( $response ) ) {
             return $response;
         }
@@ -205,12 +268,11 @@ class Clearfy_Indexnow {
     }
 
     public function check_key() {
-        if ( ! isset( $this->plugin_options->options['indexnow_key'] ) || empty( $this->plugin_options->options['indexnow_key'] ) ) {
-            $clearfy_options                 = get_option( $this->plugin_options->option_name, [] );
-			if ( empty( $clearfy_options ) ) {
-				$clearfy_options = [];
-				$clearfy_options['indexnow_key'] = $this->generate_key();
-			}
+        if ( ! isset( $this->plugin_options->options[ self::OPTION_INDEXNOW_KEY ] ) || empty( $this->plugin_options->options[ self::OPTION_INDEXNOW_KEY ] ) ) {
+            $clearfy_options = get_option( $this->plugin_options->option_name, [] );
+            if ( empty( $clearfy_options[ self::OPTION_INDEXNOW_KEY ] ) ) {
+                $clearfy_options[ self::OPTION_INDEXNOW_KEY ] = $this->generate_key();
+            }
             update_option( $this->plugin_options->option_name, $clearfy_options );
         }
     }

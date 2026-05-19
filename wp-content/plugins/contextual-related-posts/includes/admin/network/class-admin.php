@@ -58,44 +58,6 @@ class Admin {
 	public function hooks() {
 		add_action( 'network_admin_menu', array( $this, 'network_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'admin_init', array( $this, 'process_network_settings' ) );
-	}
-
-	/**
-	 * Process network settings form submission.
-	 *
-	 * @since 4.0.0
-	 */
-	public function process_network_settings() {
-		if ( ! isset( $_POST['crp_network_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['crp_network_settings_nonce'] ), 'crp_network_settings' ) ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'manage_network_options' ) ) {
-			return;
-		}
-
-		$ecsi_setting = isset( $_POST['crp_ecsi_setting'] ) ? sanitize_key( $_POST['crp_ecsi_setting'] ) : 'individual';
-
-		// Get all sites.
-		$sites = get_sites();
-
-		if ( 'individual' !== $ecsi_setting ) {
-			$enable_ecsi = 'enable' === $ecsi_setting;
-
-			foreach ( $sites as $site ) {
-				switch_to_blog( (int) $site->blog_id );
-				crp_update_option( 'use_custom_tables', $enable_ecsi );
-				restore_current_blog();
-			}
-		}
-
-		add_settings_error(
-			'crp_network_settings',
-			'crp_network_settings_updated',
-			__( 'Network settings updated successfully.', 'contextual-related-posts' ),
-			'success'
-		);
 	}
 
 	/**
@@ -132,6 +94,8 @@ class Admin {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Contextual Related Posts Multisite Settings', 'contextual-related-posts' ); ?></h1>
+			<?php do_action( 'crp_network_admin_settings_page_content_header' ); ?>
+
 			<p><?php esc_html_e( 'This page allows you to configure the settings for Contextual Related Posts on your multisite network.', 'contextual-related-posts' ); ?></p>
 
 			<?php settings_errors(); ?>
@@ -139,52 +103,17 @@ class Admin {
 			<div id="poststuff">
 			<div id="post-body" class="metabox-holder columns-2">
 			<div id="post-body-content">
-				<form method="post" action="">
-					<?php wp_nonce_field( 'crp_network_settings', 'crp_network_settings_nonce' ); ?>
-					
-					<div class="postbox">
-						<h3 class="hndle"><?php esc_html_e( 'Performance Settings', 'contextual-related-posts' ); ?></h3>
-						<div class="inside">
-							<table class="form-table">
-								<tr>
-									<th scope="row"><?php esc_html_e( 'ECSI Settings', 'contextual-related-posts' ); ?></th>
-									<td>
-										<fieldset>
-											<legend class="screen-reader-text">
-												<?php esc_html_e( 'ECSI Settings', 'contextual-related-posts' ); ?>
-											</legend>
-											<p>
-												<label>
-													<input type="radio" name="crp_ecsi_setting" value="enable" />
-													<?php esc_html_e( 'Enable Enhanced Content Search Index on all sites', 'contextual-related-posts' ); ?>
-												</label>
-											</p>
-											<p>
-												<label>
-													<input type="radio" name="crp_ecsi_setting" value="disable" />
-													<?php esc_html_e( 'Disable Enhanced Content Search Index on all sites', 'contextual-related-posts' ); ?>
-												</label>
-											</p>
-											<p>
-												<label>
-													<input type="radio" name="crp_ecsi_setting" value="individual" checked="checked" />
-													<?php esc_html_e( 'Let each site control its own ECSI setting', 'contextual-related-posts' ); ?>
-												</label>
-											</p>
-											<p class="description">
-												<?php esc_html_e( 'Choose how to manage Enhanced Content Search Index (ECSI) across your network. Sites will need to reindex their content after enabling this option.', 'contextual-related-posts' ); ?>
-											</p>
-										</fieldset>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</div>
-
-					<p class="submit">
-						<input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Changes', 'contextual-related-posts' ); ?>" />
-					</p>
-				</form>
+				<?php
+					\WebberZone\Contextual_Related_Posts\Admin\Admin::pro_upgrade_banner(
+						false,
+						sprintf(
+							/* translators: 1: link to Network Plugins page, 2: link to account page */
+							__( 'If you are running Contextual Related Posts Pro and see the upgrade banner instead of the settings, you may need to activate your license. Go to the %1$s, locate Contextual Related Posts Pro, and activate your license from there. View your %2$s to check the status of your license after activation.', 'contextual-related-posts' ),
+							'<a href="' . esc_url( network_admin_url( 'plugins.php' ) ) . '" target="_blank">' . esc_html__( 'Network Plugins page', 'contextual-related-posts' ) . '</a>',
+							'<a href="' . esc_url( \WebberZone\Contextual_Related_Posts\crp_freemius()->get_account_url() ) . '" target="_blank">' . esc_html__( 'account page', 'contextual-related-posts' ) . '</a>'
+						)
+					);
+				?>
 
 				<?php
 				/**
@@ -222,16 +151,28 @@ class Admin {
 		$screen = get_current_screen();
 
 		if ( $this->parent_id === $screen->id || $this->parent_id === $hook ) {
+			$file_prefix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 			wp_enqueue_script( 'crp-admin-js' );
 			wp_enqueue_style( 'crp-admin-ui-css' );
 			wp_localize_script(
 				'crp-admin-js',
 				'crp_admin_data',
 				array(
-					'security'       => wp_create_nonce( 'crp-admin' ),
-					'clear_cache'    => __( 'Clear cache', 'contextual-related-posts' ),
-					'clearing_cache' => __( 'Clearing cache', 'contextual-related-posts' ),
+					'security' => wp_create_nonce( 'crp-admin' ),
+					'strings'  => array(
+						'clear_cache'    => __( 'Clear cache', 'contextual-related-posts' ),
+						'clearing_cache' => __( 'Clearing cache', 'contextual-related-posts' ),
+					),
 				)
+			);
+
+			wp_enqueue_script(
+				'crp-pro-admin',
+				WZ_CRP_PLUGIN_URL . "includes/pro/js/admin{$file_prefix}.js",
+				array(),
+				WZ_CRP_VERSION,
+				true
 			);
 		}
 	}

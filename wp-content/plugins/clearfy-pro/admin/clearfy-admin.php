@@ -1,15 +1,5 @@
 <?php
 
-/**
- * The admin-specific functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
- *
- * @since      0.9.0
- * @package    Clearfy
- * @author     WPShop.biz <support@wpshop.biz>
- */
 class Clearfy_Plugin_Admin {
     /**
      * Option name
@@ -24,13 +14,6 @@ class Clearfy_Plugin_Admin {
      * @var mixed|void
      */
     protected $options;
-
-    /**
-     * Api url
-     *
-     * @var string
-     */
-    protected $api_url;
 
     /**
      * Plugin path
@@ -109,20 +92,11 @@ class Clearfy_Plugin_Admin {
      * @since    0.9.5
      */
     public function enqueue_styles() {
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Plugin_Name_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Plugin_Name_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
         wp_enqueue_style( $this->plugin_options->plugin_name, plugin_dir_url(__FILE__) . 'css/clearfy-admin.css', array(), $this->plugin_options->version, 'all' );
         wp_enqueue_style( 'wp-color-picker' );
     }
+
+
     /**
      * Register the JavaScript for the admin area.
      *
@@ -131,14 +105,28 @@ class Clearfy_Plugin_Admin {
     public function enqueue_scripts() {
         // выводим только на странице плагина и на странице редактирования юзера
         if ( get_current_screen() && in_array( get_current_screen()->id, [ 'toplevel_page_clearfy', 'profile', 'user-edit' ] ) ) {
+            $local_avatar_size = (int) apply_filters( 'clearfy/local_avatars/size', 200 );
+            if ( $local_avatar_size < 1 ) {
+                $local_avatar_size = 200;
+            }
+            $code_editor_settings = wp_enqueue_code_editor( array( 'type' => 'text/html' ) );
+            if ( ! empty( $code_editor_settings ) ) {
+                wp_enqueue_script( 'wp-theme-plugin-editor' );
+                wp_enqueue_style( 'wp-codemirror' );
+            }
+
             $enqueue_script_deps = apply_filters( 'clearfy_enqueue_script_deps', array( 'jquery', 'wp-color-picker' ) );
             wp_enqueue_script( $this->plugin_options->plugin_name, plugin_dir_url( $this->plugin_options->plugin_path ) . 'assets/js/clearfy-admin.js', $enqueue_script_deps, $this->plugin_options->version, false );
             wp_localize_script( $this->plugin_options->plugin_name, 'clearfy_settings', [
                 'color_picker_enable' => apply_filters( 'clearfy_admin_color_picker_enable', true ),
+                'local_avatar_size' => $local_avatar_size,
+                'code_editor_settings' => $code_editor_settings,
                 'i18n' => [
                     'choose_avatar' => __( 'Choose avatar', $this->plugin_options->text_domain ),
                     'select' => __( 'Select', $this->plugin_options->text_domain ),
                     'crop' => __( 'Crop', $this->plugin_options->text_domain ),
+                    'redirect_cycle' => __( 'Cyclic redirect: this URL points to itself.', $this->plugin_options->text_domain ),
+                    'redirect_duplicate' => __( 'Duplicate redirect: this source URL is used more than once.', $this->plugin_options->text_domain ),
                 ],
             ] );
             wp_enqueue_media();
@@ -158,7 +146,6 @@ class Clearfy_Plugin_Admin {
         array_unshift( $links, $settings_link );
         return $links;
     }
-
 
     /**
      * Add plugin settings menu link
@@ -192,10 +179,39 @@ class Clearfy_Plugin_Admin {
      */
     public function register_clearfy_settings() {
         register_setting( 'clearfy_settings', $this->option_name, array( $this, 'sanitize_clearfy_options' ) );
-        register_setting( 'clearfy_license', 'clearfy_license_key' );
     }
 
     public function sanitize_clearfy_options( $options ) {
+
+        // indexnow sanitize // Key must consist of a-Z0-9 or '-'
+        if ( isset( $options['indexnow_key'] ) ) {
+            $options['indexnow_key'] = preg_replace( '/[^a-zA-Z0-9\-]/', '', $options['indexnow_key'] );
+        }
+        if ( isset( $options['indexnow_post_types'] ) && is_array( $options['indexnow_post_types'] ) ) {
+            $options['indexnow_post_types'] = array_values( array_unique( array_filter( array_map( 'sanitize_key', $options['indexnow_post_types'] ) ) ) );
+        } else {
+            $options['indexnow_post_types'] = [];
+        }
+        if ( isset( $options['hide_external_links_post_types'] ) && is_array( $options['hide_external_links_post_types'] ) ) {
+            $options['hide_external_links_post_types'] = array_values( array_unique( array_filter( array_map( 'sanitize_key', $options['hide_external_links_post_types'] ) ) ) );
+        } else {
+            $options['hide_external_links_post_types'] = [];
+        }
+        if ( isset( $options['hide_external_links_excluded_post_ids'] ) ) {
+            $options['hide_external_links_excluded_post_ids'] = preg_replace( '/[^0-9,\s]/', '', (string) $options['hide_external_links_excluded_post_ids'] );
+        }
+        if ( isset( $options['pseudo_links_class'] ) ) {
+            $options['pseudo_links_class'] = sanitize_html_class( (string) $options['pseudo_links_class'] );
+        }
+        foreach ( [ 'pseudo_links_color', 'pseudo_links_hover_color' ] as $color_key ) {
+            if ( isset( $options[ $color_key ] ) ) {
+                $color = (string) $options[ $color_key ];
+                if ( ! preg_match( '/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $color ) ) {
+                    unset( $options[ $color_key ] );
+                }
+            }
+        }
+
         return $options;
     }
 
@@ -203,59 +219,155 @@ class Clearfy_Plugin_Admin {
 
 
     public function activate_license() {
-        if( isset( $_POST['clearfy_license_key'] ) && ! empty( $_POST['clearfy_license_key'] ) ) {
-            /**
-             * Remove updater cache in DB
-             */
-            delete_option(Clearfy_Plugin::CHECK_UPDATE_OPTION);
+        if ( empty( $_POST['clearfy_license_submit'] ) ) {
+            return false;
+        }
 
-            // retrieve the license from the database
-            $license = trim( $_POST[ 'clearfy_license_key'] );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return false;
+        }
 
-            // data to send in our API request
+        if ( empty( $_POST['clearfy_activate_license_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['clearfy_activate_license_nonce'] ) ), 'clearfy_activate_license' ) ) {
+            update_option( 'license_error', 'Ошибка проверки запроса. Обновите страницу и попробуйте снова.' );
+            return false;
+        }
+
+        $license_input = '';
+        if ( ! empty( $_POST['clearfy_license_input'] ) ) {
+            $license_input = trim( (string) wp_unslash( $_POST['clearfy_license_input'] ) );
+        } elseif ( ! empty( $_POST['clearfy_license_key'] ) ) {
+            // Legacy field name fallback.
+            $license_input = trim( (string) wp_unslash( $_POST['clearfy_license_key'] ) );
+        }
+
+        if ( $license_input !== '' ) {
+
+            delete_option( Clearfy_Plugin::CHECK_UPDATE_OPTION );
+
+            $license = $license_input;
+
             $api_params = array(
                 'action'    => 'activate_license',
-                'license' 	=> $license,
-                'item_name' => urlencode( $this->plugin_options->plugin_name ), // the name of our product in EDD,
+                'license'   => $license,
+                'item_name' => $this->plugin_options->plugin_name, // НЕ urlencode — на сервере ты сам sanitize’ишь
                 'version'   => $this->plugin_options->version,
+                'version_wp'  => get_bloginfo( 'version' ),
+                'version_php' => PHP_VERSION,
                 'type'      => 'plugin',
                 'ip'        => $this->get_ip(),
-			    'hash'      => md5( get_option( 'admin_email' ) ),
-			    'url'       => home_url(),
-		    );
+                'hash'      => md5( (string) get_option( 'admin_email' ) ),
+                'url'       => home_url(),
+                'locale'    => get_locale(), // <-- ключевой параметр для нового JSON
+            );
 
-            // Call the custom API.
-            $response = wp_remote_post( $this->plugin_options->api_url, array(
-                'timeout'   => 15,
-                'sslverify' => false,
-                'body'      => $api_params
+            $result = $this->request_api( $api_params );
+
+            if ( empty( $result['ok'] ) ) {
+                /** @var WP_Error $err */
+                $err = $result['error'];
+                update_option( 'license_error', 'Ошибка запроса: ' . $err->get_error_message() );
+                $this->redirect_after_license_submit();
+            }
+
+            $license_data = trim( (string) $result['body'] );
+
+            // 1) Новый формат: JSON
+            $json = json_decode( $license_data, true );
+
+            if ( is_array( $json ) && isset( $json['success'] ) ) {
+                if ( ! empty( $json['success'] ) ) {
+                    $token = trim( (string) ( $json['token'] ?? '' ) );
+                    if ( $token === '' ) {
+                        update_option( 'license_error', 'License token is empty in API response.' );
+                        $this->redirect_after_license_submit();
+                    }
+
+                    update_option( Clearfy_Plugin::LICENSE_TOKEN_OPTION, $token );
+                    update_option( 'license_verify', time() + ( WEEK_IN_SECONDS * 4 ) );
+                    delete_option( 'license_error' );
+                    $this->redirect_after_license_submit();
+                }
+
+                // Ошибка в новом формате
+                $message = $json['message'] ?? ( $json['code'] ?? 'Unknown error' );
+                update_option( 'license_error', (string) $message );
+                $this->redirect_after_license_submit();
+            }
+
+            // 2) Старый формат: начинается с "ok"
+            if ( mb_substr( $license_data, 0, 2 ) === 'ok' ) {
+                update_option( 'license_verify', time() + ( WEEK_IN_SECONDS * 4 ) );
+                delete_option( 'license_error' );
+                $this->redirect_after_license_submit();
+            }
+
+            // 3) Непонятный ответ
+            update_option( 'license_error', $license_data ?: 'Unknown response from license server.' );
+            $this->redirect_after_license_submit();
+        }
+
+        return false;
+    }
+
+    private function redirect_after_license_submit() {
+        $redirect_url = add_query_arg(
+            array(
+                'page' => 'clearfy',
+            ),
+            admin_url( 'options-general.php' )
+        );
+
+        wp_safe_redirect( $redirect_url );
+        exit;
+    }
+
+    private function request_api( array $api_params ) {
+        $urls = array();
+
+        // Source of truth for license API endpoints.
+        if ( ! empty( $this->plugin_options->api_urls ) && is_array( $this->plugin_options->api_urls ) ) {
+            $urls = $this->plugin_options->api_urls;
+        }
+
+        // если совсем пусто — подстрахуемся
+        if ( empty( $urls ) ) {
+            $urls = array( 'https://wpshop.ru/api/' );
+        }
+
+        $last_error = null;
+
+        foreach ( $urls as $url ) {
+            $response = wp_remote_post( $url, array(
+                'timeout'     => 20,      // 15 часто ок, но лучше 20 под CF/хостинги
+                'sslverify'   => true,    // лучше true; иначе вы ловите странные сетевые баги и риски
+                'redirection' => 3,
+                'headers'     => array(
+                    'Accept' => 'application/json',
+                ),
+                'body'        => $api_params,
             ) );
-            // make sure the response came back okay
-			if ( is_wp_error( $response ) ) {
-                $api_url = str_replace("https", "http", $this->plugin_options->api_url);
-
-				$response = wp_remote_post( $api_url, array(
-					'timeout'   => 15,
-					'sslverify' => false,
-					'body'      => $api_params
-				) );
-			}
 
             if ( is_wp_error( $response ) ) {
-                update_option( 'license_error', 'Ошибка запроса: ' . $response->get_error_message() );
-                return false;
+                $last_error = $response;
+                continue;
             }
 
-            // decode the license data
-            $license_data = wp_remote_retrieve_body( $response );
-            if (mb_substr($license_data, 0, 2) == 'ok') {
-                update_option( 'license_verify', time() + (WEEK_IN_SECONDS * 4) );
-                delete_option( 'license_error' );
-            } else {
-                update_option( 'license_error', $license_data );
-            }
+            $code = (int) wp_remote_retrieve_response_code( $response );
+            $body = (string) wp_remote_retrieve_body( $response );
 
-	    }
+            // Даже если код не 200, иногда API шлёт полезный JSON — вернём как есть
+            return array(
+                'ok'   => true,
+                'code' => $code,
+                'body' => $body,
+                'url'  => $url,
+            );
+        }
+
+        return array(
+            'ok'    => false,
+            'error' => $last_error,
+        );
     }
 
 
@@ -266,14 +378,15 @@ class Clearfy_Plugin_Admin {
      */
     public function admin_page_display() {
         $options = get_option($this->option_name);
-        $license_key = get_option('clearfy_license_key');
+        $license_token = get_option(Clearfy_Plugin::LICENSE_TOKEN_OPTION);
+        $license_key = get_option(Clearfy_Plugin::LICENSE_KEY_OPTION);
         $license_verify = get_option('license_verify');
         $license_error = get_option('license_error');
 
         // 27600
         ?>
 
-        <div class="wrap wpshop clearfy js-clearfy">
+        <div class="wrap wpshop clearfy clearfy-settings-page js-clearfy">
 
             <h1>Clearfy Pro</h1>
 
@@ -281,29 +394,29 @@ class Clearfy_Plugin_Admin {
                 <img src="https://cdn.wpshop.ru/plugins/clearfy/logo-mini.png" alt="">
             </div>
 
-            <?php settings_errors(); ?>
-
-
-            <?php if ( empty($license_key) || empty($license_verify) || !empty($license_error) ): ?>
-
-            <form method="post" action="options.php">
-                <?php settings_fields( 'clearfy_license' ); ?>
+            <?php if ( ( empty( $license_token ) && empty( $license_key ) ) || empty( $license_verify ) || ! empty( $license_error ) ): ?>
+            <div class="clearfy-settings-box">
+            <form method="post">
+                <?php wp_nonce_field( 'clearfy_activate_license', 'clearfy_activate_license_nonce' ); ?>
+                <input type="hidden" name="clearfy_license_submit" value="1">
                 <table class="form-table">
 
                     <tr>
                         <th scope="row"><label for="clearfy_license_key">Лицензионный ключ</label></th>
                         <td>
-                            <input name="clearfy_license_key" id="clearfy_license_key" type="text" class="regular-text" value="<?php echo $license_key ?>">
+                            <input name="clearfy_license_input" id="clearfy_license_key" type="text" class="regular-text" value="">
                             <?php if (!empty($license_error)): ?>
                                 <p class="description danger"><?php echo $license_error ?></p>
                             <?php endif; ?>
+
+                            <p><?php echo sprintf( __( 'To activate the plugin, enter the license key that you receive after payment in the letter or in <a href="%s" target="_blank" rel="noopener">personal account</a>.', $this->plugin_options->text_domain ), 'https://wpshop.ru/dashboard' ); ?></p>
                         </td>
                     </tr>
                 </table>
 
                 <?php submit_button(); ?>
             </form>
-
+            </div>
             <?php else: ?>
 
 
@@ -321,8 +434,8 @@ class Clearfy_Plugin_Admin {
                 <p><?php _e( 'For default we recommend enable only recommended settings.<br>If you are expert - you can configure manually.', $this->plugin_options->text_domain ) ?></p>
                 <p><strong><?php _e( 'Don\'t forget to save settings', $this->plugin_options->text_domain ) ?></strong></p>
 
-
-                <div class="wpshop-col-left">
+                <div class="clearfy-settings-cols">
+                <div class="clearfy-settings-col clearfy-settings-col--left">
 
                     <form method="post" action="options.php" class="js-clearfy-form">
 
@@ -333,7 +446,7 @@ class Clearfy_Plugin_Admin {
                             <a class="wpshop-tab" id="tab-clearfy_clear" href="#clearfy_clear"><?php _e( 'Code', $this->plugin_options->text_domain ) ?></a>
                             <a class="wpshop-tab" id="tab-clearfy_seo" href="#clearfy_seo"><?php _e( 'SEO', $this->plugin_options->text_domain ) ?></a>
                             <a class="wpshop-tab" id="tab-clearfy_double" href="#clearfy_double"><?php _e( 'Duplicate', $this->plugin_options->text_domain ) ?></a>
-                            <a class="wpshop-tab" id="tab-clearfy_security" href="#clearfy_security"><?php _e( 'Defence', $this->plugin_options->text_domain ) ?></a>
+                            <a class="wpshop-tab" id="tab-clearfy_security" href="#clearfy_security"><?php _e( 'Security', $this->plugin_options->text_domain ) ?></a>
                             <a class="wpshop-tab" id="tab-clearfy_modules" href="#clearfy_modules"><?php _e( 'Modules', $this->plugin_options->text_domain ) ?></a>
                             <a class="wpshop-tab" id="tab-clearfy_more" href="#clearfy_more"><?php _e( 'Additionally', $this->plugin_options->text_domain ) ?></a>
                             <a class="wpshop-tab" id="tab-clearfy_redirect" href="#clearfy_redirect"><?php _e( 'Redirect', $this->plugin_options->text_domain ) ?></a>
@@ -369,7 +482,7 @@ class Clearfy_Plugin_Admin {
                                     <div class="wpshop-widget__icon">
                                         <img src="<?php echo plugins_url( 'admin/images/widget-video.svg', $this->plugin_options->plugin_path ) ?>" alt="">
                                     </div>
-                                    <div class="wpshop-widget__header"><a href="https://www.youtube.com/watch?v=EenYGrdOQ6Y" target="_blank" rel="noopener"><?php _e( 'Video tutorials', $this->plugin_options->text_domain ) ?></a></div>
+                                    <div class="wpshop-widget__header"><a href="https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/" target="_blank" rel="noopener"><?php _e( 'Video tutorials', $this->plugin_options->text_domain ) ?></a></div>
                                     <div class="wpshop-widget__description"><?php _e( 'Video tutorials on the plugin and its functions. Subscribe to the channel so you don\'t miss it.', $this->plugin_options->text_domain ) ?></div>
 
                                 </div><!--.wpshop-widget-->
@@ -582,8 +695,10 @@ class Clearfy_Plugin_Admin {
                                 </label>
                                 <div class="option-field-body">
                                     <?php $this->display_checkbox('insert_code_in_head') ?>
-                                    <div class="code-in-head">
-                                        <?php $this->display_textarea( 'code_in_head' ) ?>
+                                    <div style="border: 2px solid #c2c2c2; border-radius: 5px; margin-bottom: 1rem;">
+                                        <div class="code-in-head">
+                                            <?php $this->display_textarea( 'code_in_head' ) ?>
+                                        </div>
                                     </div>
                                     <p class="description"><?php _e( 'This usually adds verification codes from the webmaster, retarget code or JS code, which should be executed first.', $this->plugin_options->text_domain ) ?></p>
                                     <p class="description"><strong>Clearfy Pro:</strong> <?php printf( __( 'Insert the code before the closing %s', $this->plugin_options->text_domain ), '&lt;head&gt;' ) ?></p>
@@ -598,8 +713,10 @@ class Clearfy_Plugin_Admin {
                                 </label>
                                 <div class="option-field-body">
                                     <?php $this->display_checkbox('insert_code_in_body') ?>
-                                    <div class="code-in-body">
-                                        <?php $this->display_textarea( 'code_in_body' ) ?>
+                                    <div style="border: 2px solid #c2c2c2; border-radius: 5px; margin-bottom: 1rem;">
+                                        <div class="code-in-body">
+                                            <?php $this->display_textarea( 'code_in_body' ) ?>
+                                        </div>
                                     </div>
                                     <p class="description"><?php _e( 'This usually adds counters, analytics and other JS scripts.', $this->plugin_options->text_domain ) ?></p>
                                     <p class="description"><strong>Clearfy Pro:</strong> <?php printf( __( 'Insert the code before the closing %s', $this->plugin_options->text_domain ), '&lt;/body&gt;' ) ?></p>
@@ -696,33 +813,6 @@ class Clearfy_Plugin_Admin {
                             </div><!--.option-field-->
 
                             <div class="option-field">
-                                <label class="option-field-label" for="comment_text_convert_links_pseudo">
-                                    <?php _e( 'Hide external links in comments by JS', $this->plugin_options->text_domain ) ?>
-                                    <?php $this->the_help_icon( 'hide-comment-links' ) ?>
-                                    <span class="clearfy-recommend"><?php _e( 'Recommended', $this->plugin_options->text_domain ) ?></span>
-                                </label>
-                                <div class="option-field-body">
-                                    <?php $this->display_checkbox('comment_text_convert_links_pseudo') ?>
-                                    <p class="description"><?php _e( 'A lot of external links in comments reduce page rank and positions in search engines like Google.', $this->plugin_options->text_domain ) ?></p>
-                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Replaces only external links in comments by JS and it looks like a regular link.', $this->plugin_options->text_domain ) ?></p>
-                                </div>
-                            </div><!--.option-field-->
-
-                            <div class="option-field">
-                                <label class="option-field-label" for="pseudo_comment_author_link">
-                                    <?php _e( 'Hide authors external links in comments by JS', $this->plugin_options->text_domain ) ?> *
-                                    <?php $this->the_help_icon( 'hide-author-link' ) ?>
-                                    <span class="clearfy-recommend"><?php _e( 'Recommended', $this->plugin_options->text_domain ) ?></span>
-                                </label>
-                                <div class="option-field-body">
-                                    <?php $this->display_checkbox('pseudo_comment_author_link') ?>
-                                    <p class="description"><?php _e( 'Up to 90&#37 comments may be left on your site for external link. Even nofollow can\'t stop reduce page rank.', $this->plugin_options->text_domain ) ?></p>
-                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Replaces authors external links in comments by JS, and it looks like a regular link.', $this->plugin_options->text_domain ) ?></p>
-                                    <p class="description danger"><small>* <?php _e( 'Perhaps it will not work with your theme', $this->plugin_options->text_domain ) ?></small></p>
-                                </div>
-                            </div><!--.option-field-->
-
-                            <div class="option-field">
                                 <label class="option-field-label" for="noindex_pagination">
                                     <?php _e( 'Noindex for pagination', $this->plugin_options->text_domain ) ?>
                                     <?php $this->the_help_icon( 'noindex-pagination' ) ?>
@@ -753,6 +843,7 @@ class Clearfy_Plugin_Admin {
                                     <p class="robots-text">
                                         <?php $this->display_textarea_robots('robots_txt_text') ?>
                                     </p>
+                                    <p class="description"><?php _e( 'If you want to reset robots.txt to its original position, as with a new Clearfy Pro installation, clear the field above and save your settings.', $this->plugin_options->text_domain ) ?></p>
                                 </div>
                             </div><!--.option-field-->
 
@@ -766,6 +857,134 @@ class Clearfy_Plugin_Admin {
                                     <p class="description"><span class="dashicons dashicons-warning wpshop-warning-color"></span> <?php _e('Warning! Before you activate it, make sure that your site opens via https', $this->plugin_options->text_domain); ?></p>
                                     <p class="description"><?php _e( 'If your site uses an SSL certificate, check this box to enable redirection from http to https', $this->plugin_options->text_domain ) ?></p>
                                     <p class="description"><strong>Clearfy Pro:</strong> <?php _e('It redirects from http to https.', $this->plugin_options->text_domain); ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field-header">
+                                <?php _e( 'Hide external links', $this->plugin_options->text_domain ) ?>
+                            </div>
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="hide_external_links_content">
+                                    <?php _e( 'Hide in content', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'hide-external-links-content' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('hide_external_links_content') ?>
+                                    <p class="description"><?php _e( 'Converts external links in selected post types into pseudo links.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label">
+                                    <?php _e( 'Post types', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php
+                                    $external_links_post_types = ( ! empty( $options['hide_external_links_post_types'] ) && is_array( $options['hide_external_links_post_types'] ) )
+                                        ? $options['hide_external_links_post_types']
+                                        : [ 'post' ];
+                                    $post_types = get_post_types( [ 'public' => true ], 'objects' );
+                                    $excluded_post_types = [ 'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'oembed_cache', 'user_request', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'wp_global_styles' ];
+                                    foreach ( $post_types as $post_type_key => $post_type_obj ) {
+                                        if ( in_array( $post_type_key, $excluded_post_types, true ) ) {
+                                            continue;
+                                        }
+                                        echo '<label>';
+                                        echo '<input type="checkbox" name="clearfy_option[hide_external_links_post_types][]" value="' . esc_attr( $post_type_key ) . '" ' . checked( in_array( $post_type_key, $external_links_post_types, true ), true, false ) . '>';
+                                        echo ' ' . esc_html( $post_type_obj->labels->name ) . '</label><br>';
+                                    }
+                                    ?>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="comment_text_convert_links_pseudo">
+                                    <?php _e( 'Hide in comments text', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'hide-comment-links' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('comment_text_convert_links_pseudo') ?>
+                                    <p class="description"><?php _e( 'Converts external links in comment text into pseudo links.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_comment_author_link">
+                                    <?php _e( 'Hide comment author links', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'hide-author-link' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('pseudo_comment_author_link') ?>
+                                    <p class="description"><?php _e( 'Converts comment author website links into pseudo links.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="hide_external_links_excluded_urls">
+                                    <?php _e( 'Exclude links', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_textarea( 'hide_external_links_excluded_urls', [ 'rows' => 5 ] ) ?>
+                                    <p class="description"><?php _e( 'One pattern per line. If a URL contains this part, it will not be converted. You can specify a full URL or only part of an address (for example: example.com, /go/, partner-site).', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="hide_external_links_excluded_post_ids">
+                                    <?php _e( 'Disable by post IDs', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_input_text( 'hide_external_links_excluded_post_ids' ) ?>
+                                    <p class="description"><?php _e( 'Enter post IDs separated by commas. For these posts/pages, links will not be converted in content.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field-header"><?php _e( 'Pseudo links settings', $this->plugin_options->text_domain ) ?></div>
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_links_class">
+                                    <?php _e( 'Link class', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_input_text( 'pseudo_links_class', [ 'default' => 'pseudo-clearfy-link' ] ) ?>
+                                    <p class="description"><?php _e( 'You can set your own unique class. Avoid overly generic names like "link".', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_links_color">
+                                    <?php _e( 'Link color', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_color( 'pseudo_links_color', [ 'default' => '#0058cf' ] ) ?>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_links_underline">
+                                    <?php _e( 'Underline', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('pseudo_links_underline') ?>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_links_hover_color">
+                                    <?php _e( 'Hover color', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_color( 'pseudo_links_hover_color', [ 'default' => '#2900cf' ] ) ?>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="pseudo_links_hover_underline">
+                                    <?php _e( 'Underline on hover', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('pseudo_links_hover_underline') ?>
                                 </div>
                             </div><!--.option-field-->
 
@@ -1015,8 +1234,58 @@ class Clearfy_Plugin_Admin {
                                 <div class="option-field-body">
                                     <?php $this->display_checkbox('cloud_protection') ?>
                                     <p class="description"><?php _e('All websites are constantly under attack by bots looking for vulnerabilities. These include attempts to find security holes, authorization attempts, opportunities to upload viruses to the site, find backups, logs, and so on. To avoid this, we decided to launch a cloud-based protection service.', 'clearfy-pro'); ?></p>
-                                    <p class="description"><?php _e( 'Now the service is free, but as the consumption of resources grows and Clearfy Cloud+ functionality improves, a small fee will be introduced.', 'clearfy-pro' ); ?></p>
-                                    <p class="description"><strong style="color: #165ff4;">Clearfy Cloud+:</strong> <?php _e( 'Includes cloud-based site protection in beta mode. Collects and analyzes potentially dangerous requests, gives recommendations.', 'clearfy-pro' ) ?></p>
+                                    <p class="description"><?php printf( __( 'Сейчас сервис бесплатный, но в следующем обновлении будет работать в единой подписке за <a href="%s" target="_blank" rel="noopener">лимиты</a>.', 'clearfy-pro' ), 'https://wpshop.ru/limits' ); ?></p>
+                                    <p class="description"><strong style="color: #165ff4;">Clearfy Cloud+:</strong> <?php _e( 'Включает облачную защиту сайта в бета-режиме. Собирает, анализирует и блокирует опасные запросы и ботов, ищущих уязвимости.', 'clearfy-pro' ) ?></p>
+                                    <?php
+                                    $cloud = new \WPShop\ClearfyPro\ClearfyCloud();
+                                    $last_sync = $cloud->get_last_feed_sync();
+                                    $cloud_ips = $cloud->get_cloud_ips_for_admin( 300 );
+                                    $cloud_stats = $cloud->get_stats_summary_for_admin();
+                                    $cloud_ips_count = is_array( $cloud_ips ) ? count( $cloud_ips ) : 0;
+                                    ?>
+                                    <p class="description">
+                                        <strong><?php _e( 'Last bad IP feed update:', $this->plugin_options->text_domain ) ?></strong>
+                                        <?php
+                                        if ( $last_sync > 0 ) {
+                                            echo esc_html( wp_date( 'd.m.Y H:i', $last_sync ) );
+                                        } else {
+                                            _e( 'Never', $this->plugin_options->text_domain );
+                                        }
+                                        ?>
+                                    </p>
+                                    <p class="description">
+                                        <strong><?php _e( 'Bad IPs in current list:', $this->plugin_options->text_domain ) ?></strong>
+                                        <?php echo (int) $cloud_ips_count; ?>
+                                    </p>
+                                    <div style="display:grid; grid-template-columns:repeat(3,minmax(180px,1fr)); gap:10px; margin:10px 0 12px;">
+                                        <div style="border:1px solid #dcdcde; border-radius:8px; padding:10px 12px; background:#fff;">
+                                            <div style="font-size:12px; color:#646970; margin-bottom:6px;"><?php _e( 'Last 24 hours', $this->plugin_options->text_domain ) ?></div>
+                                            <div style="font-size:13px; line-height:1.5;">
+                                                <div><?php _e( 'Blocked:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['24h']['blocked_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha shown:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['24h']['captcha_shown_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha passed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['24h']['captcha_passed_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha failed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['24h']['captcha_failed_count']; ?></strong></div>
+                                            </div>
+                                        </div>
+                                        <div style="border:1px solid #dcdcde; border-radius:8px; padding:10px 12px; background:#fff;">
+                                            <div style="font-size:12px; color:#646970; margin-bottom:6px;"><?php _e( 'Last 30 days', $this->plugin_options->text_domain ) ?></div>
+                                            <div style="font-size:13px; line-height:1.5;">
+                                                <div><?php _e( 'Blocked:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['30d']['blocked_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha shown:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['30d']['captcha_shown_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha passed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['30d']['captcha_passed_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha failed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['30d']['captcha_failed_count']; ?></strong></div>
+                                            </div>
+                                        </div>
+                                        <div style="border:1px solid #dcdcde; border-radius:8px; padding:10px 12px; background:#fff;">
+                                            <div style="font-size:12px; color:#646970; margin-bottom:6px;"><?php _e( 'All time', $this->plugin_options->text_domain ) ?></div>
+                                            <div style="font-size:13px; line-height:1.5;">
+                                                <div><?php _e( 'Blocked:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['all']['blocked_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha shown:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['all']['captcha_shown_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha passed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['all']['captcha_passed_count']; ?></strong></div>
+                                                <div><?php _e( 'Captcha failed:', $this->plugin_options->text_domain ) ?> <strong><?php echo (int) $cloud_stats['all']['captcha_failed_count']; ?></strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div><!--.option-field-->
 
@@ -1363,7 +1632,44 @@ class Clearfy_Plugin_Admin {
 
 
 
+                            <div class="option-field">
+                                <label class="option-field-label" for="remove_url_from_comment_form">
+                                    <?php _e( 'Remove the "Site" field in the comment form', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'disable-site-field' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('remove_url_from_comment_form') ?>
+                                    <p class="description"><?php _e( 'Tired of spam comments? Visitors leaving "empty" comments for a link to your site?', $this->plugin_options->text_domain ) ?></p>
+                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Removes the "Site" field from the comment form.', $this->plugin_options->text_domain ) ?></p>
+                                    <p class="description danger"><small><?php _e( '* Works with the standard commenting form, if your topic has a manually prescribed form - most likely will not work!', $this->plugin_options->text_domain ) ?></small></p>
+                                </div>
+                            </div><!--.option-field-->
 
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="disable_comments_email_field">
+                                    <?php _e( 'Hide email field', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'disable-comments-email-field' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('disable_comments_email_field') ?>
+                                    <p class="description"><?php _e( 'Removes the email field from the comment form.', $this->plugin_options->text_domain ) ?></p>
+                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'This option hides the email field completely and disables its validation.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="disable_comments_save_ip">
+                                    <?php _e( 'Disable IP address logging', $this->plugin_options->text_domain ) ?>
+                                    <?php $this->the_help_icon( 'disable-comments-save-ip' ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('disable_comments_save_ip') ?>
+                                    <p class="description"><?php _e( 'Prevents WordPress from saving commenters’ IP addresses to the database. This helps protect users’ personal data and supports GDPR compliance.', $this->plugin_options->text_domain ) ?></p>
+                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Also removes IP logging from custom forms and plugins.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div>
                             <div class="option-field-header">
                                 <?php _e( 'Content protection', $this->plugin_options->text_domain ) ?>
                                 <?php $this->the_help_icon( 'content-protection' ) ?>
@@ -1493,6 +1799,43 @@ class Clearfy_Plugin_Admin {
                                 </label>
                                 <div class="option-field-body">
 			                        <?php $this->display_color( 'cookie_message_button_background', array( 'default' => $this->plugin_options->get_default_option('cookie_message_button_background') ) ) ?>
+                                </div>
+                            </div><!--.option-field-->
+
+
+                            <div class="option-field-header">
+                                <?php _e( 'Site under maintenance', $this->plugin_options->text_domain ) ?>
+                                <?php $this->the_help_icon( 'maintenance-enable' ) ?>
+                            </div>
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="maintenance_mode_enable">
+                                    <?php _e( 'Enable maintenance mode', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('maintenance_mode_enable') ?>
+                                    <p class="description"><?php _e( 'Shows a temporary "Site under maintenance" page only on the frontend. The admin area is not affected. Users with the Editor access level can still view the site. The page returns HTTP status 503 (Service Unavailable), which tells search engines and monitoring systems that this is a temporary state.', $this->plugin_options->text_domain ) ?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="maintenance_mode_allow_indexing">
+                                    <?php _e( 'Allow indexing by robots', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php $this->display_checkbox('maintenance_mode_allow_indexing') ?>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="maintenance_mode_html">
+                                    <?php _e( 'HTML content', $this->plugin_options->text_domain ) ?>
+                                </label>
+                                <div class="option-field-body">
+                                    <div style="border: 2px solid #c2c2c2; border-radius: 5px; margin-bottom: 1rem;">
+                                        <?php $this->display_textarea( 'maintenance_mode_html', array( 'rows' => 10, 'default' => $this->plugin_options->get_default_option( 'maintenance_mode_html' ) ) ) ?>
+                                    </div>
+                                    <p class="description"><?php _e( 'You can use your own HTML. By default, simple localized text with minimal style is used.', $this->plugin_options->text_domain ) ?></p>
                                 </div>
                             </div><!--.option-field-->
 
@@ -1635,19 +1978,6 @@ class Clearfy_Plugin_Admin {
                                     <?php $this->display_checkbox('disable_feed') ?>
                                     <p class="description"><?php _e( 'The main hole from which they will parse your content is RSS feeds. For article sites, business card sites, corporate sites - disable it.', $this->plugin_options->text_domain ) ?></p>
                                     <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Removes the link to the RSS feed from the &lt;head&gt; section, closes it and puts a redirect from all RSS feeds.', $this->plugin_options->text_domain ) ?></p>
-                                </div>
-                            </div><!--.option-field-->
-
-                            <div class="option-field">
-                                <label class="option-field-label" for="remove_url_from_comment_form">
-                                    <?php _e( 'Remove the "Site" field in the comment form', $this->plugin_options->text_domain ) ?>
-                                    <?php $this->the_help_icon( 'disable-site-field' ) ?>
-                                </label>
-                                <div class="option-field-body">
-                                    <?php $this->display_checkbox('remove_url_from_comment_form') ?>
-                                    <p class="description"><?php _e( 'Tired of spam comments? Visitors leaving "empty" comments for a link to your site?', $this->plugin_options->text_domain ) ?></p>
-                                    <p class="description"><strong>Clearfy Pro:</strong> <?php _e( 'Removes the "Site" field from the comment form.', $this->plugin_options->text_domain ) ?></p>
-                                    <p class="description danger"><small><?php _e( '* Works with the standard commenting form, if your topic has a manually prescribed form - most likely will not work!', $this->plugin_options->text_domain ) ?></small></p>
                                 </div>
                             </div><!--.option-field-->
 
@@ -1849,7 +2179,9 @@ class Clearfy_Plugin_Admin {
                                             ?>
                                             <tr>
                                                 <td><?php echo date( 'd.m.Y H:i', (int) $log['date'] ) ?></td>
-                                                <td><?php echo $log['message'] ?></td>
+                                                <td>
+                                                    <?php echo $log['message'] ?>
+                                                </td>
                                                 <td><?php echo ( ! empty( $referer_short ) ) ? '<a href="' . esc_attr( $referer ) . '" target="_blank" rel="noopener noreferrer">' . $referer_short . '</span>' : '' ?></td>
                                                 <td><?php echo $log['ip'] ?></td>
                                             </tr>
@@ -1877,6 +2209,32 @@ class Clearfy_Plugin_Admin {
                                 <div class="option-field-body">
                                     <?php $this->display_checkbox('indexnow_enable') ?>
                                     <p class="description"><?php _e( 'Automatically notify search engines of changes to the site.', $this->plugin_options->text_domain )?></p>
+                                </div>
+                            </div><!--.option-field-->
+
+                            <div class="option-field">
+                                <label class="option-field-label" for="indexnow_post_types">
+                                    <?php _e( 'Post types', $this->plugin_options->text_domain )?>
+                                </label>
+                                <div class="option-field-body">
+                                    <?php
+                                    $indexnow_available_post_types = $class_indexnow->get_available_post_types();
+                                    $indexnow_selected_post_types = $class_indexnow->get_selected_post_types();
+                                    ?>
+
+                                    <?php foreach ( $indexnow_available_post_types as $indexnow_post_type ): ?>
+                                        <?php
+                                        $indexnow_post_type_name = $indexnow_post_type->name;
+                                        $indexnow_post_type_label = ! empty( $indexnow_post_type->labels->name ) ? $indexnow_post_type->labels->name : $indexnow_post_type_name;
+                                        $indexnow_checked = in_array( $indexnow_post_type_name, $indexnow_selected_post_types, true ) ? ' checked' : '';
+                                        ?>
+                                        <label>
+                                            <input type="checkbox" name="<?php echo esc_attr( $this->option_name ) ?>[indexnow_post_types][]" value="<?php echo esc_attr( $indexnow_post_type_name ) ?>"<?php echo $indexnow_checked ?>>
+                                            <?php echo esc_html( $indexnow_post_type_label ) ?>
+                                        </label><br>
+                                    <?php endforeach; ?>
+
+                                    <p class="description"><?php _e( 'Select which post types should trigger IndexNow when updated.', $this->plugin_options->text_domain )?></p>
                                 </div>
                             </div><!--.option-field-->
 
@@ -1948,18 +2306,22 @@ class Clearfy_Plugin_Admin {
 
                         </div>
 
-                        <?php submit_button(); ?>
+                        <div class="clearfy-settings-save-container js-clearfy-settings-save-container">
+                            <?php submit_button(); ?>
+                        </div>
 
                     </form>
 
                 </div><!--.wpshop-col-left-->
 
 
-                <div class="wpshop-col-right">
+                <div class="clearfy-settings-col clearfy-settings-col--right">
 
                     <?php $this->display_widgets(); ?>
 
                 </div>
+
+                </div><!--.clearfy-settings-cols-->
 
             </div>
 
@@ -1980,7 +2342,92 @@ class Clearfy_Plugin_Admin {
             <?php _e( 'Plugin version', $this->plugin_options->text_domain ) ?>: <?php echo $this->plugin_options->version; ?>
         </div>
 
-        <div class="wpshop-widget wpshop-widget-news js-wpshop-news"></div>
+        <div class="wpshop-widget wpshop-widget-news">
+            <div class="js-wpshop-news-block"></div>
+            <script>
+                const container = document.querySelector('.js-wpshop-news-block');
+
+                if (container) {
+                    const widgetProduct = 'clearfy_pro';
+                    const widgetLocale = '<?php echo get_locale() ?>';
+
+                    const cacheKey = 'wpshop_news_widget_' + widgetLocale + '_cache_v1';
+                    const cacheTtl = 60 * 60 * 1000; // 1 час
+                    const endpoint = `https://wpshop.tech/tools/product-widget/?${new URLSearchParams({
+                        product: widgetProduct,
+                        locale: widgetLocale,
+                    }).toString()}`;
+
+                    const renderNews = (html) => {
+                        if (!html) {
+                            return;
+                        }
+                        const newsBox = document.createElement('div');
+                        newsBox.className = 'wpshop-settings-widget';
+                        newsBox.innerHTML = html;
+                        container.innerHTML = '';
+                        container.appendChild(newsBox);
+                    };
+
+                    const readCache = () => {
+                        try {
+                            const raw = window.localStorage.getItem(cacheKey);
+                            if (!raw) {
+                                return null;
+                            }
+                            const parsed = JSON.parse(raw);
+                            if (!parsed || typeof parsed !== 'object') {
+                                return null;
+                            }
+                            if (!parsed.html || !parsed.cachedAt) {
+                                return null;
+                            }
+                            return parsed;
+                        } catch (error) {
+                            return null;
+                        }
+                    };
+
+                    const writeCache = (html) => {
+                        try {
+                            window.localStorage.setItem(cacheKey, JSON.stringify({
+                                html,
+                                cachedAt: Date.now()
+                            }));
+                        } catch (error) {
+                            // Если localStorage недоступен — просто пропускаем кеш.
+                        }
+                    };
+
+                    const cached = readCache();
+                    const isFresh = cached && (Date.now() - Number(cached.cachedAt) < cacheTtl);
+
+                    if (isFresh) {
+                        renderNews(cached.html);
+                    } else {
+                        fetch(endpoint)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.html) {
+                                    writeCache(data.html);
+                                    renderNews(data.html);
+                                    return;
+                                }
+                                if (cached && cached.html) {
+                                    renderNews(cached.html);
+                                }
+                            })
+                            .catch(error => {
+                                if (cached && cached.html) {
+                                    renderNews(cached.html);
+                                    return;
+                                }
+                                console.error('Ошибка загрузки новостей:', error);
+                            });
+                    }
+                }
+            </script>
+        </div>
 
         <?php
     }
@@ -2065,6 +2512,9 @@ class Clearfy_Plugin_Admin {
             ],
             'hide-author-link' => [
                 'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#hide-author-link',
+            ],
+            'hide-external-links-content' => [
+                'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#hide-external-links-content',
             ],
             'noindex-pagination' => [
                 'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#noindex-pagination',
@@ -2194,6 +2644,9 @@ class Clearfy_Plugin_Admin {
             'cookies' => [
                 'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#cookies',
             ],
+            'maintenance-enable' => [
+                'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#maintenance-enable',
+            ],
             'hide-posts-home' => [
                 'default' => 'https://support.wpshop.ru/docs/plugins/clearfy-pro/setting/#hide-posts-home',
             ],
@@ -2264,10 +2717,12 @@ class Clearfy_Plugin_Admin {
             ],
         ];
 
-        if ( isset( $urls[ $name ][ get_locale() ] ) ) {
-            return $urls[ $name ][ get_locale() ];
-        } else if ( $urls[ $name ][ 'default' ] ) {
-            return $urls[ $name ][ 'default' ];
+        if ( isset( $urls[ $name ] ) ) {
+            if ( isset( $urls[ $name ][ get_locale() ] ) ) {
+                return $urls[ $name ][ get_locale() ];
+            } else if ( $urls[ $name ]['default'] ) {
+                return $urls[ $name ]['default'];
+            }
         }
 
         return '';
@@ -2309,9 +2764,8 @@ class Clearfy_Plugin_Admin {
         $value = '';
         if (isset($this->options[$name]) && ! empty($this->options[$name])) $value = $this->options[$name];
         if ( empty( $value ) ) {
-            $plugin = new Clearfy_Plugin();
-            $value = $plugin->right_robots_txt( '' );
-            //$value = Clearfy_Plugin::right_robots_txt( '' );
+            $robots_txt = new \WPShop\ClearfyPro\RobotsTxt( $this->plugin_options );
+            $value = $robots_txt->render( '' );
         }
         $string = '<textarea name="' . $this->option_name . '[' . $name . ']" id="' . $name . '" class="regular-text">'. $value .'</textarea>';
         echo $string;
@@ -2400,14 +2854,6 @@ class Clearfy_Plugin_Admin {
         $string .= 'id="' . $name . '" value="' . esc_attr($value) . '"" class="small-text">';
         echo $string;
     }
-
-
-	/**
-	 * @return string
-	 */
-	public function get_api_url(): string {
-		return $this->api_url;
-	}
 
 
     /**

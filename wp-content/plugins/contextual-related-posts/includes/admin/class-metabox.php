@@ -8,6 +8,7 @@
 namespace WebberZone\Contextual_Related_Posts\Admin;
 
 use WebberZone\Contextual_Related_Posts\Util\Cache;
+use WebberZone\Contextual_Related_Posts\Util\Hook_Registry;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -25,11 +26,11 @@ class Metabox {
 	 * Main constructor class.
 	 */
 	public function __construct() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ), 10, 2 );
-		add_action( 'save_post', array( $this, 'save_meta_box' ) );
-		add_action( 'edit_attachment', array( $this, 'save_meta_box' ) );
-		add_action( 'wp_ajax_crp_get_posts_action', array( $this, 'get_posts_action' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		Hook_Registry::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ), 10, 2 );
+		Hook_Registry::add_action( 'save_post', array( $this, 'save_meta_box' ) );
+		Hook_Registry::add_action( 'edit_attachment', array( $this, 'save_meta_box' ) );
+		Hook_Registry::add_action( 'wp_ajax_crp_get_posts_action', array( $this, 'get_posts_action' ) );
+		Hook_Registry::add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
 	/**
@@ -106,31 +107,28 @@ class Metabox {
 		wp_nonce_field( 'crp_meta_box', 'crp_meta_box_nonce' );
 
 		// Get the thumbnail settings. The name of the meta key is defined in thumb_meta parameter of the CRP Settings array.
-		$thumb_meta = get_post_meta( $post->ID, crp_get_option( 'thumb_meta' ), true );
+		$thumb_meta = crp_get_meta( $post->ID, crp_get_option( 'thumb_meta' ) );
 		$value      = ( $thumb_meta ) ? $thumb_meta : '';
 
 		// Get related posts specific meta.
-		$post_meta = get_post_meta( $post->ID, 'crp_post_meta', true );
+		$disable_here      = crp_get_meta( $post->ID, 'disable_here' );
+		$exclude_this_post = crp_get_meta( $post->ID, 'exclude_this_post' );
+		$keyword           = crp_get_meta( $post->ID, 'keyword' );
+		$exclude_words     = crp_get_meta( $post->ID, 'exclude_words' );
+		$manual_related    = crp_get_meta( $post->ID, 'manual_related' );
+		$exclude_post_ids  = crp_get_meta( $post->ID, 'exclude_post_ids' );
 
 		// Disable display option.
-		$disable_here = isset( $post_meta['crp_disable_here'] ) ? $post_meta['crp_disable_here'] : 0;
+		$disable_here = ( $disable_here ) ? $disable_here : 0;
 
 		// Exclude this post.
-		$exclude_this_post = isset( $post_meta['exclude_this_post'] ) ? $post_meta['exclude_this_post'] : 0;
+		$exclude_this_post = ( $exclude_this_post ) ? $exclude_this_post : 0;
 
 		// Manual related.
-		$manual_related       = isset( $post_meta['manual_related'] ) ? $post_meta['manual_related'] : '';
 		$manual_related_array = array_map( 'absint', explode( ',', $manual_related ) );
 
 		// Exclude post IDs.
-		$exclude_post_ids       = isset( $post_meta['exclude_post_ids'] ) ? $post_meta['exclude_post_ids'] : '';
 		$exclude_post_ids_array = array_map( 'absint', explode( ',', $exclude_post_ids ) );
-
-		// Keyword - word or phrase.
-		$keyword = isset( $post_meta['keyword'] ) ? $post_meta['keyword'] : '';
-
-		// Exclude terms.
-		$exclude_words = isset( $post_meta['exclude_words'] ) ? $post_meta['exclude_words'] : '';
 
 		/**
 		 * Filter the relevance of manual related posts.
@@ -256,8 +254,6 @@ class Metabox {
 	 */
 	public static function save_meta_box( $post_id ) {
 
-		$post_meta = array();
-
 		// Bail if we're doing an auto save.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -284,25 +280,36 @@ class Metabox {
 			delete_post_meta( $post_id, crp_get_option( 'thumb_meta' ) );
 		}
 
-		// Disable posts.
-		if ( isset( $_POST['crp_disable_here'] ) ) {
-			$post_meta['crp_disable_here'] = 1;
+		// Disable on this post.
+		$disable_here = isset( $_POST['crp_disable_here'] ) ? 1 : 0;
+		if ( $disable_here ) {
+			update_post_meta( $post_id, '_crp_disable_here', $disable_here );
 		} else {
-			$post_meta['crp_disable_here'] = 0;
+			delete_post_meta( $post_id, '_crp_disable_here' );
 		}
 
-		if ( isset( $_POST['crp_exclude_this_post'] ) ) {
-			$post_meta['exclude_this_post'] = 1;
+		// Exclude this post from related posts.
+		$exclude_this_post = isset( $_POST['crp_exclude_this_post'] ) ? 1 : 0;
+		if ( $exclude_this_post ) {
+			update_post_meta( $post_id, '_crp_exclude_this_post', $exclude_this_post );
 		} else {
-			$post_meta['exclude_this_post'] = 0;
+			delete_post_meta( $post_id, '_crp_exclude_this_post' );
 		}
 
-		if ( isset( $_POST['crp_keyword'] ) ) {
-			$post_meta['keyword'] = sanitize_text_field( wp_unslash( $_POST['crp_keyword'] ) );
+		// Override keyword.
+		$keyword = isset( $_POST['crp_keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['crp_keyword'] ) ) : '';
+		if ( $keyword ) {
+			update_post_meta( $post_id, '_crp_keyword', $keyword );
+		} else {
+			delete_post_meta( $post_id, '_crp_keyword' );
 		}
 
-		if ( isset( $_POST['crp_exclude_words'] ) ) {
-			$post_meta['exclude_words'] = implode( ',', array_map( 'trim', explode( ',', sanitize_text_field( wp_unslash( $_POST['crp_exclude_words'] ) ) ) ) );
+		// Exclude words.
+		$exclude_words = isset( $_POST['crp_exclude_words'] ) ? implode( ',', array_map( 'trim', explode( ',', sanitize_text_field( wp_unslash( $_POST['crp_exclude_words'] ) ) ) ) ) : '';
+		if ( $exclude_words ) {
+			update_post_meta( $post_id, '_crp_exclude_words', $exclude_words );
+		} else {
+			delete_post_meta( $post_id, '_crp_exclude_words' );
 		}
 
 		// Save Manual related posts.
@@ -315,10 +322,17 @@ class Metabox {
 					unset( $manual_related_array[ $key ] );
 				}
 			}
-			$post_meta['manual_related'] = implode( ',', $manual_related_array );
+			$manual_related = implode( ',', $manual_related_array );
+			if ( $manual_related ) {
+				update_post_meta( $post_id, '_crp_manual_related', $manual_related );
+			} else {
+				delete_post_meta( $post_id, '_crp_manual_related' );
+			}
+		} else {
+			delete_post_meta( $post_id, '_crp_manual_related' );
 		}
 
-		// Save Manual related posts.
+		// Save Exclude post IDs.
 		if ( isset( $_POST['exclude_post_ids'] ) ) {
 
 			$exclude_post_ids_array = array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['exclude_post_ids'] ) ) ) );
@@ -328,26 +342,14 @@ class Metabox {
 					unset( $exclude_post_ids_array[ $key ] );
 				}
 			}
-			$post_meta['exclude_post_ids'] = implode( ',', $exclude_post_ids_array );
-		}
-
-		/**
-		 * Filter the CRP Post meta variable which contains post-specific settings
-		 *
-		 * @since   2.2.0
-		 *
-		 * @param   array   $post_meta  CRP post-specific settings
-		 * @param   int $post_id    Post ID
-		 */
-		$post_meta = apply_filters( 'crp_post_meta', $post_meta, $post_id );
-
-		$post_meta_filtered = array_filter( $post_meta );
-
-		/**** Now we can start saving */
-		if ( empty( $post_meta_filtered ) ) {   // Checks if all the array items are 0 or empty.
-			delete_post_meta( $post_id, 'crp_post_meta' );  // Delete the post meta if no options are set.
+			$exclude_post_ids = implode( ',', $exclude_post_ids_array );
+			if ( $exclude_post_ids ) {
+				update_post_meta( $post_id, '_crp_exclude_post_ids', $exclude_post_ids );
+			} else {
+				delete_post_meta( $post_id, '_crp_exclude_post_ids' );
+			}
 		} else {
-			update_post_meta( $post_id, 'crp_post_meta', $post_meta_filtered );
+			delete_post_meta( $post_id, '_crp_exclude_post_ids' );
 		}
 
 		// Clear cache of current post.
@@ -361,6 +363,9 @@ class Metabox {
 		 * @param   int $post_id    Post ID
 		 */
 		do_action( 'crp_save_meta_box', $post_id );
+
+		// Delete old array key if it exists to avoid conflicts.
+		delete_post_meta( $post_id, 'crp_post_meta' );
 	}
 
 	/**
@@ -376,19 +381,20 @@ class Metabox {
 		$search_term      = isset( $_POST['search_term'] ) ? sanitize_text_field( wp_unslash( $_POST['search_term'] ) ) : '';
 		$postid           = isset( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
 		$exclude_post_ids = isset( $_POST['exclude_post_ids'] ) ? wp_parse_id_list( wp_unslash( $_POST['exclude_post_ids'] ) ) : array();
-		$relevance        = isset( $_POST['relevance'] ) ? (bool) $_POST['relevance'] : true;
+		$relevance_raw    = isset( $_POST['relevance'] ) ? sanitize_text_field( wp_unslash( $_POST['relevance'] ) ) : '1';
+		$relevance        = wp_validate_boolean( $relevance_raw );
 
-		if ( empty( $search_term ) || empty( $postid ) ) {
+		if ( empty( $search_term ) ) {
 			wp_send_json_error();
 		}
 
-		if ( ! $relevance ) {
+		if ( ! $relevance || empty( $postid ) ) {
 			$args = array(
-				'post_type'      => 'post',
+				'post_type'      => get_post_types( array( 'public' => true ) ),
 				'post_status'    => 'publish',
 				'posts_per_page' => 7,
 				's'              => $search_term,
-				'post__not_in'   => array_merge( array( $postid ), $exclude_post_ids ),
+				'post__not_in'   => array_merge( $postid ? array( $postid ) : array(), $exclude_post_ids ),
 			);
 			if ( is_numeric( $search_term ) ) {
 				$args['p'] = absint( $search_term );
@@ -397,7 +403,7 @@ class Metabox {
 			$posts = get_posts( $args );
 		} else {
 			$args = array(
-				'postid'           => $postid,
+				'post_id'          => $postid,
 				'posts_per_page'   => 7,
 				'keyword'          => $search_term,
 				'exclude_post_ids' => $exclude_post_ids,
@@ -409,18 +415,46 @@ class Metabox {
 				$args['include_post_ids'] = array( $search_term );
 			}
 			$posts = \get_crp_posts( $args );
+
+			if ( empty( $posts ) || ! is_array( $posts ) ) {
+				$fallback_args = array(
+					'post_type'      => get_post_types( array( 'public' => true ) ),
+					'post_status'    => 'publish',
+					'posts_per_page' => 7,
+					's'              => $search_term,
+					'post__not_in'   => array_merge( array( $postid ), $exclude_post_ids ),
+				);
+
+				if ( is_numeric( $search_term ) ) {
+					$fallback_args['p'] = absint( $search_term );
+					unset( $fallback_args['s'] );
+				}
+
+				$posts = get_posts( $fallback_args );
+			}
+		}
+
+		if ( ! is_array( $posts ) ) {
+			$posts = array();
 		}
 
 		$result = array();
 		foreach ( $posts as $post ) {
+			if ( is_numeric( $post ) ) {
+				$post = get_post( absint( $post ) );
+			}
+
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+
 			$result[] = array(
 				'id'    => $post->ID,
 				'title' => sprintf( '%1$s (%2$s)', $post->post_title, $post->ID ),
 			);
 		}
 
-		echo wp_json_encode( $result );
-		wp_die();
+		wp_send_json( $result );
 	}
 
 	/**
@@ -443,12 +477,16 @@ class Metabox {
 		}
 
 		$screen = get_current_screen();
+		if ( null === $screen ) {
+			return;
+		}
+
 		if ( 'post' === $screen->base ) {
 			wp_enqueue_script(
 				'crp-admin-metabox',
-				CRP_PLUGIN_URL . "includes/admin/js/metabox{$file_prefix}.js",
+				WZ_CRP_PLUGIN_URL . "includes/admin/js/metabox{$file_prefix}.js",
 				array( 'jquery', 'jquery-ui-autocomplete', 'jquery-ui-sortable' ),
-				CRP_VERSION,
+				WZ_CRP_VERSION,
 				true
 			);
 			wp_localize_script(
@@ -460,17 +498,55 @@ class Metabox {
 			);
 			wp_enqueue_style(
 				'crp-admin-styles',
-				CRP_PLUGIN_URL . "includes/admin/css/admin-styles{$file_prefix}.css",
+				WZ_CRP_PLUGIN_URL . "includes/admin/css/admin-styles{$file_prefix}.css",
 				array( 'dashicons' ),
-				CRP_VERSION
+				WZ_CRP_VERSION
 			);
-			wp_enqueue_script(
-				'wz-taxonomy-suggest-js',
-				CRP_PLUGIN_URL . "includes/admin/settings/js/taxonomy-suggest{$file_prefix}.js",
-				array( 'jquery' ),
-				CRP_VERSION,
-				true
+
+			if ( ! wp_style_is( 'wz-crp-tom-select', 'registered' ) ) {
+				wp_register_style(
+					'wz-crp-tom-select',
+					WZ_CRP_PLUGIN_URL . 'includes/admin/settings/css/tom-select.min.css',
+					array(),
+					\WebberZone\Contextual_Related_Posts\Admin\Settings\Settings_API::VERSION
+				);
+			}
+
+			if ( ! wp_script_is( 'wz-crp-tom-select', 'registered' ) ) {
+				wp_register_script(
+					'wz-crp-tom-select',
+					WZ_CRP_PLUGIN_URL . 'includes/admin/settings/js/tom-select.complete.min.js',
+					array( 'jquery' ),
+					\WebberZone\Contextual_Related_Posts\Admin\Settings\Settings_API::VERSION,
+					true
+				);
+			}
+
+			if ( ! wp_script_is( 'wz-crp-tom-select-init', 'registered' ) ) {
+				wp_register_script(
+					'wz-crp-tom-select-init',
+					WZ_CRP_PLUGIN_URL . "includes/admin/settings/js/tom-select-init{$file_prefix}.js",
+					array( 'jquery', 'wz-crp-tom-select' ),
+					\WebberZone\Contextual_Related_Posts\Admin\Settings\Settings_API::VERSION,
+					true
+				);
+			}
+
+			wp_localize_script(
+				'wz-crp-tom-select-init',
+				'WZTomSelectSettings',
+				array(
+					'endpoint' => 'category',
+					'strings'  => array(
+						/* translators: %s: search term */
+						'no_results' => esc_html__( 'No results found for "%s"', 'contextual-related-posts' ),
+					),
+				)
 			);
+
+			wp_enqueue_style( 'wz-crp-tom-select' );
+			wp_enqueue_script( 'wz-crp-tom-select' );
+			wp_enqueue_script( 'wz-crp-tom-select-init' );
 		}
 	}
 }

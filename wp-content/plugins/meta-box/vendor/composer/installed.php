@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'wpmetabox/meta-box',
-        'pretty_version' => '5.10.9',
-        'version' => '5.10.9.0',
-        'reference' => '9cf65b4dbcda8bc3c6a06f96e591bd01dfdfe60c',
+        'pretty_version' => '5.12.0',
+        'version' => '5.12.0.0',
+        'reference' => 'ab68b5ee5949640b37608d1056845d79bf029d2f',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,23 +11,21 @@
     ),
     'versions' => array(
         'wpmetabox/meta-box' => array(
-            'pretty_version' => '5.10.9',
-            'version' => '5.10.9.0',
-            'reference' => '9cf65b4dbcda8bc3c6a06f96e591bd01dfdfe60c',
+            'pretty_version' => '5.12.0',
+            'version' => '5.12.0.0',
+            'reference' => 'ab68b5ee5949640b37608d1056845d79bf029d2f',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'wpmetabox/support' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '874318ec497ce7fb918eb0629dec825210155d97',
+            'pretty_version' => '1.0.0',
+            'version' => '1.0.0.0',
+            'reference' => '6c392347cdb77ed133b8a4227b5ee20db89a5717',
             'type' => 'library',
             'install_path' => __DIR__ . '/../wpmetabox/support',
-            'aliases' => array(
-                0 => '9999999-dev',
-            ),
+            'aliases' => array(),
             'dev_requirement' => false,
         ),
     ),

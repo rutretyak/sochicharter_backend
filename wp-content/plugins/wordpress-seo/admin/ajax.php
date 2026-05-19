@@ -144,7 +144,7 @@ function wpseo_save_what( $what ) {
  */
 function wpseo_upsert_meta( $post_id, $new_meta_value, $orig_meta_value, $meta_key, $return_key ) {
 
-	$post_id                  = intval( $post_id );
+	$post_id                  = (int) $post_id;
 	$sanitized_new_meta_value = wp_strip_all_tags( $new_meta_value );
 	$orig_meta_value          = wp_strip_all_tags( $orig_meta_value );
 
@@ -171,7 +171,7 @@ function wpseo_upsert_meta( $post_id, $new_meta_value, $orig_meta_value, $meta_k
 		$upsert_results['results'] = sprintf(
 			/* translators: %s expands to post type. */
 			__( 'Post has an invalid Content Type: %s.', 'wordpress-seo' ),
-			$the_post->post_type
+			$the_post->post_type,
 		);
 
 		return $upsert_results;
@@ -183,7 +183,7 @@ function wpseo_upsert_meta( $post_id, $new_meta_value, $orig_meta_value, $meta_k
 		$upsert_results['results'] = sprintf(
 			/* translators: %s expands to post type name. */
 			__( 'You can\'t edit %s.', 'wordpress-seo' ),
-			$post_type_object->label
+			$post_type_object->label,
 		);
 
 		return $upsert_results;
@@ -195,7 +195,7 @@ function wpseo_upsert_meta( $post_id, $new_meta_value, $orig_meta_value, $meta_k
 		$upsert_results['results'] = sprintf(
 			/* translators: %s expands to the name of a post type (plural). */
 			__( 'You can\'t edit %s that aren\'t yours.', 'wordpress-seo' ),
-			$post_type_object->label
+			$post_type_object->label,
 		);
 
 		return $upsert_results;
@@ -303,26 +303,18 @@ function ajax_get_keyword_usage_and_post_types() {
 
 	$post_ids = WPSEO_Meta::keyword_usage( $keyword, $post_id );
 
-	if ( ! empty( $post_ids ) ) {
-		$post_types = WPSEO_Meta::post_types_for_ids( $post_ids );
-	}
-	else {
-		$post_types = [];
-	}
-
 	$return_object = [
 		'keyword_usage' => $post_ids,
-		'post_types'    => $post_types,
+		'post_types'    => WPSEO_Meta::post_types_for_ids( $post_ids ),
 	];
 
 	wp_die(
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: WPSEO_Utils::format_json_encode is safe.
-		WPSEO_Utils::format_json_encode( $return_object )
+		WPSEO_Utils::format_json_encode( $return_object ),
 	);
 }
 
 add_action( 'wp_ajax_get_focus_keyword_usage_and_post_types', 'ajax_get_keyword_usage_and_post_types' );
-
 
 /**
  * Retrieves the keyword for the keyword doubles of the termpages.
@@ -363,7 +355,7 @@ function ajax_get_term_keyword_usage() {
 
 	wp_die(
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: WPSEO_Utils::format_json_encode is safe.
-		WPSEO_Utils::format_json_encode( $usage )
+		WPSEO_Utils::format_json_encode( $usage ),
 	);
 }
 
@@ -414,6 +406,6 @@ function ajax_get_keyword_usage() {
 
 	wp_die(
 		// phpcs:ignore WordPress.Security.EscapeOutput -- Reason: WPSEO_Utils::format_json_encode is safe.
-		WPSEO_Utils::format_json_encode( WPSEO_Meta::keyword_usage( $keyword, $post_id ) )
+		WPSEO_Utils::format_json_encode( WPSEO_Meta::keyword_usage( $keyword, $post_id ) ),
 	);
 }
