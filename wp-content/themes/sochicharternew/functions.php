@@ -416,11 +416,10 @@ function yachts_get_meta_box( $meta_boxes ) {
 			),
 			array(
 				'id' => $prefix . 'yachts_videos',
-				'type' => 'image_advanced',
+				'type' => 'video',
 				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
 				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
-				'max_file_uploads' => '20',
-				'force_delete' => true,
+				'max_file_uploads' => 20,
 			),
 			array(
 				'id' => $prefix . 'yacht_name',
@@ -632,11 +631,10 @@ function yachts_adler_get_meta_box( $meta_boxes ) {
 			),
 			array(
 				'id' => $prefix . 'yachts_videos',
-				'type' => 'image_advanced',
+				'type' => 'video',
 				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
 				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
-				'max_file_uploads' => '20',
-				'force_delete' => true,
+				'max_file_uploads' => 20,
 			),
 			array(
 				'id' => $prefix . 'yacht_name',
@@ -848,11 +846,10 @@ function yachts_lazar_get_meta_box( $meta_boxes ) {
 			),
 			array(
 				'id' => $prefix . 'yachts_videos',
-				'type' => 'image_advanced',
+				'type' => 'video',
 				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
 				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
-				'max_file_uploads' => '20',
-				'force_delete' => true,
+				'max_file_uploads' => 20,
 			),
 			array(
 				'id' => $prefix . 'yacht_name',
