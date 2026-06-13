@@ -39,8 +39,8 @@
 }
 
 .redirect-manager-item input {
-    flex: 1 1 320px;
-    min-width: 220px;
+    flex: 1 1 180px;
+    min-width: 180px;
 }
 
 .redirect-manager-item__sep {

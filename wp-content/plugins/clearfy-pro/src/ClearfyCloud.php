@@ -17,6 +17,10 @@ class ClearfyCloud {
     const CAPTCHA_COOKIE_TTL = DAY_IN_SECONDS;
 
     public function init() {
+
+        // отключаем временно защиту вообще из-за ложных срабатываний у клиентов
+        return;
+
         if ( ! clearfy_get_option( 'cloud_protection' ) ) {
             return;
         }
@@ -280,6 +284,10 @@ class ClearfyCloud {
             return;
         }
 
+//        if ( $_SERVER['HTTP_HOST'] === 'reboot.local:8888' ) {
+//            $rule['action'] = 'captcha';
+//        }
+
         if ( 'block' === $rule['action'] ) {
             $this->increment_daily_stat( 'blocked_count' );
             $this->render_block_page();
@@ -360,7 +368,6 @@ class ClearfyCloud {
         status_header( 403 );
         nocache_headers();
         $nonce = wp_create_nonce( 'clearfy_cloud_challenge_' . $ip );
-        $ip_label = esc_html__( 'Your IP:', 'clearfy-pro' );
         // Добавляем случайное смещение: "ровная поза" достигается в случайной точке слайдера,
         // а не на его крайних значениях min/max.
         $offset = random_int( 40, 320 );
@@ -373,7 +380,30 @@ class ClearfyCloud {
         $expected_answer = $target_angle;
         set_transient( 'clearfy_cloud_captcha_' . md5( $ip . '|' . $captcha_token ), $expected_answer, 10 * MINUTE_IN_SECONDS );
 
-        echo '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . esc_html__( 'Verification', 'clearfy-pro' ) . '</title></head><body style="font-family:Arial,sans-serif;padding:32px;margin:0;"><div style="max-width:560px;margin:10vh auto 0;text-align:center;"><h2>' . esc_html__( 'Security check', 'clearfy-pro' ) . '</h2><p>' . esc_html__( 'Please confirm you are a human.', 'clearfy-pro' ) . '</p><p style="margin:0 0 16px;color:#111827;font-size:14px;"><strong>' . $ip_label . '</strong> ' . esc_html( $ip ) . '</p><form method="post"><input type="hidden" name="clearfy_cloud_challenge" value="1"><input type="hidden" name="clearfy_cloud_nonce" value="' . esc_attr( $nonce ) . '"><input type="hidden" name="clearfy_cloud_captcha_token" value="' . esc_attr( $captcha_token ) . '"><input type="hidden" name="clearfy_cloud_js_ready" id="clearfy-cloud-js-ready" value="0"><input type="hidden" name="clearfy_cloud_captcha_answer" id="clearfy-cloud-answer" value="-1"><div style="position:absolute;left:-9999px;opacity:0;"><label>Website<input type="text" name="clearfy_cloud_hp" value=""></label></div><p style="margin:14px 0 8px;font-weight:600;">' . esc_html__( 'Rotate the icon to the upright position.', 'clearfy-pro' ) . '</p><div style="display:flex;justify-content:center;align-items:center;margin-bottom:10px;"><svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true"><g id="clearfy-cloud-figure" transform="rotate(' . (int) $start_angle . ' 55 55)"><circle cx="55" cy="24" r="10" fill="#165ff4"></circle><rect x="49" y="35" width="12" height="32" rx="4" fill="#165ff4"></rect><line x1="30" y1="48" x2="80" y2="48" stroke="#165ff4" stroke-width="8" stroke-linecap="round"></line><line x1="55" y1="67" x2="38" y2="95" stroke="#165ff4" stroke-width="8" stroke-linecap="round"></line><line x1="55" y1="67" x2="72" y2="95" stroke="#165ff4" stroke-width="8" stroke-linecap="round"></line></g></svg></div><input id="clearfy-cloud-slider" type="range" min="0" max="359" step="1" value="' . (int) $start_angle . '" style="width:100%;max-width:320px;margin:4px auto 14px;display:block;"><button id="clearfy-cloud-submit" type="submit" style="font-size:16px;line-height:1.2;padding:12px 22px;border-radius:6px;cursor:pointer;background:#165ff4;color:#fff;border:1px solid #165ff4;">' . esc_html__( 'Continue', 'clearfy-pro' ) . '</button></form><p style="margin-top:16px;color:#6b7280;font-size:13px;">' . esc_html__( 'Protection by Clearfy Pro', 'clearfy-pro' ) . '</p></div><script>(function(){var offset=' . (int) $offset . ';var slider=document.getElementById("clearfy-cloud-slider");var fig=document.getElementById("clearfy-cloud-figure");var js=document.getElementById("clearfy-cloud-js-ready");var ans=document.getElementById("clearfy-cloud-answer");js.value="1";function norm(v){v=parseInt(v,10)||0;v=((v%360)+360)%360;return v;}function sync(){var raw=norm(slider.value);var displayed=norm(raw+offset);fig.setAttribute("transform","rotate("+displayed+" 55 55)");ans.value=raw;}slider.addEventListener("input",sync);sync();})();</script></body></html>';
+        $title = esc_html__( 'Security check', 'clearfy-pro' );
+        $subtitle = esc_html__( 'Please confirm you are a human.', 'clearfy-pro' );
+        $rotate_text = esc_html__( 'Rotate the icon to the upright position.', 'clearfy-pro' );
+        $button_text = esc_html__( 'Continue', 'clearfy-pro' );
+        $content = '
+            <h1 class="clearfy-cloud-title">' . esc_html( $title ) . '</h1>
+            <p class="clearfy-cloud-subtitle">' . esc_html( $subtitle ) . '</p>
+            <form method="post" class="clearfy-cloud-form">
+                <input type="hidden" name="clearfy_cloud_challenge" value="1">
+                <input type="hidden" name="clearfy_cloud_nonce" value="' . esc_attr( $nonce ) . '">
+                <input type="hidden" name="clearfy_cloud_captcha_token" value="' . esc_attr( $captcha_token ) . '">
+                <input type="hidden" name="clearfy_cloud_js_ready" id="clearfy-cloud-js-ready" value="0">
+                <input type="hidden" name="clearfy_cloud_captcha_answer" id="clearfy-cloud-answer" value="-1">
+                <div style="position:absolute;left:-9999px;opacity:0;"><label>Website<input type="text" name="clearfy_cloud_hp" value=""></label></div>
+                <p class="clearfy-cloud-help">' . esc_html( $rotate_text ) . '</p>
+                <div class="clearfy-cloud-captcha-figure" aria-hidden="true">
+                    <svg width="110" height="110" viewBox="0 0 110 110" role="presentation"><g id="clearfy-cloud-figure" transform="rotate(' . (int) $start_angle . ' 55 55)"><circle cx="55" cy="24" r="10" fill="#f7f8fb"></circle><rect x="49" y="35" width="12" height="32" rx="4" fill="#f7f8fb"></rect><line x1="30" y1="48" x2="80" y2="48" stroke="#f7f8fb" stroke-width="8" stroke-linecap="round"></line><line x1="55" y1="67" x2="38" y2="95" stroke="#f7f8fb" stroke-width="8" stroke-linecap="round"></line><line x1="55" y1="67" x2="72" y2="95" stroke="#f7f8fb" stroke-width="8" stroke-linecap="round"></line></g></svg>
+                </div>
+                <input id="clearfy-cloud-slider" class="clearfy-cloud-slider" type="range" min="0" max="359" step="1" value="' . (int) $start_angle . '">
+                <button id="clearfy-cloud-submit" class="clearfy-cloud-button" type="submit">' . esc_html( $button_text ) . '</button>
+            </form>
+            <script>(function(){var offset=' . (int) $offset . ';var slider=document.getElementById("clearfy-cloud-slider");var fig=document.getElementById("clearfy-cloud-figure");var js=document.getElementById("clearfy-cloud-js-ready");var ans=document.getElementById("clearfy-cloud-answer");js.value="1";function norm(v){v=parseInt(v,10)||0;v=((v%360)+360)%360;return v;}function sync(){var raw=norm(slider.value);var displayed=norm(raw+offset);fig.setAttribute("transform","rotate("+displayed+" 55 55)");ans.value=raw;}slider.addEventListener("input",sync);sync();})();</script>
+        ';
+        $this->render_cloud_page_shell( esc_html__( 'Verification', 'clearfy-pro' ), $content, $ip );
         exit;
     }
 
@@ -388,11 +418,58 @@ class ClearfyCloud {
             __( 'If you are the site owner, disable Cloud Protection temporarily using %s.', 'clearfy-pro' ),
             '<a href="' . esc_url( $help_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'this guide', 'clearfy-pro' ) . '</a>'
         );
-        $ip_label = esc_html__( 'Your IP:', 'clearfy-pro' );
         $visitor_ip = $this->get_ip();
-
-        echo '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $title . '</title></head><body style="font-family:Arial,sans-serif;padding:32px;margin:0;"><div style="max-width:560px;margin:10vh auto 0;text-align:center;"><h2>' . $title . '</h2><p style="margin:0 0 8px;">' . $help_text . '</p><p style="margin:0 0 16px;color:#111827;font-size:14px;"><strong>' . $ip_label . '</strong> ' . esc_html( $visitor_ip ) . '</p><p style="margin:0 0 16px;color:#6b7280;font-size:13px;">' . wp_kses_post( $owner_text ) . '</p><p style="margin-top:16px;color:#6b7280;font-size:13px;">' . esc_html__( 'Protection by Clearfy Pro', 'clearfy-pro' ) . '</p></div></body></html>';
+        $retry_text = esc_html__( 'Try again', 'clearfy-pro' );
+        $content = '
+            <h1 class="clearfy-cloud-title">' . esc_html( $title ) . '</h1>
+            <p class="clearfy-cloud-subtitle">' . esc_html( $help_text ) . '</p>
+            <p class="clearfy-cloud-help">' . wp_kses_post( $owner_text ) . '</p>
+            <a class="clearfy-cloud-button clearfy-cloud-button--link" href="' . esc_url( $_SERVER['REQUEST_URI'] ?? '/' ) . '">' . esc_html( $retry_text ) . '</a>
+        ';
+        $this->render_cloud_page_shell( $title, $content, $visitor_ip );
         exit;
+    }
+
+    protected function render_cloud_page_shell( $page_title, $content, $ip ) {
+        $ip_label = esc_html__( 'IP address:', 'clearfy-pro' );
+        $protection_label = esc_html__( 'Protection by Clearfy Pro', 'clearfy-pro' );
+        $safe_content = wp_kses(
+            $content,
+            [
+                'div' => [ 'class' => true, 'style' => true, 'aria-hidden' => true ],
+                'svg' => [ 'width' => true, 'height' => true, 'viewBox' => true, 'role' => true ],
+                'g' => [ 'id' => true, 'transform' => true ],
+                'circle' => [ 'cx' => true, 'cy' => true, 'r' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true ],
+                'rect' => [ 'x' => true, 'y' => true, 'width' => true, 'height' => true, 'rx' => true, 'fill' => true ],
+                'line' => [ 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true ],
+                'path' => [ 'd' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true ],
+                'h1' => [ 'class' => true ],
+                'p' => [ 'class' => true ],
+                'form' => [ 'method' => true, 'class' => true ],
+                'input' => [ 'type' => true, 'name' => true, 'value' => true, 'id' => true, 'class' => true, 'min' => true, 'max' => true, 'step' => true ],
+                'button' => [ 'id' => true, 'class' => true, 'type' => true ],
+                'script' => [],
+                'a' => [ 'href' => true, 'target' => true, 'rel' => true, 'class' => true ],
+                'label' => [],
+            ]
+        );
+
+        echo '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . esc_html( $page_title ) . '</title><style>
+            *,*::before,*::after{box-sizing:border-box;}
+            body{margin:0;padding:clamp(1rem,2.4vw,1.75rem);min-height:100dvh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top,#2f313a 0%,#1f2129 65%,#1a1b22 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#f3f4f6;}
+            .clearfy-cloud-card{width:100%;max-width:38rem;background:#2e3039;border:1px solid rgba(255,255,255,.16);border-radius:2rem;padding:clamp(1.75rem,3.8vw,2.75rem) clamp(1.25rem,3vw,2.2rem) clamp(1.125rem,2.6vw,1.85rem);box-shadow:0 1rem 3rem rgba(0,0,0,.32);}
+            .clearfy-cloud-title{margin:0 0 .625rem;font-size:clamp(1.5rem,3.9vw,1.95rem);line-height:1.15;font-weight:700;color:#f5f6f7;}
+            .clearfy-cloud-subtitle{margin:0 0 clamp(1rem,2.3vw,1.4rem);font-size:clamp(1rem,2.8vw,1.3rem);line-height:1.35;color:#bcc0cf;}
+            .clearfy-cloud-help{margin:0 0 clamp(1rem,2vw,1.2rem);font-size:clamp(.95rem,2.3vw,1.12rem);line-height:1.45;color:#d6d8de;}
+            .clearfy-cloud-help a{color:#e8e9ee;text-decoration:underline;}
+            .clearfy-cloud-captcha-figure{display:flex;justify-content:center;align-items:center;margin:0 0 clamp(.75rem,1.9vw,1rem);}
+            .clearfy-cloud-slider{width:100%;margin:0 0 clamp(.75rem,1.9vw,1rem);}
+            .clearfy-cloud-form{margin-top:.25rem;}
+            .clearfy-cloud-button{display:block;width:100%;margin-top:clamp(.85rem,2vw,1.1rem);border:0;border-radius:999px;padding:clamp(.75rem,1.9vw,.95rem) 1rem;background:#14151b;color:#fff;font-size:clamp(1.2rem,3vw,1.6rem);line-height:1.2;font-weight:500;cursor:pointer;text-align:center;text-decoration:none;}
+            .clearfy-cloud-button:hover,.clearfy-cloud-button:focus{background:#0f1015;}
+            .clearfy-cloud-button--link{box-sizing:border-box;}
+            .clearfy-cloud-meta{margin-top:clamp(1.1rem,2.5vw,1.55rem);padding-top:clamp(.65rem,1.7vw,.85rem);border-top:1px solid rgba(255,255,255,.12);display:flex;gap:clamp(.7rem,2vw,1.25rem);flex-wrap:wrap;justify-content:center;font-size:clamp(.75rem,1.7vw,.875rem);color:#9fa4b6;}
+        </style></head><body><div class="clearfy-cloud-card">' . $safe_content . '<div class="clearfy-cloud-meta"><span>' . esc_html( $protection_label ) . '</span><span>' . esc_html( $ip_label ) . ' ' . esc_html( $ip ) . '</span></div></div></body></html>';
     }
 
     protected function has_valid_challenge_cookie( $ip ) {
@@ -664,6 +741,9 @@ class ClearfyCloud {
     }
 
     private function get_ip() {
+//        if ( $_SERVER['HTTP_HOST'] === 'reboot.local:8888' ) {
+//            return '107.172.35.195';
+//        }
         $remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : '';
         $trusted_proxies = [ '127.0.0.1', '::1' ];
 

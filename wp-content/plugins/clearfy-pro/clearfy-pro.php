@@ -3,7 +3,7 @@
  * Plugin Name: Clearfy Pro
  * Plugin URI:  https://wpshop.ru/plugins/clearfy
  * Description: Очищает код WP от лишнего мусора, улучшает SEO, убирает дубли, усиливает защиту и не только! Смотрите полное описание на странице настроек
- * Version:     3.7.1
+ * Version:     3.7.2
  * Author:      WPShop.ru
  * Author URI:  https://wpshop.ru/
  * License:     WPShop License
@@ -129,7 +129,7 @@ if( ! class_exists( 'Clearfy_Plugin' ) ):
 
             // set variables
             $this->plugin_name      = 'clearfy-pro';
-            $this->version          = '3.7.1';
+            $this->version          = '3.7.2';
             $this->api_urls         = [
                 'https://wpshop.ru/api/',           // main api
                 'https://wpshop.biz/api-proxy/',    // proxy cloudflare

@@ -4,7 +4,7 @@ Contributors:      wpshopbiz
 Requires at least: 4.7
 Tested up to:      6.9
 Requires PHP:      7.2
-Stable tag:        3.7.1
+Stable tag:        3.7.2
 License:           WPShop License
 License URI:       https://wpshop.ru/license
 Tags:              SEO, protect, protect admin, seo optimize, clear code, disable emoji, rest api, rss feeds, remove versions, yoast helper, yoast breadbrubms, minifier, minify, remove meta generator, rsd, wlw, next link, previous link, remove dns-prefetch
@@ -21,6 +21,12 @@ Powerful All in One plugin (SEO, Protect, Clear code  etc.)
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+
+= 3.7.2 - 2026-05-29 =
+* Исправлено: верстка полей в разделе Redirect Manager, улучшили адаптив.
+* Исправлено: временно отключили Clearfy Cloud+ защиту от ботов из-за ложных срабатываний.
+* Исправлено: модуль Отключения комментариев пропускал спамные комментарии, поправили.
+* Исправлено: модуль Скрыть внешние ссылки теперь не ломает стили блока Кнопка от Gutenberg.
 
 = 3.7.1 - 2026-05-15 =
 * Добавлено: на страницу блокировки Clearfy Cloud+ добавлен вывод IP-адреса посетителя.

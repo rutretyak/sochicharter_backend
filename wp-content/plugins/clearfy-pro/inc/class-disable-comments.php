@@ -21,10 +21,9 @@ class Clearfy_Disable_Comments {
 
 	public function init() {
 
-		if ( ! empty( $this->plugin_options->options['disable_comments'] ) && $this->plugin_options->options['disable_comments'] != 'on' ) {
-            // remove comments
+        if ( ! empty( $this->plugin_options->options['disable_comments'] ) && $this->plugin_options->options['disable_comments'] == 'on' ) {
             add_action( 'wp_loaded', array( $this, 'filter_wp_loaded' ) );
-		}
+        }
 
 		if ( ! empty( $this->plugin_options->options['disable_comments_interface'] ) && $this->plugin_options->options['disable_comments_interface'] == 'on' ) {
 			// remove rest api

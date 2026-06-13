@@ -65,13 +65,13 @@ class Wpshop_Clearfy_Upgrade {
 	}
 
     /**
-     * Для 3.6.0 включаем по умолчанию cloud_protection
+     * Миграция 3.6.0.
+     * Включение cloud_protection по умолчанию отключено.
+     *
      * @return void
      */
     private function upgrade_360() {
-        $options = $this->plugin_options->options;
-        $options['cloud_protection'] = 'on';
-        update_option( $this->plugin_options->option_name, $options );
+        // Оставлено намеренно пустым для совместимости цепочки миграций.
     }
 
 

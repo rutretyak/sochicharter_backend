@@ -378,6 +378,11 @@ function create_posttype() {
 
 // Meta Boxes
 
+
+//
+//	SOCHI
+//
+
 function yachts_get_meta_box( $meta_boxes ) {
 	$prefix = 'yachts-';
 
@@ -405,7 +410,15 @@ function yachts_get_meta_box( $meta_boxes ) {
 				'id' => $prefix . 'yachts_images',
 				'type' => 'image_advanced',
 				'name' => esc_html__( 'Фотографии яхты', 'yachts-generator' ),
-				'desc' => esc_html__( 'Сюда загружаем фотографии яхт. Фотографии должны быть 320px по высоте.', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем фотографии яхт.', 'yachts-generator' ),
+				'max_file_uploads' => '20',
+				'force_delete' => true,
+			),
+			array(
+				'id' => $prefix . 'yachts_videos',
+				'type' => 'image_advanced',
+				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
 				'max_file_uploads' => '20',
 				'force_delete' => true,
 			),
@@ -583,7 +596,7 @@ function yachts_get_meta_box( $meta_boxes ) {
 add_filter( 'rwmb_meta_boxes', 'yachts_get_meta_box' );
 
 //
-//
+// ADLER
 //
 
 function yachts_adler_get_meta_box( $meta_boxes ) {
@@ -613,7 +626,15 @@ function yachts_adler_get_meta_box( $meta_boxes ) {
 				'id' => $prefix . 'yachts_images',
 				'type' => 'image_advanced',
 				'name' => esc_html__( 'Фотографии яхты', 'yachts-generator' ),
-				'desc' => esc_html__( 'Сюда загружаем фотографии яхт. Фотографии должны быть 320px по высоте.', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем фотографии яхт.', 'yachts-generator' ),
+				'max_file_uploads' => '20',
+				'force_delete' => true,
+			),
+			array(
+				'id' => $prefix . 'yachts_videos',
+				'type' => 'image_advanced',
+				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
 				'max_file_uploads' => '20',
 				'force_delete' => true,
 			),
@@ -821,7 +842,15 @@ function yachts_lazar_get_meta_box( $meta_boxes ) {
 				'id' => $prefix . 'yachts_images',
 				'type' => 'image_advanced',
 				'name' => esc_html__( 'Фотографии яхты', 'yachts-generator' ),
-				'desc' => esc_html__( 'Сюда загружаем фотографии яхт. Фотографии должны быть 320px по высоте.', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем фотографии яхт.', 'yachts-generator' ),
+				'max_file_uploads' => '20',
+				'force_delete' => true,
+			),
+			array(
+				'id' => $prefix . 'yachts_videos',
+				'type' => 'image_advanced',
+				'name' => esc_html__( 'Видео яхты', 'yachts-generator' ),
+				'desc' => esc_html__( 'Сюда загружаем видео яхт.', 'yachts-generator' ),
 				'max_file_uploads' => '20',
 				'force_delete' => true,
 			),
@@ -1094,3 +1123,48 @@ add_filter( 'rest_allow_anonymous_comments', function ( $allow_anonymous, $reque
 
 // turbo pages
 require('parts/functions/yandex-turbo.php');
+
+// --------------------------------------
+// Run `npm run build` at sochicharter.ru 
+/*
+add_action('save_post', function ($post_id, $post, $update) {
+
+    // Avoid autosaves and revisions
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (wp_is_post_revision($post_id)) {
+        return;
+    }
+
+    $url = 'https://sochicharter.ru/php/build.php';
+    $data = [
+        'password' => 'scsecret',
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+
+    curl_close($ch);
+}, 10, 3);
+*/
+
+// ----
+// CORS
+// ----
+
+add_action('init', function () {
+    register_post_meta('post', 'count', [
+        'type'         => 'integer',
+        'single'       => true,
+        'show_in_rest' => true,
+        'default'      => 0,
+        'auth_callback' => function () {
+            return current_user_can('edit_posts');
+        },
+    ]);
+});

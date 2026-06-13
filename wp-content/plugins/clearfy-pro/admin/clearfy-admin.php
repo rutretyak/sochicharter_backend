@@ -1222,6 +1222,7 @@ class Clearfy_Plugin_Admin {
                         <div id="clearfy_security" class="wpshop-tab-in js-wpshop-tab-item">
                             <div class="option-field-header"><?php _e( 'Security', $this->plugin_options->text_domain ) ?></div>
 
+                            <?php /*
                             <div class="option-field">
                                 <label class="option-field-label" for="cloud_protection">
                                     <?php _e( 'Cloud site protection', $this->plugin_options->text_domain ) ?>
@@ -1229,7 +1230,6 @@ class Clearfy_Plugin_Admin {
                                     <sup style="color: #143bd6; font-size: .8em;">🔥 beta</sup>
                                     <br>
                                     <span style="color: #165ff4;font-size: .9em;font-weight: 600;">Clearfy Cloud+</span><br>
-                                    <span class="clearfy-recommend"><?php _e( 'Recommended', $this->plugin_options->text_domain ) ?></span>
                                 </label>
                                 <div class="option-field-body">
                                     <?php $this->display_checkbox('cloud_protection') ?>
@@ -1288,7 +1288,7 @@ class Clearfy_Plugin_Admin {
                                     </div>
                                 </div>
                             </div><!--.option-field-->
-
+                            */ ?>
 
                             <div class="option-field">
                                 <label class="option-field-label" for="hide_wp_login">

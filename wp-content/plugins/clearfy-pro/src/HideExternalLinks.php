@@ -61,9 +61,9 @@ class HideExternalLinks {
     }
 
     public function convert_links_pseudo( $text, $context = 'comment' ) {
-        $class = $this->get_pseudo_link_class();
+        $pseudo_class = $this->get_pseudo_link_class();
 
-        return preg_replace_callback( '/<a\b[^>]*>.*?<\/a>/is', function ( $matches ) use ( $context, $class ) {
+        return preg_replace_callback( '/<a\b[^>]*>.*?<\/a>/is', function ( $matches ) use ( $context, $pseudo_class ) {
             $link_html = $matches[0];
             if ( ! preg_match( '/href\s*=\s*([\'"])(.*?)\1/i', $link_html, $href_match ) ) {
                 return $link_html;
@@ -82,8 +82,9 @@ class HideExternalLinks {
             $content = preg_replace( '/^<a\b[^>]*>|<\/a>$/i', '', $link_html );
             $encoded_url = base64_encode( $href );
             $data_target = $target !== '' ? ' data-target="' . esc_attr( $target ) . '"' : '';
+            $span_attributes = $this->build_span_attributes_from_link( $link_html, $pseudo_class );
 
-            return '<span class="' . esc_attr( $class ) . '" data-uri="' . esc_attr( $encoded_url ) . '"' . $data_target . '>' . $content . '</span>';
+            return '<span' . $span_attributes . ' data-uri="' . esc_attr( $encoded_url ) . '"' . $data_target . '>' . $content . '</span>';
         }, $text );
     }
 
@@ -114,6 +115,8 @@ class HideExternalLinks {
 
         $styles  = '.' . $class . '{color:' . $color . ';cursor:pointer;text-decoration:' . $underline . ';}';
         $styles .= '.' . $class . ':hover{color:' . $hover_color . ';text-decoration:' . $hover_underline . ';}';
+        $styles .= '.wp-block-button__link.' . $class . '{color:var(--wp-block-button-pseudo-color,#fff);text-decoration:inherit;}';
+        $styles .= '.wp-block-button__link.' . $class . ':hover{color:var(--wp-block-button-pseudo-color-hover,#fff);}';
 
         echo '<style>' . apply_filters( 'clearfy_pseudo_links_style', $styles ) . '</style>';
     }
@@ -256,5 +259,46 @@ class HideExternalLinks {
         }
 
         return $class;
+    }
+
+    protected function build_span_attributes_from_link( $link_html, $pseudo_class ) {
+        $class_attr = $this->extract_attribute_value( $link_html, 'class' );
+        $classes = preg_split( '/\s+/', trim( $class_attr ) );
+        $classes = is_array( $classes ) ? $classes : [];
+        $classes[] = $pseudo_class;
+        $classes = array_filter( array_map( 'sanitize_html_class', $classes ) );
+        $classes = array_values( array_unique( $classes ) );
+        $attributes = ' class="' . esc_attr( implode( ' ', $classes ) ) . '"';
+
+        // Сохраняем визуальные и служебные атрибуты, чтобы не ломать стили кнопок Gutenberg и кастомных блоков.
+        $allowed_attributes = [ 'id', 'style', 'title', 'role', 'aria-label', 'aria-describedby' ];
+        foreach ( $allowed_attributes as $attribute_name ) {
+            $attribute_value = $this->extract_attribute_value( $link_html, $attribute_name );
+            if ( $attribute_value !== '' ) {
+                $attributes .= ' ' . $attribute_name . '="' . esc_attr( $attribute_value ) . '"';
+            }
+        }
+
+        if ( preg_match_all( '/\s(data-[a-z0-9\-_:.]+)\s*=\s*([\'"])(.*?)\2/i', $link_html, $matches, PREG_SET_ORDER ) ) {
+            foreach ( $matches as $match ) {
+                $data_name = strtolower( (string) $match[1] );
+                $data_value = (string) $match[3];
+                if ( $data_name === 'data-uri' || $data_name === 'data-target' ) {
+                    continue;
+                }
+                $attributes .= ' ' . $data_name . '="' . esc_attr( $data_value ) . '"';
+            }
+        }
+
+        return $attributes;
+    }
+
+    protected function extract_attribute_value( $html, $attribute_name ) {
+        $pattern = '/\b' . preg_quote( $attribute_name, '/' ) . '\s*=\s*([\'"])(.*?)\1/i';
+        if ( preg_match( $pattern, $html, $matches ) ) {
+            return html_entity_decode( (string) $matches[2], ENT_QUOTES, get_bloginfo( 'charset' ) );
+        }
+
+        return '';
     }
 }
